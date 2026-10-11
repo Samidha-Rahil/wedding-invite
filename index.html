@@ -28,7 +28,62 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 @keyframes pulse{50%{opacity:.25}}
 @keyframes ganpatiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
-/* ===== LOGO SCREEN ===== */
+/* ================= BEE-FOLLOW INTRO ================= */
+#logo{overflow:hidden}
+#logoBox,#hint{position:relative;z-index:2}
+#logoBox{
+  opacity:0;
+  transform:translate(105vw,35vh) scale(.72);
+}
+#hint{opacity:0;animation:none}
+#logo.bee-arrived #logoBox{
+  animation:logoReveal 2.1s cubic-bezier(.2,.75,.25,1) forwards;
+}
+#logo.bee-arrived #hint{
+  animation:hintReveal 1.1s ease 2.1s forwards;
+}
+#bee{
+  position:absolute;
+  z-index:15;
+  left:50%;
+  top:50%;
+  width:clamp(42px,12vw,62px);
+  height:auto;
+  object-fit:contain;
+  pointer-events:none;
+  opacity:0;
+  transform:translate(-50%,-50%);
+  will-change:left,top,transform;
+}
+#bee.flying{
+  opacity:1;
+  animation:beeJourney 3.5s cubic-bezier(.45,.05,.25,1) forwards;
+}
+#bee.landed{
+  opacity:1;
+  animation:beeLand 1s ease forwards;
+}
+@keyframes beeJourney{
+  0%{left:-12%;top:76%;transform:translate(-50%,-50%) rotate(-18deg) scale(.8)}
+  18%{left:23%;top:57%;transform:translate(-50%,-50%) rotate(12deg) scale(1)}
+  37%{left:42%;top:35%;transform:translate(-50%,-50%) rotate(-12deg) scale(1.04)}
+  58%{left:66%;top:42%;transform:translate(-50%,-50%) rotate(10deg) scale(1)}
+  78%{left:56%;top:47%;transform:translate(-50%,-50%) rotate(-5deg) scale(.96)}
+  100%{left:50%;top:50%;transform:translate(-50%,-50%) rotate(0) scale(.88)}
+}
+@keyframes beeLand{
+  0%{transform:translate(-50%,-50%) rotate(-8deg) scale(.88)}
+  55%{transform:translate(-50%,-56%) rotate(4deg) scale(.92)}
+  100%{transform:translate(-50%,-50%) rotate(0) scale(.88)}
+}
+@keyframes logoReveal{
+  0%{opacity:0;transform:translate(65vw,28vh) scale(.65)}
+  60%{opacity:1}
+  100%{opacity:1;transform:translate(0,0) scale(1)}
+}
+@keyframes hintReveal{
+  to{opacity:.85}
+}
 #logo{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cream);transition:opacity 1.2s}
 #logo.gone{opacity:0;pointer-events:none}
 #logoBox{width:62%;aspect-ratio:1;display:grid;place-items:center}
@@ -162,7 +217,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 </head>
 <body>
 <div class="frame">
-  <div id="logo">
+  <div id="logo">     <img id="bee" src="assets/bee.png" alt="">
     <div id="logoBox">
       <img id="logoImg" alt="Logo">
       <div class="mono" id="mono">A <span>∞</span> M<small>WEDDING</small></div>
@@ -304,7 +359,56 @@ li.src=CONFIG.logo;
 /* warm the cache while the guest is still on the logo screen */
 setTimeout(()=>[CONFIG.ganpati,CONFIG.tree,CONFIG.hibiscus,CONFIG.petal,...Object.values(CONFIG.bg)].forEach(s=>{new Image().src=s}),400);
 
-/* ---- infinity gesture ---- */
+/* ---- bee flight intro ---- */
+let beeIntroStarted=false;
+
+async function startBeeIntro(){
+  if(beeIntroStarted)return;
+  beeIntroStarted=true;
+
+  const logo=$('#logo');
+  const bee=$('#bee');
+
+  if(!bee){
+    logo.classList.add('bee-arrived');
+    return;
+  }
+
+  bee.onerror=()=>{
+    console.error('Bee image failed to load:',bee.src);
+    bee.remove();
+    logo.classList.add('bee-arrived');
+  };
+
+  if(!bee.complete || bee.naturalWidth===0){
+    await new Promise(resolve=>{
+      bee.addEventListener('load',resolve,{once:true});
+      bee.addEventListener('error',resolve,{once:true});
+    });
+  }
+
+  if(!bee.isConnected || bee.naturalWidth===0){
+    logo.classList.add('bee-arrived');
+    return;
+  }
+
+  bee.classList.add('flying');
+
+  await wait(3500);
+
+  bee.classList.remove('flying');
+  bee.classList.add('landed');
+  logo.classList.add('bee-arrived');
+
+  await wait(1000);
+
+  bee.style.transition='opacity .8s ease';
+  bee.style.opacity='0';
+  await wait(850);
+  bee.remove();
+}
+  
+  /* ---- infinity gesture ---- */
 function isInfinity(){
   if(pts.length<25)return false;
   const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),w=x1-x0,h=y1-y0;
@@ -321,8 +425,7 @@ function isInfinity(){
 }
 function infinityDone(){
   stage='name';drawing=false;
-  pts.forEach((p,i)=>{if(i%2==0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6)});
-  setTimeout(()=>{$('#nameModal').classList.add('show');$('#nameIn').focus({preventScroll:true})},950);
+   setTimeout(()=>{$('#nameModal').classList.add('show');$('#nameIn').focus({preventScroll:true})},950);
 }
 
 /* ---- builders ---- */
@@ -557,7 +660,7 @@ function returnToInfinity(){
 /* ---- global pointer handling ---- */
 addEventListener('pointerdown',e=>{
   down={x:e.clientX,y:e.clientY};
-  if(stage==='logo'){drawing=true;pts=[{x:e.clientX,y:e.clientY}];dust(e.clientX,e.clientY,{n:4,tiny:true})}
+  if(stage==='logo'){drawing=true;pts=[{x:e.clientX,y:e.clientY}]}
 });
 addEventListener('pointermove',e=>{
   if(stage==='logo'&&drawing){
@@ -566,11 +669,10 @@ addEventListener('pointermove',e=>{
       pts.push({x:e.clientX,y:e.clientY});
       if(pts.length%6===0&&isInfinity()){infinityDone();return}
     }
-    dust(e.clientX,e.clientY,{n:2,tiny:true,spread:.6});
   }else if(stage==='scenes'&&(e.buttons||e.pointerType==='mouse')&&!e.target.closest('.flower'))dust(e.clientX,e.clientY,{n:1,faint:true,spread:.7});
 });
 addEventListener('pointerup',e=>{
-  if(stage==='logo'){drawing=false;burst(e.clientX,e.clientY,10,{tiny:true,spread:1.5});if(isInfinity())infinityDone();pts=[];return}
+  if(stage==='logo'){drawing=false;if(isInfinity())infinityDone();pts=[];return}
   if(stage!=='scenes'||!down)return;
   const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;
   if(moved>12||e.target.closest('.flower,.petal,#nameModal,a'))return;
