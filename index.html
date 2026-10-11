@@ -36,8 +36,8 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .mono{display:none;text-align:center;color:var(--pink);font-family:var(--f-names);font-size:3.4rem;line-height:1.1}
 .mono small{display:block;font-size:1rem;letter-spacing:.35em;color:var(--forest);margin-top:.6rem;font-family:var(--f-date)}
 #hint{margin-top:2.2rem;font-size:clamp(.9rem,3.75vw,1.2rem);letter-spacing:.15em;text-transform:uppercase;color:var(--pink);opacity:0;animation:none;transition:opacity .8s ease}
-#hint.ready{opacity:.85;animation:pulse 3s ease-in-out infinite}
-#hint .inf{display:inline-block;font-size:2.7em;line-height:0;vertical-align:-.1em;margin:0 .08em}
+#hint.ready{opacity:.85;animation:pulse 3s ease-in-out infinite} #hint.ready{animation:hintFloat 4s ease-in-out infinite} @keyframes hintFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+#hint .inf{display:inline-block;font-size:2.565em;line-height:0;vertical-align:-.1em;margin:0 .08em}
 
 /* ===== NAME MODAL ===== */
 #nameModal{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:rgba(249,237,213,.55);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .8s}
@@ -75,15 +75,16 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 #inviteGaneshay{display:block;width:clamp(58px,17vw,82px);height:clamp(58px,17vw,82px);object-fit:contain;flex-shrink:0;margin-bottom:1.1vh}
 .invite-gap{height:2.2vh;min-height:8px;flex-shrink:0}
 .invite-gap-small{height:1.5vh;min-height:5px}
-.invite-hosts{font:clamp(11px,3.1vw,15px)/1.3 var(--f-date);letter-spacing:.07em;margin:0 0 1.5vh}
-.invite-statements,.invite-statement{font:clamp(12px,3.4vw,16px)/1.35 var(--f-venue);letter-spacing:.01em}
+.invite-hosts{font:calc(clamp(11px,3.1vw,15px) + 6.67px)/1.3 var(--f-date);letter-spacing:.07em;margin:0 0 1.5vh}
+.invite-statements,.invite-statement{font:calc(clamp(12px,3.4vw,16px) + 6.67px)/1.35 var(--f-venue);letter-spacing:.01em}
+.invite-with{font-size:calc(clamp(12px,3.4vw,16px) + 6.67px)}
 .invite-opening{margin-bottom:1.8vh}
 .invite-opening p{margin:0}
-.invite-name{font:400 clamp(35px,10vw,48px)/1.05 var(--f-names);color:var(--white);overflow-wrap:anywhere;margin:0}
+.invite-name{font:500 clamp(70px,20vw,96px)/1.05 var(--f-names);color:var(--pink);overflow-wrap:anywhere;margin:0}
 .invite-with{font:clamp(12px,3.4vw,16px)/1.2 var(--f-venue);margin:.6vh 0}
 .invite-groom{margin-bottom:1.4vh}
 .invite-statement{margin:0 0 .7vh;max-width:100%}
-.invite-family{font:400 clamp(21px,6vw,29px)/1.1 var(--f-names);margin-top:1.2vh;overflow-wrap:anywhere}
+.invite-family{font:500 clamp(42px,12vw,58px)/1.1 var(--f-names);color:var(--pink);margin-top:1.2vh;overflow-wrap:anywhere}
 #hintG{position:absolute;bottom:max(1.1rem,env(safe-area-inset-bottom));left:5%;width:90%;z-index:3;text-align:center;white-space:nowrap;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.9rem,3.75vw,1.2rem);letter-spacing:.08em;color:var(--pink);text-shadow:0 0 6px #fff,0 0 14px rgba(227,132,150,.95),0 0 28px rgba(227,132,150,.7),0 0 42px rgba(227,132,150,.4)}
 #hintG.show{animation:petalFadeIn 1.8s ease-out both,petalGlow 2.8s 1.8s ease-in-out infinite}
 #drop{position:absolute;left:50%;bottom:calc(7% - 39px);width:78px;height:78px;margin-left:-39px;border-radius:50%;border:1.5px dashed var(--white);box-shadow:0 0 20px rgba(255,255,255,.45),inset 0 0 18px rgba(227,132,150,.38);animation:pulse 2.6s infinite;z-index:6}
@@ -99,7 +100,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 
 /* ===== GANPATI + FLOWER (one element shared by pages 1 and 2) ===== */
 #bappa{position:absolute;left:17%;width:66%;top:49%;height:49%;z-index:4;pointer-events:none;transition:top 1s cubic-bezier(.65,0,.25,1),height 1s cubic-bezier(.65,0,.25,1),opacity .6s}
-#bappa.up{top:13%;height:46%}
+#bappa.up{top:8%;height:46%}
 #bappa.gone{opacity:0}
 #bappa img.bgan{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom center;opacity:0;filter:drop-shadow(0 5px 10px rgba(26,61,40,.12))}
 #bappa.in img.bgan{animation:flyU 1.5s .5s cubic-bezier(.2,.8,.2,1) both,ganpatiFloat 4.5s 2s ease-in-out infinite}
@@ -119,7 +120,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .maplink{display:inline-block;margin-top:.9rem;padding:.55rem 1.3rem;border:1px solid currentColor;border-radius:999px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;pointer-events:auto;cursor:pointer}
 .ev-over .maplink{color:var(--white)}
 .scene[data-event=puja] .ev-over p,.scene[data-event=puja] .ev-over .maplink{color:var(--sage);text-shadow:0 1px 4px rgba(249,237,213,.55)}
-@media(max-width:600px){
+@media(max-width:600px){   #mainInvite{top:7%;height:90%;justify-content:center;align-items:center;text-align:center}
   .ev-over{padding:3.5rem .8rem 2.2rem}
   .ev-over h2{font-size:6.5rem;line-height:.95}
   .scene[data-event=puja] .ev-over h2{font-size:4.9rem}
@@ -199,7 +200,7 @@ const CONFIG={
   hibiscus:"assets/hibiscus.png",
   petal:"assets/petal.png",
   drawTree:true,                      // false if the main BG already has a tree
-  flowerPos:[[28,68],[53,50],[42,67],[70,61],[60,22]],// five flowers; raised centre flowers and one near the top
+  flowerPos:[[28,68],[53,50],[42,67],[70,61],[60,32]],// five flowers, including one near the top of the tree
   bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
 };
 // Page order: Main → Puja → Mehendi → Sagai (sangeet) → Haldi → Wedding (petals) → Thank-you
