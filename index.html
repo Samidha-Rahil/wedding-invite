@@ -131,7 +131,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
   .ev-over{padding:3.5rem .8rem 2.2rem}
   .ev-over h2{font-size:6.5rem;line-height:.95}
   .scene[data-event=puja] .ev-over h2{font-size:4.9rem}
-.scene[data-event=wedding] .ev-over h2{font-weight:600;-webkit-text-stroke:.7px currentColor}
+.scene[data-event=wedding] .ev-over h2{font-weight:600;-webkit-text-stroke:.10px currentColor}
 }
 
 .next-cue{position:absolute;right:1.1rem;bottom:1.2rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
@@ -606,7 +606,12 @@ addEventListener('pointerup',e=>{
 
   const r=$('.frame').getBoundingClientRect(),tapX=(e.clientX-r.left)/r.width;
 
-  if(cur===FINAL&&tapX>=.75){returnToInfinity();return}   /* last page: right side → logo */
+  
+  if(cur===FINAL&&(e.target.closest('#final .lg')||tapX>=.75)){
+    returnToInfinity();
+    return;
+  }
+   /* last page: right side → logo */
 
   if(tapX<.25){dust(e.clientX,e.clientY,{n:16,faint:true,spread:2.5});go(cur-1);return}   /* left edge: back */
 
