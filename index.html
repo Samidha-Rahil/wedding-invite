@@ -35,8 +35,9 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 #logoBox img{width:100%;height:100%;object-fit:contain}
 .mono{display:none;text-align:center;color:var(--pink);font-family:var(--f-names);font-size:3.4rem;line-height:1.1}
 .mono small{display:block;font-size:1rem;letter-spacing:.35em;color:var(--forest);margin-top:.6rem;font-family:var(--f-date)}
-#hint{margin-top:2.2rem;font-size:clamp(.9rem,3.75vw,1.2rem);letter-spacing:.15em;text-transform:uppercase;color:var(--pink);opacity:.85;animation:pulse 3s ease-in-out infinite}
-#hint .inf{display:inline-block;font-size:2.2em;line-height:0;vertical-align:-.1em;margin:0 .08em}
+#hint{margin-top:2.2rem;font-size:clamp(.9rem,3.75vw,1.2rem);letter-spacing:.15em;text-transform:uppercase;color:var(--pink);opacity:0;animation:none;transition:opacity .8s ease}
+#hint.ready{opacity:.85;animation:pulse 3s ease-in-out infinite}
+#hint .inf{display:inline-block;font-size:2.7em;line-height:0;vertical-align:-.1em;margin:0 .08em}
 
 /* ===== NAME MODAL ===== */
 #nameModal{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:rgba(249,237,213,.55);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .8s}
@@ -92,13 +93,13 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .scene.active#s0 .tree-art{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobble 16s 1.8s ease-in-out infinite}
 @keyframes treeEnter{from{opacity:0;transform:translateX(65%) rotate(3deg)}to{opacity:1;transform:none}}
 @keyframes treeBobble{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-9px) rotate(-2.4deg)}55%{transform:translateX(6px) rotate(1.8deg)}75%{transform:translateX(-5px) rotate(-1.2deg)}}
-.flower{position:absolute;width:58px;height:58px;transform:translate(-50%,-50%);cursor:grab;touch-action:none;z-index:7;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35));transition:transform .35s,opacity .5s;pointer-events:auto}
+.flower{position:absolute;width:46.4px;height:46.4px;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scaleX(var(--flip,1));cursor:grab;touch-action:none;z-index:7;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35));transition:transform .35s,opacity .5s;pointer-events:auto}
 .flower.drag{transition:none;cursor:grabbing;z-index:30}
 .flower img,.flower svg{width:100%;height:100%;object-fit:contain;pointer-events:none;display:block}
 
 /* ===== GANPATI + FLOWER (one element shared by pages 1 and 2) ===== */
-#bappa{position:absolute;left:17%;width:66%;top:44%;height:49%;z-index:4;pointer-events:none;transition:top 1s cubic-bezier(.65,0,.25,1),height 1s cubic-bezier(.65,0,.25,1),opacity .6s}
-#bappa.up{top:8%;height:46%}
+#bappa{position:absolute;left:17%;width:66%;top:49%;height:49%;z-index:4;pointer-events:none;transition:top 1s cubic-bezier(.65,0,.25,1),height 1s cubic-bezier(.65,0,.25,1),opacity .6s}
+#bappa.up{top:13%;height:46%}
 #bappa.gone{opacity:0}
 #bappa img.bgan{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom center;opacity:0;filter:drop-shadow(0 5px 10px rgba(26,61,40,.12))}
 #bappa.in img.bgan{animation:flyU 1.5s .5s cubic-bezier(.2,.8,.2,1) both,ganpatiFloat 4.5s 2s ease-in-out infinite}
@@ -111,7 +112,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .ev-over{position:absolute;left:0;right:0;bottom:10%;padding:5rem 1.5rem 2.6rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
 .ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
-.ev-over h2{font-family:var(--f-names);font-size:5rem;line-height:1;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
+.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:5rem;line-height:1;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere} .scene[data-event=wedding] .ev-over h2{font-weight:500}
 .ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
 .date-time,.host-names{font-family:var(--f-date)}
 .venue-row{font-family:var(--f-venue)}
@@ -176,7 +177,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
       <img id="logoImg" alt="Logo">
       <div class="mono" id="mono">A <span>∞</span> M<small>WEDDING</small></div>
     </div>
-    <div id="hint"><span class="fx" style="--d:3s;display:inline-block">Draw <span class="inf">∞</span> to begin</span></div>
+    <div id="hint"><span style="display:inline-block">Draw <span class="inf">∞</span> to begin</span></div>
   </div>
   <div id="nameModal"><div class="card">
     <h2 class="welcome-word fx" style="--d:.3s">Welcome</h2><p class="fx l" style="--d:.5s">Please enter your name</p>
@@ -198,7 +199,7 @@ const CONFIG={
   hibiscus:"assets/hibiscus.png",
   petal:"assets/petal.png",
   drawTree:true,                      // false if the main BG already has a tree
-  flowerPos:[[12,76],[48,52],[30,70]],// centre flowers moved 10 percentage points higher
+  flowerPos:[[28,68],[53,50],[42,67],[70,61],[60,22]],// five flowers; raised centre flowers and one near the top
   bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
 };
 // Page order: Main → Puja → Mehendi → Sagai (sangeet) → Haldi → Wedding (petals) → Thank-you
@@ -248,11 +249,23 @@ const burst=(x,y,n=50,o={})=>dust(x,y,{...o,n,spread:o.spread||4});
   cx.globalAlpha=1;requestAnimationFrame(loop);
 })();
 
-/* ---- load the logo directly; no opening logo animation ---- */
+/* ---- logo fades and floats in subtly; infinity prompt follows ---- */
 li.onload=()=>{
-  li.style.opacity=1;
   li.style.display='block';
+  li.style.opacity=0;
+  li.style.transform='translateY(8px)';
+  li.style.transition='opacity .8s ease, transform .8s ease';
   $('#mono').style.display='none';
+
+  requestAnimationFrame(()=>{
+    li.style.opacity=1;
+    li.style.transform='translateY(0)';
+  });
+
+  clearTimeout(window.infinityHintTimer);
+  window.infinityHintTimer=setTimeout(()=>{
+    if(stage==='logo')$('#hint').classList.add('ready');
+  },2000);
 };
 li.onerror=()=>{
   console.error('Logo failed to load:',li.src);
@@ -321,7 +334,7 @@ function build(){
       if(bg.complete&&bg.naturalWidth>0)ph.hidden=true;
     }
 
-    if(k==='main')s.insertAdjacentHTML('beforeend',`<div class="intro fx" id="mainInvite" style="--d:.4s">   <img id="inviteGaneshay" src="assets/ganeshay.png" alt="Ganeshay" fetchpriority="high">   <div class="invite-gap"></div>   <p class="invite-hosts">[Smt. Archana & Shri Vinay Jatkar]</p>   <div class="invite-statements invite-opening">     <p>[With joy and warmth in their hearts, cordially]</p>     <p>[invite you to celebrate the wedding festivities of]</p>     <p>[their beloved daughter]</p>   </div>   <h1 class="invite-name">[Samidha]</h1>   <p class="invite-with">with</p>   <h2 class="invite-name invite-groom">[Rahil]</h2>   <p class="invite-statement">[(Son of Smt. Sneha & Late Shri Sanjiv Dhami)]</p>   <div class="invite-gap invite-gap-small"></div>   <p class="invite-statement">[sharing the joy]</p>   <p class="invite-family">[Prathama & Ninad]</p> </div> <div id="hintG">Offer Bappa a flower</div> <div id="drop" aria-label="Flower offering space"></div> <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%">${hibImg}</div>`).join('')}</div>`);
+    if(k==='main')s.insertAdjacentHTML('beforeend',`<div class="intro fx" id="mainInvite" style="--d:.4s">   <img id="inviteGaneshay" src="assets/ganeshay.png" alt="Ganeshay" fetchpriority="high">   <div class="invite-gap"></div>   <p class="invite-hosts">[Smt. Archana & Shri Vinay Jatkar]</p>   <div class="invite-statements invite-opening">     <p>[With joy and warmth in their hearts, cordially]</p>     <p>[invite you to celebrate the wedding festivities of]</p>     <p>[their beloved daughter]</p>   </div>   <h1 class="invite-name">[Samidha]</h1>   <p class="invite-with">with</p>   <h2 class="invite-name invite-groom">[Rahil]</h2>   <p class="invite-statement">[(Son of Smt. Sneha & Late Shri Sanjiv Dhami)]</p>   <div class="invite-gap invite-gap-small"></div>   <p class="invite-statement">[sharing the joy]</p>   <p class="invite-family">[Prathama & Ninad]</p> </div> <div id="hintG">Offer Bappa a flower</div> <div id="drop" aria-label="Flower offering space"></div> <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
 
@@ -438,8 +451,8 @@ $('#nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')submitName()});
 /* ---- flower drag (page 1) ---- */
 function wireFlower(f){
   let sx,sy,tx=0,ty=0;
-  const T=sc=>`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(${sc})`;
-  f.addEventListener('pointerdown',e=>{if(locked)return;e.stopPropagation();f.setPointerCapture(e.pointerId);sx=e.clientX;sy=e.clientY;f.classList.add('drag')});
+  const T=sc=>`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) rotate(var(--rot,0deg)) scaleX(var(--flip,1)) scale(${sc})`;
+  f.addEventListener('pointerdown',e=>{if(locked)return;e.stopPropagation();tx=ty=0;f.style.transform='';f.setPointerCapture(e.pointerId);sx=e.clientX;sy=e.clientY;f.classList.add('drag')});
   f.addEventListener('pointermove',e=>{if(!f.classList.contains('drag'))return;tx=e.clientX-sx;ty=e.clientY-sy;f.style.transform=T(1.25);dust(e.clientX,e.clientY,{n:2,faint:true})});
   f.addEventListener('pointerup',e=>{
     e.stopPropagation();
@@ -495,26 +508,60 @@ function closePop(){popOpen=false;$('#pop').classList.remove('show');if(ps)ps.cl
 /* ---- last page → logo: the small logo grows and glides to the centre ---- */
 function returnToInfinity(){
   const fl=$('#final .lg'),logo=$('#logo'),box=$('#logoBox'),hint=$('#hint'),fin=$('#final');
-  if(!fl||fl.style.display==='none'){logo.classList.remove('gone');app.classList.remove('on');stage='logo';cur=0;drawing=false;pts=[];return}
+
+  hint.classList.remove('ready');
+
+  if(!fl||fl.style.display==='none'){
+    logo.classList.remove('gone');
+    app.classList.remove('on');
+    stage='logo';cur=0;drawing=false;pts=[];
+    setTimeout(()=>{if(stage==='logo')hint.classList.add('ready')},2000);
+    return;
+  }
+
   stage='returning';
-  const start=fl.getBoundingClientRect(),clone=fl.cloneNode(true);
+
+  const start=fl.getBoundingClientRect();
+  const clone=fl.cloneNode(true);
   clone.className='logo-return';
   clone.style.cssText=`left:${start.left}px;top:${start.top}px;width:${start.width}px;height:${start.height}px;opacity:1`;
   document.body.appendChild(clone);
-  fl.style.visibility='hidden';box.style.visibility='hidden';hint.style.visibility='hidden';
-  fin.style.transition='opacity .6s';fin.style.opacity='0';
+
+  fl.style.visibility='hidden';
+  box.style.visibility='hidden';
+  hint.style.visibility='hidden';
+
+  fin.style.transition='opacity .6s';
+  fin.style.opacity='0';
+
   logo.classList.remove('gone');
+
   const target=box.getBoundingClientRect();
+
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    clone.style.left=target.left+'px';clone.style.top=target.top+'px';
-    clone.style.width=target.width+'px';clone.style.height=target.height+'px';
+    clone.style.left=target.left+'px';
+    clone.style.top=target.top+'px';
+    clone.style.width=target.width+'px';
+    clone.style.height=target.height+'px';
   }));
+
   setTimeout(()=>{
-    box.style.visibility='';hint.style.visibility='';
     clone.remove();
+
+    fl.style.visibility='';
+    box.style.visibility='';
+    hint.style.visibility='';
+    fin.style.opacity='';
+    fin.style.transition='';
+
     app.classList.remove('on');
     $('#nameModal').classList.remove('show');
+
     stage='logo';cur=0;drawing=false;pts=[];
+
+    setTimeout(()=>{
+      if(stage==='logo')hint.classList.add('ready');
+    },2000);
   },1000);
 }
 
