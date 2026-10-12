@@ -110,8 +110,13 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 h1.invite-name{transform:translateX(-5cqw)}
 
 /* Groom main page: keep the bride-side layout, with names slightly separated */
+.groom-side #mainInvite .invite-opening,
+.groom-side #mainInvite .invite-hosts,
+.groom-side #mainInvite .invite-after-hosts{
+  transform:translateY(-3cqh);
+}
 .groom-side h1.invite-name{transform:translate(-12cqw,1.2cqh)}
-.groom-side .invite-with{transform:translateY(.5cqh)}
+.groom-side .invite-with{top:0;transform:translateY(1cqh)}
 .groom-side .invite-groom{transform:translate(12cqw,1.2cqh)}
 .invite-statement{margin:0 0 .7cqh;max-width:100%}
 /* names: pink, 0.5px stroke */
@@ -188,8 +193,8 @@ h1.invite-name{transform:translateX(-5cqw)}
 /* Sangeet title is intentionally large on both sides */
 .bride-side .scene[data-event=sangeet] .ev-over h2,
 .groom-side .scene[data-event=sangeet] .ev-over h2{
-  font-size:clamp(4.3rem,18.5cqw,6rem);
-  line-height:1;
+  font-size:clamp(4.8rem,21cqw,6.8rem);
+  line-height:.98;
 }
    .ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
 .date-time,.host-names{font-family:var(--f-date)}
@@ -258,7 +263,7 @@ h1.invite-name{transform:translateX(-5cqw)}
 /* wedding details pop-up */
 #pop{position:absolute;inset:0;z-index:40;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .5s}
 #pop.show{opacity:1;pointer-events:auto}
-#pop:not(.show) .maplink{pointer-events:none}  .scene:not(.active) .maplink{   pointer-events:none!important; }  .scene[data-event=wedding] .maplink{   display:none!important; }
+#pop:not(.show) .maplink{pointer-events:none} .scene:not(.active) .maplink{pointer-events:none!important}
 #pop .card{width:84%}
 #pop .row{margin-top:.7rem;color:var(--forest);font-size:.95rem}
 #pop .maplink{color:var(--pink)}
@@ -283,11 +288,9 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 /* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
 .g-flor{position:absolute;top:0;z-index:2;pointer-events:none;transform-origin:50% 0;opacity:0;transition:opacity 1.6s ease .6s;will-change:transform}
 .g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
-.g-l{left:-4%;width:41.4%;--amp:1deg;--dur:9s;--dly:-2s}
-.g-r1{right:-4%;width:37.8%;--amp:.8deg;--dur:10.5s;--dly:-5s}
-.g-r2{right:5%;width:30.6%;--amp:1.2deg;--dur:8.5s;--dly:-7s}
+.g-r1{right:-4%;width:37.8%;--amp:1.3deg;--dur:15s;--dly:-5s}
+.g-r2{right:5%;width:30.6%;--amp:1.6deg;--dur:17s;--dly:-7s}
 .scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
-.scene.active .g-flor.touch-swing{animation:none!important}
 @keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
 @media (prefers-reduced-motion:reduce){.scene.active .g-flor{animation:none}}
 </style>
@@ -485,14 +488,14 @@ function infinityDone(){
 const FSVG=`<svg viewBox="-22 -22 44 44">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-9" rx="7.5" ry="11" fill="#E38496" stroke="#fff" stroke-width=".7" transform="rotate(${a})"/>`).join('')}<circle r="4.2" fill="#fff" opacity=".9"/><path d="M0 0L8-13" stroke="#B2AF87" stroke-width="1.3"/><circle cx="8" cy="-13" r="2" fill="#B2AF87"/></svg>`;
 const hibImg=`<img src="${CONFIG.hibiscus}" draggable="false" alt="" onerror="this.outerHTML=FSVG">`;
 const treeSVG=`<svg class="t" viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet"><g fill="none" stroke="#617764" stroke-linecap="round"><path d="M100 300C100 230 90 190 98 140 104 100 96 70 100 40" stroke-width="13"/><path d="M99 205C70 185 50 172 30 140" stroke-width="7"/><path d="M100 160C130 142 150 120 170 90" stroke-width="7"/><path d="M98 112C80 92 70 72 55 50" stroke-width="6"/></g><g fill="#1A3D28" opacity=".92"><circle cx="30" cy="135" r="22"/><circle cx="170" cy="85" r="24"/><circle cx="55" cy="45" r="22"/><circle cx="100" cy="30" r="26"/><circle cx="135" cy="125" r="18"/><circle cx="70" cy="160" r="18"/></g><g fill="#617764" opacity=".85"><circle cx="40" cy="125" r="14"/><circle cx="160" cy="75" r="15"/><circle cx="68" cy="38" r="13"/><circle cx="112" cy="22" r="14"/></g></svg>`;
-const mapUrl=e=>e.map||'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e.venue);
+const mapUrl=e=>e.map||'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e.venue||e.title);
 const mapLink=(e,d)=>`<a class="maplink fx" style="--d:${d}s" href="${mapUrl(e)}" target="_blank" rel="noopener">Find on map ↗</a>`;
 const hostLine=(e,cls,d)=>e.hosts?`<p class="${cls} host-names" style="--d:${d}s">Hosted by ${e.hosts}</p>`:'';
 
 function evHTML(k,invited){
   if(k==='puja'&&!invited)return `<div class="tg fx" style="--d:.7s">With blessings</div><h2 class="fx l" style="--d:.9s">Ganpati Bappa Morya</h2>`;
   const e=EVENTS[k];
-  return `<h2 class="fx l" style="--d:.9s">${e.title}</h2>${e.date?`<p class="fx r date-time" style="--d:1.1s">${e.date}</p>`:''}${e.time?`<p class="fx l date-time" style="--d:1.3s">${e.time}</p>`:''}${e.venue?`<p class="fx r venue-row" style="--d:1.5s">${e.venue}</p>`:''}${hostLine(e,'fx l',1.65)}${e.map!==undefined&&e.map!==''?mapLink(e,1.8):''}`;
+  return `<h2 class="fx l" style="--d:.9s">${e.title}</h2>${e.date?`<p class="fx r date-time" style="--d:1.1s">${e.date}</p>`:''}${e.time?`<p class="fx l date-time" style="--d:1.3s">${e.time}</p>`:''}${e.venue?`<p class="fx r venue-row" style="--d:1.5s">${e.venue}</p>`:''}${hostLine(e,'fx l',1.65)}${mapLink(e,1.8)}`;
 }
 
 /* ===== INTERACTIVE SANGEET WISH STARS ===== */
@@ -634,7 +637,7 @@ if(k==='main'){
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
 
-    if(k==='gpuja'||(k==='haldi'&&SIDE==='bride'))s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-l"><img src="assets/L-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`);     app.appendChild(s);scenes.push(s);
+    if(k==='gpuja'||(k==='haldi'&&SIDE==='bride'))s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`);     app.appendChild(s);scenes.push(s);
     if(k==='sangeet')makeConstellation(s);
   });
 
@@ -972,32 +975,8 @@ addEventListener('pointerup',e=>{
   const blocked=e.target.closest('.flower,.petal,#nameModal,a,button,input,textarea,.constellation-star,.constellation-ui,.constellation-admin,.constellation-admin-panel');
   if(!inFrame(e)||blocked)return;
 
-  // A swipe nudges the hanging florals, then they settle back into their tiny idle sway.
-  if(moved>12){
-    const activeScene=document.querySelector('.scene.active');
-    const florals=activeScene?.querySelectorAll('.g-flor');
-    if(florals&&florals.length){
-      const direction=Math.sign(Math.abs(dx)>=Math.abs(dy)?dx:-dy)||1;
-      florals.forEach((floral,index)=>{
-        floral.classList.add('touch-swing');
-        const side=floral.classList.contains('g-l')?-1:1;
-        const impulse=direction*side;
-        const swing=3.2+index*.45;
-        const anim=floral.animate([
-          {transform:`rotate(${-impulse*swing}deg)`},
-          {transform:`rotate(${impulse*swing*1.35}deg)`,offset:.28},
-          {transform:`rotate(${-impulse*swing*.62}deg)`,offset:.57},
-          {transform:`rotate(${impulse*swing*.22}deg)`,offset:.8},
-          {transform:'rotate(0deg)'}
-        ],{duration:1550+index*150,easing:'cubic-bezier(.22,.61,.36,1)'});
-        anim.onfinish=()=>{
-          floral.classList.remove('touch-swing');
-          anim.cancel();
-        };
-      });
-    }
-    return;
-  }
+  // Swipes do not trigger a floral animation.
+  if(moved>12)return;
 
   if(e.target.closest('.flower,.petal'))return;
   if(popOpen){closePop();go(FINAL);return}
