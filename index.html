@@ -66,7 +66,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .scene.dim img.bg{opacity:.22}
 .scene[data-event=main] img.bg{object-position:left center}
 .scene[data-event=puja] img.bg{object-position:center top}
-.ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:2rem;background:var(--cream);color:var(--forest);font-size:.85rem;letter-spacing:.1em;z-index:1}
+.ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:2rem;background:var(--cream);color:var(--forest);font-size:.85rem;letter-spacing:.1em;z-index:1;pointer-events:none}
 .ph[hidden],.image-fallback[hidden]{display:none}
 .image-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:1rem;text-align:center;color:var(--forest);font-size:.85rem;letter-spacing:.04em;background:var(--cream);z-index:1}
 
@@ -74,7 +74,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .intro{position:absolute;top:0;left:5%;width:90%;height:100%;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;color:var(--white);text-shadow:0 2px 8px rgba(26,61,40,.6);pointer-events:none;overflow:hidden}
 .scene.active#s0 .intro{animation:flyU 1.3s .4s both}
 #inviteGaneshay{display:block;width:clamp(58px,17vw,82px);height:clamp(58px,17vw,82px);object-fit:contain;flex-shrink:0;margin-top:0;margin-bottom:0}
-.invite-gap{height:2.2vh;min-height:8px;flex-shrink:0}
+.invite-gap{height:5vh;min-height:18px;flex-shrink:0}
 .invite-gap-small{height:1.5vh;min-height:5px}
 
 .invite-hosts{font:calc((clamp(11px,3.1vw,15px) + 6.67px)*1.1)/1.3 var(--f-date);letter-spacing:.07em;margin:0 0 1.5vh}
@@ -82,8 +82,8 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .invite-opening{margin-bottom:1.8vh}
 .invite-opening p{margin:0}
 .invite-name{font:500 clamp(70px,20vw,96px)/1.05 var(--f-names);color:var(--pink);-webkit-text-stroke:.3px currentColor;overflow-wrap:anywhere;margin:0}
-.invite-with{font:clamp(12px,3.4vw,16px)/1.2 var(--f-venue);margin:.6vh 0}
-.invite-groom{margin-bottom:1.4vh}
+.invite-with{font:clamp(12px,3.4vw,16px)/1.2 var(--f-venue);margin:.1vh 0 .6vh;transform:translateY(-.5vh)}
+.invite-groom{margin-bottom:.7vh}
 .invite-statement{margin:0 0 .7vh;max-width:100%}
 .invite-family{font:500 clamp(42px,12vw,58px)/1.1 var(--f-names);color:var(--pink);-webkit-text-stroke:.3px currentColor;margin-top:1.2vh;overflow-wrap:anywhere}
 #hintG{position:absolute;bottom:max(1.1rem,env(safe-area-inset-bottom));left:5%;width:90%;z-index:3;text-align:center;white-space:nowrap;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.9rem,3.75vw,1.2rem);letter-spacing:.08em;color:var(--pink);text-shadow:0 0 6px #fff,0 0 14px rgba(227,132,150,.95),0 0 28px rgba(227,132,150,.7),0 0 42px rgba(227,132,150,.4)}
@@ -123,8 +123,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .ev-over{position:absolute;left:0;right:0;bottom:10%;padding:5rem 1.5rem 2.6rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
 .ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
-.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:5rem;line-height:1;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere} 
-.scene[data-event=wedding] .ev-over h2{font-weight:500}
+.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:5rem;line-height:1;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
 .ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
 .date-time,.host-names{font-family:var(--f-date)}
 .venue-row{font-family:var(--f-venue)}
@@ -135,7 +134,6 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
   .ev-over{padding:3.5rem .8rem 2.2rem}
   .ev-over h2{font-size:6.5rem;line-height:.95}
   .scene[data-event=puja] .ev-over h2{font-size:4.9rem}
-.scene[data-event=wedding] .ev-over h2{font-weight:700!important;-webkit-text-stroke:10px currentColor;paint-order:stroke fill}
 
 .next-cue{position:absolute;right:1.1rem;bottom:1.2rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
 .next-cue-label{text-shadow:0 1px 5px rgba(26,61,40,.5)}
@@ -169,37 +167,61 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
   animation:starTwinkle var(--twinkle,3s) ease-in-out infinite alternate;
   text-shadow:0 0 5px rgba(255,255,255,.8);
 }
+
 .constellation-star{
-  position:absolute;transform:translate(-50%,-50%);
-  display:grid;place-items:center;width:36px;height:36px;
-  border:0;background:transparent;color:#e8edf2;
-  font-size:clamp(1.35rem,5vw,1.8rem);line-height:1;
-  cursor:pointer;pointer-events:auto;
-  filter:drop-shadow(0 0 5px rgba(225,237,255,.85));
+  position:absolute;
+  transform:translate(-50%,-50%);
+  display:grid;place-items:center;
+  width:44px;height:44px;
+  border:0;background:transparent;
+  color:#fff8e9;
+  font-size:clamp(1.55rem,5.5vw,2rem);
+  line-height:1;cursor:pointer;
+  pointer-events:auto;touch-action:manipulation;
+  filter:drop-shadow(0 0 3px #fff)
+         drop-shadow(0 0 7px rgba(211,229,255,.95))
+         drop-shadow(0 0 15px rgba(198,220,255,.7));
   animation:starTwinkle var(--twinkle,2.8s) ease-in-out infinite alternate;
-  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.constellation-star::before{
+  content:"";
+  position:absolute;width:70%;height:70%;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(255,255,255,.75) 0,
+    rgba(218,232,255,.25) 32%,
+    transparent 72%);
+  z-index:-1;
 }
 .constellation-star::after{
   content:attr(data-category);
-  position:absolute;left:50%;bottom:100%;
+  position:absolute;left:50%;bottom:calc(100% - 2px);
   transform:translateX(-50%);
-  padding:.28rem .48rem;border-radius:20px;
-  background:rgba(20,38,32,.86);color:#fff;
-  font: .58rem var(--f-date);letter-spacing:.08em;
+  padding:.3rem .55rem;border-radius:20px;
+  background:rgba(20,38,32,.9);color:#fff;
+  font:.58rem var(--f-date);letter-spacing:.08em;
   white-space:nowrap;opacity:0;pointer-events:none;
   transition:opacity .2s;
 }
 .constellation-star:hover::after,
 .constellation-star:focus-visible::after{opacity:1}
-.constellation-star:focus-visible{outline:1px solid #fff;border-radius:50%}
+.constellation-star:focus-visible{
+  outline:1px solid #fff;border-radius:50%;
+}
 .constellation-star.is-gold{
-  color:#f4ce72;
-  filter:drop-shadow(0 0 8px rgba(255,211,112,.95));
+  color:#ffe6a0;
+  filter:drop-shadow(0 0 4px #fff7d7)
+         drop-shadow(0 0 10px #ffce68)
+         drop-shadow(0 0 20px rgba(255,190,74,.9));
 }
 .constellation-star.is-gold::before{
-  content:"";position:absolute;inset:3px;border-radius:50%;
-  background:rgba(255,210,112,.14);z-index:-1;
+  background:radial-gradient(circle,
+    rgba(255,242,190,.9) 0,
+    rgba(255,202,91,.3) 38%,
+    transparent 75%);
 }
+
 @keyframes starTwinkle{
   from{opacity:.48;scale:.92}
   to{opacity:1;scale:1.08}
@@ -434,19 +456,20 @@ function evHTML(k,invited){
 let activeConstellationStar = null;
 const goldConstellationStars = new Set();
 
+
 const CONSTELLATION_STARS = [
-  {id:"star-01",x:13,y:20,category:"Luck",fortune:"May good fortune find you in the most unexpected places."},
-  {id:"star-02",x:31,y:14,category:"Dance",fortune:"May music always find your feet and joy find your heart."},
-  {id:"star-03",x:52,y:21,category:"Cheer",fortune:"May laughter fill your home and brighten ordinary days."},
-  {id:"star-04",x:76,y:15,category:"Future",fortune:"May the road ahead bring beautiful beginnings."},
-  {id:"star-05",x:88,y:32,category:"Love",fortune:"May love grow deeper with every season of life."},
-  {id:"star-06",x:15,y:39,category:"Future",fortune:"May every new chapter bring a reason to believe."},
-  {id:"star-07",x:35,y:35,category:"Love",fortune:"May you always be surrounded by people who feel like home."},
-  {id:"star-08",x:62,y:39,category:"Luck",fortune:"May little miracles find their way to you."},
-  {id:"star-09",x:83,y:49,category:"Dance",fortune:"May life give you a thousand reasons to celebrate."},
-  {id:"star-10",x:22,y:58,category:"Cheer",fortune:"May your days hold more smiles than worries."},
-  {id:"star-11",x:49,y:57,category:"Future",fortune:"May your dreams find the courage and space to grow."},
-  {id:"star-12",x:72,y:62,category:"Love",fortune:"May the love you give return to you in countless ways."}
+  {id:"star-01",x:13,y:20,category:"Luck",fortune:"May the life you build together be full of little miracles, kind people, and beautiful surprises."},
+  {id:"star-02",x:31,y:14,category:"Dance",fortune:"May your home always have music in the air, laughter in every room, and a reason to dance."},
+  {id:"star-03",x:52,y:21,category:"Cheer",fortune:"May the happiest moments of your life become the stories you tell and retell for years."},
+  {id:"star-04",x:76,y:15,category:"Future",fortune:"May every new chapter bring you closer to the dreams you have shared and the ones yet to come."},
+  {id:"star-05",x:88,y:32,category:"Love",fortune:"May you keep choosing each other, in the grand celebrations and in the quiet moments nobody else sees."},
+  {id:"star-06",x:15,y:39,category:"Future",fortune:"May you always find courage in each other and wonder in the life you create together."},
+  {id:"star-07",x:35,y:35,category:"Love",fortune:"May you always be each other's safest place, favourite person, and reason to smile."},
+  {id:"star-08",x:62,y:39,category:"Luck",fortune:"May good fortune follow your footsteps and may kindness find its way back to you, again and again."},
+  {id:"star-09",x:83,y:49,category:"Dance",fortune:"May you never run out of songs to sing, places to explore, or reasons to celebrate together."},
+  {id:"star-10",x:22,y:58,category:"Cheer",fortune:"May you collect ordinary days that feel extraordinary simply because you are sharing them."},
+  {id:"star-11",x:49,y:57,category:"Future",fortune:"May the dreams you bring into this marriage grow into a life even more beautiful than you imagined."},
+  {id:"star-12",x:72,y:62,category:"Love",fortune:"May the love surrounding you today stay with you through every season, every change, and every new beginning."}
 ];
 
 function makeConstellation(scene){
@@ -478,7 +501,7 @@ function makeConstellation(scene){
     button.dataset.category = star.category;
     button.style.cssText =
       `left:${star.x}%;top:${star.y}%;--twinkle:${2.1+(star.x%4)*.35}s;animation-delay:${(star.x%5)*-.3}s`;
-    button.textContent = "✦";
+    button.textContent = "✧";
     button.setAttribute("aria-label", `${star.category} star. Open its fortune.`);
     button.addEventListener("pointerdown", e=>e.stopPropagation());
     button.addEventListener("pointerup", e=>e.stopPropagation());
