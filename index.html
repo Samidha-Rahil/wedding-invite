@@ -166,10 +166,10 @@ h1.invite-name{transform:translateX(-5cqw)}
 .constellation-admin-panel.open{display:block}.constellation-admin-panel h3{font:1.4rem var(--f-names);margin:1rem 0}.admin-wish{padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.2);font:.8rem/1.4 var(--f-venue);overflow-wrap:anywhere}.admin-wish button{margin:.4rem .3rem 0 0;padding:.35rem .5rem;border:0;border-radius:6px;background:#d7b45a;color:#17271e;font-size:.7rem}.admin-close{position:sticky;top:0;float:right;padding:.45rem .65rem;border:0;border-radius:8px}
 
 /* ===== EVENT PAGES ===== */
-.ev-over{position:absolute;left:0;right:0;top:60%;bottom:auto;padding:0 .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
+.ev-over{position:absolute;left:0;right:0;bottom:10%;top:auto;padding:0 .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
 .ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
-.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(4.3rem,20cqw,6.5rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
+.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(3.5rem,15cqw,4.9rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
 .ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
 .date-time,.host-names{font-family:var(--f-date)}
 .venue-row{font-family:var(--f-venue)}
@@ -235,9 +235,19 @@ h1.invite-name{transform:translateX(-5cqw)}
    @keyframes treeEnterL{from{opacity:0;transform:translateX(-65%) rotate(-3deg)}to{opacity:1;transform:none}} 
    @keyframes treeBobbleL{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(9px) rotate(2.4deg)}55%{transform:translateX(-6px) rotate(-1.8deg)}75%{transform:translateX(5px) rotate(1.2deg)}} 
 /* ===== LOGO-BG on home + last page ===== */
-:root{--logo-bg:url('assets/bg-logo.jpg')}
-#logo{background:var(--cream) var(--bg-logo) center/cover no-repeat}
-#final{background:var(--cream) var(--bg-logo) center/cover no-repeat}
+#logo{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
+#final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
+#bappa.gone.fromMain{transform:translateY(-102cqh)}
+html[data-side=groom] #inviteGaneshay{width:clamp(58px,17cqw,82px);height:clamp(58px,17cqw,82px)}
+/* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
+.g-flor{position:absolute;top:0;z-index:2;pointer-events:none;transform-origin:50% 0;opacity:0;transition:opacity 1.6s ease .6s;will-change:transform}
+.g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
+.g-l{left:0;width:46%;--amp:1deg;--dur:9s;--dly:-2s}
+.g-r1{right:0;width:42%;--amp:.8deg;--dur:10.5s;--dly:-5s}
+.g-r2{right:12%;width:34%;--amp:1.2deg;--dur:8.5s;--dly:-7s}
+.scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
+@keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
+@media (prefers-reduced-motion:reduce){.scene.active .g-flor{animation:none}}
 </style>
 </head>
 <body>
@@ -276,7 +286,7 @@ const SIDES={
       share:"sharing the joy", family:"Prathama &amp; Ninad"}
   },
   groom:{
-    logo:"assets/logo-groom.png", ganeshay:"assets/ganeshay-groom.png",
+    logo:"assets/logo-groom.png", ganeshay:"assets/groom-ganeshay.png",
     order:["sangeet","gpuja","wedding"],
     main:{
       lines:[
@@ -301,7 +311,7 @@ const SD=SIDES[SIDE];
   petal:"assets/petal.png",
   drawTree:true,                      // false if the main BG already has a tree
   flowerPos:[[28,48],[53,56],[42,67],[30,61],[50,38]],// five flowers, including one near the top of the tree
-  bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",gpuja:"assets/bg-gpuja.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
+  bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",gpuja:"assets/Groom-bg-haldi.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
 };
 // Page order: Main → Puja → Mehendi → Sagai (sangeet) → Haldi → Wedding (petals) → Thank-you
 
@@ -544,7 +554,7 @@ function build(){
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
 
-    app.appendChild(s);scenes.push(s);
+    if(k==='gpuja')s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-l"><img src="assets/L-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`);     app.appendChild(s);scenes.push(s);
     if(k==='sangeet')makeConstellation(s);
   });
 
@@ -600,7 +610,9 @@ function show(i){
 
   const bp=$('#bappa');
 const bi=scenes.findIndex(x=>x.dataset.bappa==='1');
-  bp.classList.toggle('up',i>=1);
+  const hasUp=bi>0;
+  bp.classList.toggle('up',hasUp&&i>=1);
+  bp.classList.toggle('fromMain',!hasUp);
   bp.classList.toggle('gone',i>Math.max(bi,0));
   if(i===0)bp.classList.remove('offered');
 
