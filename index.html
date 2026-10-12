@@ -109,9 +109,10 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .invite-groom{margin-bottom:-.8cqh;transform:translateX(5cqw)}
 h1.invite-name{transform:translateX(-5cqw)}
 
-/* Groom page: groom's name left, bride's name right */
-.groom-side h1.invite-name{transform:translateX(-8cqw)}
-.groom-side .invite-groom{transform:translateX(8cqw)}
+/* Groom page: increase the space between the names */
+.groom-side h1.invite-name{transform:translateX(-12cqw)}
+.groom-side .invite-groom{transform:translateX(12cqw)}
+.groom-side .intro{top:-4%;height:96%}
 .groom-side .invite-opening{margin-bottom:.45cqh}
 .groom-side .invite-hosts{margin-bottom:.55cqh}
 .groom-side .invite-after-hosts{margin-bottom:.7cqh}
@@ -268,17 +269,37 @@ h1.invite-name{transform:translateX(-5cqw)}
 #final h1{font-size:clamp(4.8rem,22cqw,6.8rem);line-height:1.05;text-wrap:balance}
 #final .lg{width:34%;margin-top:1.35rem;transition:transform .9s ease,opacity .9s ease}
 #final .final-blessings{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:.6rem;font-family:var(--f-date);font-size:clamp(10px,2.8cqw,14px);line-height:1.35;letter-spacing:.035em;text-align:center;color:var(--forest);opacity:.82;max-width:100%}
-/* Groom final page: blessing at the top, family names at the bottom */
-.groom-side #final{position:relative}
-.groom-side #final .final-blessings{position:absolute;inset:0;display:block;margin:0;max-width:none;pointer-events:none}
-.groom-side #final .final-blessings span:first-child{position:absolute;top:4.5%;left:5%;width:90%;}
-.groom-side #final .final-blessings span:last-child{position:absolute;bottom:4.5%;left:5%;width:90%;}
+/* Groom final page: stable blessing positions */
+.groom-side #final{position:relative;isolation:isolate}
+.groom-side #final .final-blessings{
+  position:absolute;
+  inset:0;
+  display:block;
+  margin:0;
+  max-width:none;
+  pointer-events:none;
+  opacity:1;
+  animation:none!important;
+  transform:none!important;
+  z-index:5;
+}
+.groom-side #final .final-blessings span{
+  position:absolute;
+  left:5%;
+  width:90%;
+  display:block;
+  text-align:center;
+  transform:none!important;
+}
+.groom-side #final .final-blessings span:first-child{top:5%;bottom:auto}
+.groom-side #final .final-blessings span:last-child{top:auto;bottom:5%}
 .logo-return{position:fixed;z-index:200;object-fit:contain;pointer-events:none;transition:left .9s cubic-bezier(.2,.8,.2,1),top .9s cubic-bezier(.2,.8,.2,1),width .9s cubic-bezier(.2,.8,.2,1),height .9s cubic-bezier(.2,.8,.2,1),opacity .5s ease}
 .intro .invite-with{font-family:'BodoniVenue',serif;text-transform:none;font-variant:normal}
 
 /* ===== LOGO-BG on home + last page ===== */
 #logo{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 #final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
+#final:not(.active){background-image:none}
 #bappa.gone.fromMain{transform:translateY(-102cqh)}
 html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
 /* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
@@ -288,7 +309,7 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 .g-r1{right:-4%;width:37.8%;--amp:.8deg;--dur:10.5s;--dly:-5s}
 .g-r2{right:5%;width:30.6%;--amp:1.2deg;--dur:8.5s;--dly:-7s}
 .scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
-.scene.active .g-flor.touch-swing{animation:none!important}
+
 @keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
 @media (prefers-reduced-motion:reduce){.scene.active .g-flor{animation:none}}
 </style>
@@ -977,32 +998,8 @@ addEventListener('pointerup',e=>{
   const blocked=e.target.closest('.flower,.petal,#nameModal,a,button,input,textarea,.constellation-star,.constellation-ui,.constellation-admin,.constellation-admin-panel');
   if(!inFrame(e)||blocked)return;
 
-  // A swipe nudges the hanging florals, then they settle back into their tiny idle sway.
-  if(moved>12){
-    const activeScene=document.querySelector('.scene.active');
-    const florals=activeScene?.querySelectorAll('.g-flor');
-    if(florals&&florals.length){
-      const direction=Math.sign(Math.abs(dx)>=Math.abs(dy)?dx:-dy)||1;
-      florals.forEach((floral,index)=>{
-        floral.classList.add('touch-swing');
-        const side=floral.classList.contains('g-l')?-1:1;
-        const impulse=direction*side;
-        const swing=3.2+index*.45;
-        const anim=floral.animate([
-          {transform:`rotate(${-impulse*swing}deg)`},
-          {transform:`rotate(${impulse*swing*1.35}deg)`,offset:.28},
-          {transform:`rotate(${-impulse*swing*.62}deg)`,offset:.57},
-          {transform:`rotate(${impulse*swing*.22}deg)`,offset:.8},
-          {transform:'rotate(0deg)'}
-        ],{duration:1550+index*150,easing:'cubic-bezier(.22,.61,.36,1)'});
-        anim.onfinish=()=>{
-          floral.classList.remove('touch-swing');
-          anim.cancel();
-        };
-      });
-    }
-    return;
-  }
+  // Ignore swipes here; the hanging florals use their natural idle animation.
+  if(moved>12)return;
 
   if(e.target.closest('.flower,.petal'))return;
   if(popOpen){closePop();go(FINAL);return}
