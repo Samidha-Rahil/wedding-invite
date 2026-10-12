@@ -384,7 +384,6 @@ function makeConstellation(scene){
  layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a Wish</div>';
  const used=[];
  const count=36;
- const count=36;
  for(let i=1;i<=count;i++){
   const pos=randomStarPosition(used);used.push(pos);
   const fortune=STAR_FORTUNES[(i-1)%STAR_FORTUNES.length];
