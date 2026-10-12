@@ -688,7 +688,7 @@ function findGuest(name){
   return new Promise((res,rej)=>{
     const cb='cb'+Date.now(),sc=document.createElement('script');
     const done=()=>{clearTimeout(t);delete window[cb];sc.remove()};
-    const t=setTimeout(()=>{done();rej(new Error('timeout'))},3000);
+    const t=setTimeout(()=>{done();rej(new Error('timeout'))},5000);
     window[cb]=d=>{done();res(d)};
     sc.onerror=()=>{done();rej(new Error('network'))};
     sc.src=CONSTELLATION_API+'?action=guest&side='+SIDE+'&name='+encodeURIComponent(name)+'&callback='+cb;
