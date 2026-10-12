@@ -263,25 +263,54 @@ h1.invite-name{transform:translateX(-5cqw)}
 /* ================= EDIT THIS SECTION ================= */
 const CONSTELLATION_API = "https://script.google.com/macros/s/AKfycbzVGBOLdb_vjlJfURxCMwrg0lEQxKmp4sEYgd09NQxZIrC6abiqPkRKULaBExR1G7O-/exec";
 const ADMIN_TOKEN = "CHANGE_THIS_TO_A_PRIVATE_ADMIN_TOKEN"; // Configure the same token in your Apps Script before using admin actions.
-const CONFIG={
+const SIDE=new URLSearchParams(location.search).get('side')==='groom'?'groom':'bride';
+const GUEST_SOURCE="sheet";
+const SIDES={
+  bride:{
+    logo:"assets/logo.png", ganeshay:"assets/ganeshay.png",
+    order:["puja","mehendi","sangeet","haldi","wedding"],
+    main:{hosts:"Smt. Archana &amp; Shri Vinay Jatkar",
+      lines:["With joy and warmth in their hearts, cordially","invite you to celebrate the wedding festivities of","their beloved daughter"],
+      first:"Samidha", second:"Rahil",
+      sub:"(Son of Smt. Sneha &amp; Late Shri Sanjiv Dhami)",
+      share:"sharing the joy", family:"Prathama &amp; Ninad"}
+  },
+  groom:{
+    logo:"assets/logo-groom.png", ganeshay:"assets/ganeshay-groom.png",
+    order:["sangeet","gpuja","wedding"],
+    main:{
+      lines:[
+      "With the Divine Blessings of Lord Mahavirji ",
+      "and Our Beloved Parents Smt. Manjula &",
+      "Late Shri Maheshchandra Dhami",
+      "cordially invite you to celebrate the wedding of their son"
+      ],
+      hosts:"Smt. Sneha and Late Shri Sanjiv Dhami",
+      first:"Rahil", second:"Samidha",
+      sub:"(Daughter of Smt. Archana &amp; Shri Vinay Jatkar)",
+      share:"best wishes", family:"Dhami Family"
+   }
+};
+const SD=SIDES[SIDE];
+   const CONFIG={
   couple:"Samidha & Rahil",
-  logo:"assets/logo.png",
+  logo:SD.logo,
   ganpati:"assets/ganpati.png",
   tree:"assets/Ganpati%20Tree.png",   // SVG fallback is drawn if this file is missing
   hibiscus:"assets/hibiscus.png",
   petal:"assets/petal.png",
   drawTree:true,                      // false if the main BG already has a tree
   flowerPos:[[28,48],[53,56],[42,67],[30,61],[50,38]],// five flowers, including one near the top of the tree
-  bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
+  bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",gpuja:"assets/bg-gpuja.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
 };
 // Page order: Main → Puja → Mehendi → Sagai (sangeet) → Haldi → Wedding (petals) → Thank-you
-const ORDER=["mehendi","sangeet","haldi","wedding"];
+
 const EVENTS={
-  puja:{title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:""},
+  puja:{always:true,bappa:true,title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:""},
   mehendi:{title:"Mehendi te Vaavi",date:"thursday, 10th december 2026",time:"5:00 PM onwards",venue:"Family Residence, Mumbai",map:""},
   sangeet:{title:"Sagai & Shor Sharaba",date:"friday, 11th december 2026",time:"7:00 PM onwards",venue:"Embassy Hall, The Tunga Paradise, Andheri E, Mumbai",map:""},
-  haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:""},
-  wedding:{title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:""}
+  gpuja:{skin:"puja",title:"GROOM EVENT NAME",date:"DAY, DATE",time:"TIME",venue:"VENUE",map:""},   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:""},
+  wedding:{always:true,title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:""}
 };
 // First name (lowercase) → events invited to. Wedding is always shown.
 const GUESTS={
@@ -473,14 +502,14 @@ function deleteConstellationWish(w,panel){const token=prompt('Enter admin token 
 function build(){
   app.innerHTML='';scenes=[];filled=false;locked=false;introPromptShown=false;
   clearTimeout(introTimer);introTimer=null;
-  const inv=new Set(GUESTS[guest.toLowerCase().split(/\s+/)[0]]||DEFAULT_GUEST);
-  const pages=['main','puja',...ORDER.filter(k=>inv.has(k))];
+ const inv=new Set(guestEvents);
+  const pages=['main',...SD.order.filter(k=>inv.has(k)||EVENTS[k].always)];
   PETAL=pages.length-1;FINAL=pages.length;
 
   pages.forEach((k,i)=>{
     const src=CONFIG.bg[k]||'';
     const s=document.createElement('div');
-    s.className='scene';s.id='s'+i;s.dataset.event=k;
+    s.className='scene';s.id='s'+i;s.dataset.event=(EVENTS[k]&&EVENTS[k].skin)||k;s.dataset.bappa=(EVENTS[k]&&EVENTS[k].bappa)?'1':'';
     s.innerHTML=`<div class="ph" hidden></div>`+(src?(k==='main'?`<img class="bg" src="${src}" alt="" aria-hidden="true" fetchpriority="high">`:`<img class="bg" data-src="${src}" alt="" aria-hidden="true">`):'');
     const ph=s.querySelector('.ph'),bg=s.querySelector('img.bg');
     const fail=()=>{
@@ -495,26 +524,22 @@ function build(){
       if(bg.complete&&bg.naturalWidth>0)ph.hidden=true;
     }
 
-    if(k==='main')s.insertAdjacentHTML('beforeend',`
+  if(k==='main'){const M=SD.main;s.insertAdjacentHTML('beforeend',`
       <div class="intro fx" id="mainInvite" style="--d:.4s">
-        <img id="inviteGaneshay" src="assets/ganeshay.png" alt="Ganeshay" fetchpriority="high">
-        <p class="invite-hosts">Smt. Archana &amp; Shri Vinay Jatkar</p>
-        <div class="invite-statements invite-opening">
-          <p>With joy and warmth in their hearts, cordially</p>
-          <p>invite you to celebrate the wedding festivities of</p>
-          <p>their beloved daughter</p>
-        </div>
-        <h1 class="invite-name">Samidha</h1>
+        <img id="inviteGaneshay" src="${SD.ganeshay}" alt="Ganeshay" fetchpriority="high">
+        <p class="invite-hosts">${M.hosts}</p>
+        <div class="invite-statements invite-opening">${M.lines.map(t=>`<p>${t}</p>`).join('')}</div>
+        <h1 class="invite-name">${M.first}</h1>
         <p class="invite-with">with</p>
-        <h2 class="invite-name invite-groom">Rahil</h2>
-        <p class="invite-statement">(Son of Smt. Sneha &amp; Late Shri Sanjiv Dhami)</p>
+        <h2 class="invite-name invite-groom">${M.second}</h2>
+        <p class="invite-statement">${M.sub}</p>
         <div class="invite-gap-small"></div>
-        <p class="invite-statement">sharing the joy</p>
-        <p class="invite-family">Prathama &amp; Ninad</p>
+        <p class="invite-statement">${M.share}</p>
+        <p class="invite-family">${M.family}</p>
       </div>
       <div id="hintG">Offer Bappa a flower</div>
       <div id="drop" aria-label="Flower offering space"></div>
-      <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
+      <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`)}
     else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="s-tree s-tree-l"><img src="assets/Sangeet-tree-L.png" alt="" draggable="false"></div><div class="s-tree s-tree-r"><img src="assets/Sangeet-tree-R.png" alt="" draggable="false"></div><div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
@@ -525,7 +550,7 @@ function build(){
 
   const fin=document.createElement('div');
   fin.className='scene';fin.id='final';
-  const safeGuest=guest.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const safeGuest=(guestDisplay||guest).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   fin.innerHTML=`<div class="final-greeting fx" style="--d:.3s">Dearest ${safeGuest},</div><h1><span class="fx l" style="--d:.8s;display:block">We look forward</span><span class="fx r" style="--d:1.1s;display:block">to seeing you</span></h1><img class="lg fx" style="--d:1.5s" src="${CONFIG.logo}" alt="Wedding logo" onerror="this.style.display='none'">`;
   app.appendChild(fin);scenes.push(fin);
   ps=scenes[PETAL];
@@ -574,8 +599,9 @@ function show(i){
   }
 
   const bp=$('#bappa');
+const bi=scenes.findIndex(x=>x.dataset.bappa==='1');
   bp.classList.toggle('up',i>=1);
-  bp.classList.toggle('gone',i>=2);
+  bp.classList.toggle('gone',i>Math.max(bi,0));
   if(i===0)bp.classList.remove('offered');
 
   if(i===PETAL&&!filled){filled=true;for(let k=0;k<26;k++)makePetal(true)}
@@ -605,22 +631,51 @@ function go(i){
 }
 
 /* ---- name entry ---- */
-function submitName(){
-  const v=$('#nameIn').value.trim(),firstName=v.toLowerCase().split(/\s+/)[0];
-  if(!v||!Object.prototype.hasOwnProperty.call(GUESTS,firstName)){
-    const c=$('#nameModal .card');
-    c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');
-    let err=$('#guestError');
-    if(!err){
-      err=document.createElement('p');err.id='guestError';
-      err.style.cssText='color:#B34D62;font-size:.85rem;margin-top:.8rem';
-      $('#nameIn').insertAdjacentElement('afterend',err);
-    }
-    err.textContent=v?'We couldn’t find your invitation. Please check the name.':'Please enter your name.';
-    return;
+let guestEvents=[],guestDisplay='',checking=false;
+const normName=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+/* local test list: used only while GUEST_SOURCE === "local" */
+const TEST_GUESTS={
+  bride:{"priya shah":{name:"Priya Shah",display:"Priya",events:["puja","mehendi","sangeet","haldi","wedding"]},
+         "rahul mehta":{name:"Rahul Mehta",display:"Rahul",events:["puja","sangeet","wedding"]}},
+  groom:{"amit verma":{name:"Amit Verma",display:"Amit",events:["sangeet","gpuja","wedding"]}}
+};
+function findGuest(name){
+  if(GUEST_SOURCE==='local'){
+    const g=(TEST_GUESTS[SIDE]||{})[normName(name)];
+    return Promise.resolve(g?{ok:true,...g}:{ok:false,error:'not_found'});
+  }
+  return new Promise((res,rej)=>{
+    const cb='cb'+Date.now(),sc=document.createElement('script');
+    const done=()=>{clearTimeout(t);delete window[cb];sc.remove()};
+    const t=setTimeout(()=>{done();rej(new Error('timeout'))},8000);
+    window[cb]=d=>{done();res(d)};
+    sc.onerror=()=>{done();rej(new Error('network'))};
+    sc.src=CONSTELLATION_API+'?action=guest&side='+SIDE+'&name='+encodeURIComponent(name)+'&callback='+cb;
+    document.head.appendChild(sc);
+  });
+}
+function nameError(msg){
+  const c=$('#nameModal .card');
+  c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');
+  let err=$('#guestError');
+  if(!err){err=document.createElement('p');err.id='guestError';err.style.cssText='color:#B34D62;font-size:.85rem;margin-top:.8rem';$('#nameIn').insertAdjacentElement('afterend',err)}
+  err.textContent=msg;
+}
+async function submitName(){
+  if(checking)return;
+  const v=$('#nameIn').value.trim().replace(/\s+/g,' ');
+  if(!v)return nameError('Please enter your name.');
+  if(v.split(' ').length<2)return nameError('Please enter your full name (first and last name).');
+  checking=true;$('#enterBtn').textContent='…';
+  let d;
+  try{d=await findGuest(v)}catch(e){d={ok:false,error:'network'}}
+  checking=false;$('#enterBtn').textContent='Enter';
+  if(!d.ok){
+    const m={network:'Could not check the guest list. Please try again.',full_name:'Please enter your full name (first and last name).',duplicate:'This name needs a quick manual check. Please contact the family.'};
+    return nameError(m[d.error]||'We couldn’t find your invitation. Please check the spelling of your full name.');
   }
   const err=$('#guestError');if(err)err.remove();
-  guest=v;
+  guest=d.name;guestDisplay=d.display||d.name.split(' ')[0];guestEvents=d.events||[];
   $('#nameIn').blur();
   build();
   $('#nameModal').classList.remove('show');$('#logo').classList.add('gone');
