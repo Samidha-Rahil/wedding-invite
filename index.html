@@ -82,7 +82,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 
 /* ===== PAGE 1: BLESSING + OFFERING ===== */
 /* all text is forest green; only the bride / groom / family names stay pink */
-.intro{position:absolute;top:2%;left:5%;width:90%;height:96%;padding-top:7cqh;padding-bottom:6cqh;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--forest);text-shadow:0 0 6px rgba(255,255,255,.55);pointer-events:none;overflow:visible}
+.intro{position:absolute;top:2%;left:5%;width:90%;height:96%;padding-top:0;padding-bottom:6cqh;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--forest);text-shadow:0 0 6px rgba(255,255,255,.55);pointer-events:none;overflow:visible}
 .scene.active#s0 .intro{animation:flyU 1.3s .4s both}
 /* Ganeshay: small, pinned to the very top of the frame */
 #inviteGaneshay{position:absolute;top:0;left:50%;transform:translateX(-50%);display:block;width:clamp(58px,17cqw,82px);height:clamp(58px,17cqw,82px);object-fit:contain}
@@ -100,7 +100,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .invite-statements,.invite-statement{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);letter-spacing:.01em}
 .invite-opening{margin-bottom:1.2cqh}
 .invite-opening p{margin:0}
-..invite-with{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);margin:.6cqh 0}
+..invite-with{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);margin:.6cqh 0;position:relative;top:-1.5cqh}
 .invite-groom{margin-bottom:-.8cqh;transform:translateX(5cqw)}
 h1.invite-name{transform:translateX(-5cqw)}
 .invite-statement{margin:0 0 .7cqh;max-width:100%}
@@ -166,7 +166,7 @@ h1.invite-name{transform:translateX(-5cqw)}
 .constellation-admin-panel.open{display:block}.constellation-admin-panel h3{font:1.4rem var(--f-names);margin:1rem 0}.admin-wish{padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.2);font:.8rem/1.4 var(--f-venue);overflow-wrap:anywhere}.admin-wish button{margin:.4rem .3rem 0 0;padding:.35rem .5rem;border:0;border-radius:6px;background:#d7b45a;color:#17271e;font-size:.7rem}.admin-close{position:sticky;top:0;float:right;padding:.45rem .65rem;border:0;border-radius:8px}
 
 /* ===== EVENT PAGES ===== */
-.ev-over{position:absolute;left:0;right:0;bottom:10%;padding:3.5rem .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
+.ev-over{position:absolute;left:0;right:0;top:44%;bottom:auto;padding:0 .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
 .ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
 .ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(4.3rem,20cqw,6.5rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
@@ -222,6 +222,22 @@ h1.invite-name{transform:translateX(-5cqw)}
 #final .lg{width:34%;margin-top:2rem;transition:transform .9s ease,opacity .9s ease}
 .logo-return{position:fixed;z-index:200;object-fit:contain;pointer-events:none;transition:left .9s cubic-bezier(.2,.8,.2,1),top .9s cubic-bezier(.2,.8,.2,1),width .9s cubic-bezier(.2,.8,.2,1),height .9s cubic-bezier(.2,.8,.2,1),opacity .5s ease}
 .intro .invite-with{font-family:'BodoniVenue',serif;text-transform:none;font-variant:normal}
+/* ===== SANGEET TREES ===== */ 
+   .s-tree{position:absolute;bottom:0;width:62%;height:62%;z-index:2;pointer-events:none;overflow:visible} 
+   .s-tree img{width:100%;height:100%;object-fit:contain;-webkit-user-drag:none} 
+   .s-tree-l{left:-22%;transform-origin:20% 100%} 
+   .s-tree-l img{object-position:bottom left} 
+   .s-tree-r{right:-22%;transform-origin:80% 100%} 
+   .s-tree-r img{object-position:bottom right} 
+   .scene.active[data-event=sangeet] 
+   .s-tree-l{animation:treeEnterL 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobbleL 15s 1.8s ease-in-out infinite} .scene.active[data-event=sangeet] 
+   .s-tree-r{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobble 17s 1.8s ease-in-out infinite} 
+   @keyframes treeEnterL{from{opacity:0;transform:translateX(-65%) rotate(-3deg)}to{opacity:1;transform:none}} 
+   @keyframes treeBobbleL{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(9px) rotate(2.4deg)}55%{transform:translateX(-6px) rotate(-1.8deg)}75%{transform:translateX(5px) rotate(1.2deg)}} 
+/* ===== LOGO-BG on home + last page ===== */
+:root{--logo-bg:url('assets/logo-bg.jpg')}
+#logo{background:var(--cream) var(--logo-bg) center/cover no-repeat}
+#final{background:var(--cream) var(--logo-bg) center/cover no-repeat}
 </style>
 </head>
 <body>
@@ -499,7 +515,7 @@ function build(){
       <div id="hintG">Offer Bappa a flower</div>
       <div id="drop" aria-label="Flower offering space"></div>
       <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
-    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
+    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="s-tree s-tree-l"><img src="assets/Sangeet-tree-L.png" alt="" draggable="false"></div><div class="s-tree s-tree-r"><img src="assets/Sangeet-tree-R.png" alt="" draggable="false"></div><div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
 
