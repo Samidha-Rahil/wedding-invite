@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>You're Invited</title>
+<style>
+/* ===== FONTS (files live in assets/font/) ===== */
+@font-face{font-family:'MiltonOne';src:url('assets/font/milton-one.one.otf') format('opentype');font-display:swap}
+@font-face{font-family:'CinzelInvite';src:url('assets/font/CinzelRegular-3jEM.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'BodoniVenue';src:url('assets/font/Bodoni%20SvtyTwo%20ITC%20TT%20Book.ttf') format('truetype');font-display:swap}
+:root{--pink:#E38496;--forest:#1A3D28;--white:#fff;--sage:#617764;--olive:#B2AF87;--cream:#F9EDD5;
+--f-names:'MiltonOne',serif;--f-date:'CinzelInvite',serif;--f-venue:'BodoniVenue',serif;--fd:'MiltonOne',serif;--fb:'CinzelInvite',serif}
+
+/* ===== BASE ===== */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--cream);color:var(--forest);font-family:var(--fb);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ===== PHONE FRAME =====
+   Phones: full screen (max 480px wide).
+   Desktops / tablets: the invite is shown inside a phone-shaped frame.
+   The frame is a size container, so every vw/vh below is written as cqw/cqh
+   (relative to the frame, not the browser window). Result: identical visuals everywhere. */
+.frame{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,480px);height:100vh;height:100dvh;container-type:size;overflow:hidden;background:var(--cream);box-shadow:0 0 60px rgba(97,119,100,.25)}
+@media (min-width:600px) and (min-height:500px){
+  html,body{background:linear-gradient(160deg,#e9dfc8,#cfd6c2)}
+  .frame{height:min(92vh,860px);height:min(92dvh,860px);width:min(430px,46vh);width:min(430px,46dvh);border-radius:38px;box-shadow:0 0 0 10px #1c1c1c,0 30px 80px rgba(26,61,40,.35)}
+}
+#dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:100}
+
+/* ===== ANIMATION HELPERS ===== */
+.fx{opacity:0}
+.fx.l{--a:flyL}.fx.r{--a:flyR}
+.scene.active:not(#s0) .fx,#nameModal.show .fx,#pop.show .fx{animation:var(--a,flyU) 1.3s cubic-bezier(.2,.8,.2,1) var(--d,.6s) both}
+@keyframes flyU{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+@keyframes flyL{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}
+@keyframes flyR{from{opacity:0;transform:translateX(90px)}to{opacity:1;transform:none}}
+@keyframes pulse{50%{opacity:.25}}
+@keyframes ganpatiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+/* ===== LOGO SCREEN ===== */
+#logo{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cream);transition:opacity 1.2s}
+#logo.gone{opacity:0;pointer-events:none}
+#logoBox{width:66%;aspect-ratio:1;display:grid;place-items:center}
+#logoBox img{width:100%;height:100%;object-fit:contain}
+.mono{display:none;text-align:center;color:var(--pink);font-family:var(--f-names);font-size:3.4rem;line-height:1.1}
+.mono small{display:block;font-size:1rem;letter-spacing:.35em;color:var(--forest);margin-top:.6rem;font-family:var(--f-date)}
+#hint{margin-top:2.2rem;font-size:clamp(.9rem,3.75cqw,1.2rem);letter-spacing:.15em;text-transform:uppercase;color:var(--pink);opacity:0;animation:none;transition:opacity .8s ease}
+#hint.ready{opacity:.85;animation:hintFloat 4s ease-in-out infinite}
+#logoBlessings{position:absolute;bottom:3%;left:0;width:100%;display:none;flex-direction:column;align-items:center;gap:4px;font-family:var(--f-date);font-size:clamp(11px,3.5cqw,17px);line-height:1.35;letter-spacing:.04em;text-align:center;color:var(--forest);opacity:.8;pointer-events:none}
+@keyframes hintFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.045)}}
+#hint .inf{display:inline-block;font-size:2.565em;line-height:0;vertical-align:-.1em;margin:0 .08em}
+
+/* ===== NAME MODAL ===== */
+#nameModal{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:rgba(249,237,213,.55);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .8s}
+#nameModal.show{opacity:1;pointer-events:auto}
+.card{width:82%;background:var(--white);border:1px solid var(--olive);border-radius:22px;padding:2rem 1.6rem;text-align:center;box-shadow:0 18px 50px rgba(26,61,40,.18);transform:translateY(14px);transition:transform .8s}
+#nameModal.show .card{transform:none}
+.card h2{font-family:var(--f-names);font-weight:400;font-size:2rem;color:var(--pink)}
+.card h2.welcome-word{font-family:var(--fb);letter-spacing:.06em;font-size:2.1rem}
+.card p{margin:.4rem 0 1.2rem;color:var(--forest);font-family:var(--f-venue);font-size:1rem;letter-spacing:.02em}
+.card input{width:100%;padding:.85rem 1rem;border:1px solid var(--olive);border-radius:12px;background:var(--cream);color:var(--forest);font:1.05rem var(--f-venue);text-align:center;outline:none;user-select:text;-webkit-user-select:text}
+.card input::placeholder{color:var(--sage)}
+.card input:focus{border-color:var(--pink)}
+.btn{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:12px;background:var(--pink);color:var(--white);font:.95rem var(--fb);letter-spacing:.28em;text-transform:uppercase;cursor:pointer}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* ===== SCENES ===== */
+#app{position:absolute;inset:0;opacity:0;transition:opacity 1.2s}
+#app.on{opacity:1}
+.scene{--hl:var(--pink);position:absolute;inset:0;background:var(--cream);transform:translateY(100%);transition:transform 1s cubic-bezier(.65,0,.25,1);overflow:hidden}
+.scene.active{transform:none}
+.scene.past{transform:translateY(-100%)}
+.scene[data-event=mehendi],.scene[data-event=haldi]{--hl:var(--white)}
+.scene img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .9s;z-index:0}
+.scene.dim img.bg{opacity:.22}
+.scene[data-event=main] img.bg{object-position:left center}
+.scene[data-event=puja] img.bg{object-position:center top}
+.ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:2rem;background:var(--cream);color:var(--forest);font-size:.85rem;letter-spacing:.1em;z-index:1}
+.ph[hidden],.image-fallback[hidden]{display:none}
+.image-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:1rem;text-align:center;color:var(--forest);font-size:.85rem;letter-spacing:.04em;background:var(--cream);z-index:1}
+
+/* ===== PAGE 1: BLESSING + OFFERING ===== */
+/* all text is forest green; only the bride / groom / family names stay pink */
+.intro{position:absolute;top:2%;left:5%;width:90%;height:96%;padding-top:0;padding-bottom:6cqh;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--forest);text-shadow:0 0 6px rgba(255,255,255,.55);pointer-events:none;overflow:visible}
+.scene.active#s0 .intro{animation:flyU 1.3s .4s both}
+/* Ganeshay: small, pinned to the very top of the frame */
+#inviteGaneshay{position:absolute;top:0;left:50%;transform:translateX(-50%);display:block;width:clamp(58px,17cqw,82px);height:clamp(58px,17cqw,82px);object-fit:contain}
+.invite-gap-small{height:1.5cqh;min-height:5px;flex-shrink:0}
+.invite-hosts{
+  font-family:var(--f-date);
+  font-size:clamp(11px,3.5cqw,17px);
+  line-height:1.2;
+  letter-spacing:.035em;
+  white-space:nowrap;
+  width:max-content;
+  max-width:100%;
+  margin:0 auto 1.2cqh;
+}
+   .bride-side .invite-hosts{
+  font-size:calc(clamp(11px,3.5cqw,17px) + 3px);
+}
+.invite-statements,.invite-statement{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);letter-spacing:.01em}
+.invite-opening{margin-bottom:1.2cqh}
+.invite-opening p{margin:0}
+.invite-with{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);margin:.6cqh 0;position:relative;top:-1.5cqh}
+.invite-groom{margin-bottom:-.8cqh;transform:translateX(5cqw)}
+h1.invite-name{transform:translateX(-5cqw)}
+
+/* Groom page: groom's name left, bride's name right */
+.groom-side h1.invite-name{transform:translateX(-8cqw)}
+.groom-side .invite-groom{transform:translateX(8cqw)}
+.groom-side .invite-opening{margin-bottom:.45cqh}
+.groom-side .invite-hosts{margin-bottom:.55cqh}
+.groom-side .invite-after-hosts{margin-bottom:.7cqh}
+.invite-statement{margin:0 0 .7cqh;max-width:100%}
+/* names: pink, 0.5px stroke */
+.invite-name{font:500 clamp(70px,20cqw,96px)/1.05 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);overflow-wrap:anywhere;margin:0}
+.invite-family{font:500 clamp(36px,10.5cqw,50px)/1.1 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);margin-top:0;overflow-wrap:anywhere}
+#hintG{position:absolute;bottom:max(1.1rem,env(safe-area-inset-bottom));left:5%;width:90%;z-index:3;text-align:center;white-space:nowrap;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.9rem,3.75cqw,1.2rem);letter-spacing:.08em;color:var(--forest);text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 28px rgba(255,255,255,.6)}
+#hintG.show{animation:petalFadeIn 1.8s ease-out both,petalGlow 2.8s 1.8s ease-in-out infinite}
+#drop{position:absolute;left:50%;bottom:calc(7% - 39px);width:78px;height:78px;margin-left:-39px;border-radius:50%;border:1.5px dashed var(--white);box-shadow:0 0 20px rgba(255,255,255,.45),inset 0 0 18px rgba(227,132,150,.38);animation:pulse 2.6s infinite;z-index:6}
+.tree-art{position:absolute;right:-31%;bottom:0;width:72.5%;height:65%;z-index:5;pointer-events:none;overflow:visible;transform-origin:80% 100%}
+.tree-art img,.tree-art svg.t{width:100%;height:100%}
+.tree-art img{object-fit:contain;object-position:bottom right}
+.scene.active#s0 .tree-art{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobble 16s 1.8s ease-in-out infinite}
+@keyframes treeEnter{from{opacity:0;transform:translateX(65%) rotate(3deg)}to{opacity:1;transform:none}}
+@keyframes treeBobble{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-9px) rotate(-2.4deg)}55%{transform:translateX(6px) rotate(1.8deg)}75%{transform:translateX(-5px) rotate(-1.2deg)}}
+.flower{position:absolute;width:44.1px;height:44.1px;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scaleX(var(--flip,1));cursor:grab;touch-action:none;z-index:7;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35));transition:transform .35s,opacity .5s;pointer-events:auto}
+.flower.drag{transition:none;cursor:grabbing;z-index:30}
+.flower img,.flower svg{width:100%;height:100%;object-fit:contain;pointer-events:none;display:block}
+
+/* ===== GANPATI + FLOWER (one element shared by pages 1 and 2) =====
+   Moves with transforms and the SAME easing/duration as the scenes, so it glides
+   with the background. On leaving page 2 it exits upward in sync with the slide
+   (no fade-out). Geometry: page 1 = top 49% / height 49%; page 2 = top 8% / height 46%. */
+#bappa{position:absolute;left:17%;width:66%;top:49%;height:49%;z-index:4;pointer-events:none;transform-origin:50% 100%;transition:transform 1s cubic-bezier(.65,0,.25,1);will-change:transform}
+#bappa.up{transform:translateY(-44cqh) scale(.939)}
+#bappa.gone{transform:translateY(-144cqh) scale(.939)}
+#bappa img.bgan{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom center;opacity:0;filter:drop-shadow(0 5px 10px rgba(26,61,40,.12))}
+#bappa.in img.bgan{animation:flyU 1.5s .5s cubic-bezier(.2,.8,.2,1) both,ganpatiFloat 4.5s 2s ease-in-out infinite}
+.bappa-flower{position:absolute;left:50%;bottom:3%;width:61.6px;height:61.6px;transform:translateX(-50%);opacity:0;transition:opacity .5s;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35))}
+.bappa-flower img,.bappa-flower svg{width:100%;height:100%;object-fit:contain;display:block}
+#bappa.offered .bappa-flower{opacity:1;transform:translateX(-50%) rotate(45deg);animation:flowerSpin 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes flowerSpin{from{transform:translateX(-50%) rotate(-315deg) scale(.6)}to{transform:translateX(-50%) rotate(45deg) scale(1)}}
+
+/* ===== SAGAI CONSTELLATION (glimmering wish stars) ===== */
+.constellation-layer{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none}
+.constellation-heading{position:absolute;top:6%;left:8%;width:84%;text-align:center;color:#fff;font:600 1.05rem/1.4 var(--f-date);letter-spacing:.16em;text-transform:uppercase;text-shadow:0 0 12px rgba(255,255,255,.7);pointer-events:none}
+/* the button is a 34px tap target; the visible sparkle is 10px */
+.constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:21;--lo:.3;--hi:1;filter:drop-shadow(0 0 3px rgba(255,248,223,.85));animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.constellation-star svg{display:block;width:calc(10px*var(--big,1));height:calc(10px*var(--big,1));overflow:visible;pointer-events:none}
+.constellation-star .star-shape{fill:currentColor}
+.constellation-star.is-dim{--lo:.12;--hi:.55}
+@keyframes starGlimmer{0%,100%{opacity:var(--lo);scale:.7}50%{opacity:var(--hi);scale:1.2}}
+.constellation-star::after{content:attr(data-category);position:absolute;left:50%;bottom:calc(100% - 2px);transform:translateX(-50%);padding:.3rem .55rem;border-radius:20px;background:rgba(20,38,32,.9);color:#fff;font:.58rem var(--f-date);letter-spacing:.08em;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s}
+.constellation-star:hover::after,.constellation-star:focus-visible::after{opacity:1}
+.constellation-star:focus-visible{outline:1px solid #fff;border-radius:50%}
+.constellation-star.is-gold{color:#ffd66f;filter:drop-shadow(0 0 3px #fff7d7) drop-shadow(0 0 8px #ffce68) drop-shadow(0 0 17px rgba(255,190,74,.92))}
+.constellation-star.is-mine{--lo:.85;--hi:1;color:#ffda78;filter:drop-shadow(0 0 5px #fff7d7) drop-shadow(0 0 13px #ffce68) drop-shadow(0 0 24px rgba(255,190,74,1))}
+.constellation-star.is-taken:not(.is-mine){animation:none;opacity:.5;scale:1;color:#ffd66f;filter:drop-shadow(0 0 3px rgba(255,214,111,.9)) drop-shadow(0 0 8px rgba(255,190,74,.6))} 
+.constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
+.constellation-ui.open{opacity:1;pointer-events:auto}
+.constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
+.constellation-card h3{font:700 1.45rem/1.25 var(--f-names);color:var(--pink);margin-bottom:.45rem}
+.constellation-card .star-category{font:700 1rem/1.4 var(--f-date);letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:.8rem}
+.constellation-card .star-fortune{font:700 1.2rem/1.5 var(--f-venue);margin-bottom:1rem}
+.constellation-card textarea{display:block;width:100%;min-height:90px;resize:vertical;border:1px solid var(--olive);border-radius:12px;background:#fff;color:var(--forest);padding:.8rem;font:1rem/1.4 var(--f-venue);outline:none}
+.constellation-card textarea:focus{border-color:var(--pink)}
+.constellation-actions{display:flex;gap:.6rem;margin-top:.8rem}
+.constellation-actions button{flex:1;padding:.75rem .45rem;border:0;border-radius:10px;font:.68rem var(--f-date);letter-spacing:.04em;cursor:pointer}
+.constellation-seal{background:var(--pink);color:#fff}.constellation-cancel{background:#e9e4d8;color:var(--forest)}
+.constellation-status{min-height:1.3em;margin-top:.75rem;font:.8rem/1.4 var(--f-venue);color:var(--sage)}
+.constellation-admin{position:absolute;right:.7rem;top:.7rem;z-index:32;padding:.4rem .55rem;border:1px solid rgba(255,255,255,.6);border-radius:8px;background:rgba(12,28,23,.75);color:#fff;font:.55rem var(--f-date);letter-spacing:.04em;pointer-events:auto}
+.constellation-admin-panel{position:absolute;inset:0;z-index:35;padding:1rem;background:rgba(10,24,19,.94);color:#fff;overflow:auto;pointer-events:auto;display:none}
+.constellation-admin-panel.open{display:block}.constellation-admin-panel h3{font:1.4rem var(--f-names);margin:1rem 0}.admin-wish{padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.2);font:.8rem/1.4 var(--f-venue);overflow-wrap:anywhere}.admin-wish button{margin:.4rem .3rem 0 0;padding:.35rem .5rem;border:0;border-radius:6px;background:#d7b45a;color:#17271e;font-size:.7rem}.admin-close{position:sticky;top:0;float:right;padding:.45rem .65rem;border:0;border-radius:8px}
+
+/* ===== EVENT PAGES ===== */
+.ev-over{position:absolute;left:0;right:0;bottom:10%;top:auto;padding:0 .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
+.ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
+.ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
+.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(3.5rem,15cqw,4.9rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
+.bride-side .scene[data-event=mehendi] .ev-over h2,
+.bride-side .scene[data-event=haldi] .ev-over h2,
+.scene[data-event=sangeet] .ev-over h2{
+  font-size:clamp(4.1rem,17.5cqw,5.7rem);
+  line-height:1;
+}
+   .ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
+.date-time,.host-names{font-family:var(--f-date)}
+.venue-row{font-family:var(--f-venue)}
+
+.loading-dots{
+  display:inline-block;
+  font-weight:700;
+  letter-spacing:.12em;
+  background:linear-gradient(
+    90deg,
+    #E38496 0%,
+    #B2AF87 45%,
+    #1A3D28 100%
+  );
+  background-size:200% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:dotShimmer 1.1s linear infinite;
+}
+
+@keyframes dotShimmer{
+  from{background-position:100% 0}
+  to{background-position:-100% 0}
+}
+
+   .maplink{display:inline-block;margin-top:.9rem;padding:.55rem 1.3rem;border:1px solid currentColor;border-radius:999px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;pointer-events:auto;cursor:pointer}
+.ev-over .maplink{color:var(--white)}
+.scene[data-event=puja] .ev-over p,.scene[data-event=puja] .ev-over .maplink{color:var(--sage);text-shadow:0 1px 4px rgba(249,237,213,.55)}
+.scene[data-event=puja] .ev-over h2{font-size:clamp(3.5rem,15cqw,4.9rem)}
+/* Groom GPUJA uses the puja skin; keep every visible event detail white. */
+.groom-side .scene[data-event=puja] .ev-over,
+.groom-side .scene[data-event=puja] .ev-over h2,
+.groom-side .scene[data-event=puja] .ev-over p,
+.groom-side .scene[data-event=puja] .ev-over .maplink{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.groom-side .scene[data-event=puja] .ev-over h2{font-size:clamp(3.2rem,13.5cqw,4.8rem);line-height:1.02}
+.next-cue{position:absolute;right:1.1rem;bottom:1.2rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
+.next-cue-label{text-shadow:0 1px 5px rgba(26,61,40,.5)}
+.pixie-orbit{position:relative;display:block;width:27px;height:27px;border:1px solid currentColor;border-radius:50%;animation:cuePulse 2.2s ease-in-out infinite}
+.pixie-orbit::before,.pixie-orbit::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
+.pixie-orbit::before{top:2px;right:1px}.pixie-orbit::after{bottom:1px;left:2px}
+@keyframes cuePulse{0%,100%{transform:scale(.94);opacity:.55;box-shadow:0 0 0 0 rgba(227,132,150,.18)}50%{transform:scale(1.04);opacity:1;box-shadow:0 0 0 5px rgba(227,132,150,0)}}
+
+/* ===== WEDDING PAGE: FALLING PETALS ===== */
+.petal-hint{position:absolute;top:30%;left:5%;width:90%;transform:translateY(-50%);z-index:20;text-align:center;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.9rem,3.75cqw,1.2rem);line-height:1.2;letter-spacing:.07em;color:var(--pink);text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.95),0 0 34px rgba(227,132,150,.65)}
+.petal-hint.show{animation:petalPromptEntrance 1.4s ease-out both,petalSoftGlow 3.2s 1.4s ease-in-out infinite}
+.scene.dim .petal-hint{opacity:0 !important;transition:opacity .4s}
+.hint-text{display:inline-block;transform-origin:center}
+.hint-text.pulse{animation:hintPulse 1.6s ease-in-out 1}
+@keyframes hintPulse{0%,50%,100%{transform:scale(1)}25%,75%{transform:scale(1.05)}}
+@keyframes petalFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:.9;transform:none}}
+@keyframes petalGlow{0%,100%{opacity:.72;transform:scale(1)}50%{opacity:1;transform:scale(1.035)}}
+@keyframes petalPromptEntrance{from{opacity:0;transform:translateY(calc(-50% + 28px))}to{opacity:1;transform:translateY(-50%)}}
+@keyframes petalSoftGlow{
+  0%,100%{opacity:1;text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.9),0 0 30px rgba(227,132,150,.55)}
+  50%{opacity:1;text-shadow:0 0 12px #fff,0 0 24px #E38496,0 0 40px rgba(227,132,150,.75)}
+}
+.petal{position:absolute;top:-90px;display:grid;place-items:center;animation:fall linear forwards;z-index:5;cursor:pointer;will-change:transform}
+.pi{display:block;width:var(--s);height:var(--s);pointer-events:none;animation:tumble var(--td) ease-in-out infinite alternate;opacity:var(--o,1)}
+.pi img{width:100%;height:100%;object-fit:contain;display:block;-webkit-user-drag:none}
+.pi.fb{width:calc(var(--s)*.6);height:calc(var(--s)*.85);border-radius:70% 0 70% 0;background:var(--pink);box-shadow:0 0 10px rgba(227,132,150,.6)}
+@keyframes fall{0%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(var(--dx2),58cqh,0) rotate(calc(var(--spin)*.5))}100%{transform:translate3d(var(--dx),122cqh,0) rotate(var(--spin))}}
+@keyframes tumble{from{transform:perspective(420px) scaleX(var(--fl)) rotate(var(--r0)) rotateX(0) rotateY(0) translateX(calc(var(--sw)*-1))}to{transform:perspective(420px) scaleX(var(--fl)) rotate(var(--r1)) rotateX(var(--rx)) rotateY(var(--ry)) translateX(var(--sw))}}
+
+/* wedding details pop-up */
+#pop{position:absolute;inset:0;z-index:40;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .5s}
+#pop.show{opacity:1;pointer-events:auto}
+#pop:not(.show) .maplink{pointer-events:none}  .scene:not(.active) .maplink{   pointer-events:none!important; }  .scene[data-event=wedding] .maplink{   display:none!important; }
+#pop .card{width:84%}
+#pop .row{margin-top:.7rem;color:var(--forest);font-size:.95rem}
+#pop .maplink{color:var(--pink)}
+#popCard h2{font-size:4.1rem;line-height:1.05;overflow-wrap:anywhere;-webkit-text-stroke:.5px currentColor}
+
+/* ===== FINAL PAGE ===== */
+#final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
+.final-greeting,#final h1{font-family:var(--fd);font-weight:500;color:var(--pink);-webkit-text-stroke:.3px currentColor}
+.final-greeting{font-size:clamp(1.8rem,7cqw,2.6rem);line-height:1.2;margin-bottom:1.3rem}
+#final h1{font-size:clamp(4.8rem,22cqw,6.8rem);line-height:1.05;text-wrap:balance}
+#final .lg{width:34%;margin-top:1.35rem;transition:transform .9s ease,opacity .9s ease}
+#final .final-blessings{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:.6rem;font-family:var(--f-date);font-size:clamp(10px,2.8cqw,14px);line-height:1.35;letter-spacing:.035em;text-align:center;color:var(--forest);opacity:.82;max-width:100%}
+/* Groom final page: blessing at the top, family names at the bottom */
+.groom-side #final{position:relative}
+.groom-side #final .final-blessings{position:absolute;inset:0;display:block;margin:0;max-width:none;pointer-events:none}
+.groom-side #final .final-blessings span:first-child{position:absolute;top:4.5%;left:5%;width:90%;}
+.groom-side #final .final-blessings span:last-child{position:absolute;bottom:4.5%;left:5%;width:90%;}
+.logo-return{position:fixed;z-index:200;object-fit:contain;pointer-events:none;transition:left .9s cubic-bezier(.2,.8,.2,1),top .9s cubic-bezier(.2,.8,.2,1),width .9s cubic-bezier(.2,.8,.2,1),height .9s cubic-bezier(.2,.8,.2,1),opacity .5s ease}
+.intro .invite-with{font-family:'BodoniVenue',serif;text-transform:none;font-variant:normal}
+
+/* ===== LOGO-BG on home + last page ===== */
+#logo{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
+#final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
+#bappa.gone.fromMain{transform:translateY(-102cqh)}
+html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
+/* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
+.g-flor{position:absolute;top:0;z-index:2;pointer-events:none;transform-origin:50% 0;opacity:0;transition:opacity 1.6s ease .6s;will-change:transform}
+.g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
+.g-l{left:-4%;width:41.4%;--amp:1deg;--dur:9s;--dly:-2s}
+.g-r1{right:-4%;width:37.8%;--amp:.8deg;--dur:10.5s;--dly:-5s}
+.g-r2{right:5%;width:30.6%;--amp:1.2deg;--dur:8.5s;--dly:-7s}
+.scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
+.scene.active .g-flor.touch-swing{animation:none!important}
+@keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
+@media (prefers-reduced-motion:reduce){.scene.active .g-flor{animation:none}}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div id="logo">
+    <div id="logoBox">
+      <img id="logoImg" alt="Logo">
+      <div class="mono" id="mono">A <span>∞</span> M<small>WEDDING</small></div>
+    </div>
+    <div id="hint"><span style="display:inline-block">Draw <span class="inf">∞</span> to begin</span></div> <div id="logoBlessings">   <span id="blessingLine1">With love &amp; warm regards</span>   <span id="blessingLine2">Blessings only</span> </div>
+  </div>
+  <div id="nameModal"><div class="card">
+    <h2 class="welcome-word fx" style="--d:.3s">Welcome</h2><p class="fx l" style="--d:.5s">Please enter your name</p>
+    <input class="fx r" style="--d:.7s" id="nameIn" placeholder="Your name" autocomplete="off" maxlength="40">
+    <button class="btn fx" style="--d:.9s" id="enterBtn">Enter</button>
+  </div></div>
+  <div id="app"></div>
+  <div id="pop"><div class="card" id="popCard"></div></div>
+</div>
+<canvas id="dust"></canvas>
+
+<script>
+/* ================= EDIT THIS SECTION ================= */
+const CONSTELLATION_API = "https://script.google.com/macros/s/AKfycbzVGBOLdb_vjlJfURxCMwrg0lEQxKmp4sEYgd09NQxZIrC6abiqPkRKULaBExR1G7O-/exec";
+const ADMIN_TOKEN = "CHANGE_THIS_TO_A_PRIVATE_ADMIN_TOKEN"; // Configure the same token in your Apps Script before using admin actions.
+const SIDE=new URLSearchParams(location.search).get('side')?.toLowerCase()==='groom'?'groom':'bride'; document.documentElement.dataset.side=SIDE; document.documentElement.classList.add(SIDE+'-side');
+const GUEST_SOURCE="sheet";
+const SIDES={
+  bride:{
+    logo:"assets/logo.png", ganeshay:"assets/ganeshay.png",
+    order:["puja","mehendi","sangeet","haldi","wedding"],
+    main:{hosts:"Smt. Archana &amp; Shri Vinay Jatkar",
+      lines:["With joy and warmth in their hearts, cordially","invite you to celebrate the wedding festivities of","their beloved daughter"],
+      first:"Samidha", second:"Rahil",
+      sub:"(Son of Smt. Sneha &amp; Late Shri Sanjiv Dhami)",
+      share:"sharing the joy", family:"Prathama &amp; Ninad"}
+  },
+  groom:{
+    logo:"assets/Groom-logo.png", ganeshay:"assets/groom-ganeshay.png",
+    order:["sangeet","gpuja","wedding"],
+    main:{
+      lines:[
+        "With the divine blessings of",
+        "Lord Mahavirji",
+        "and our beloved parents Smt. Manjula &",
+        "Late Shri Maheshchandra Dhami"
+      ],
+      afterHosts:"cordially invite you to celebrate the wedding of their son",
+      hosts:"Smt. Sneha and Late Shri Sanjiv Dhami",
+      first:"Rahil", second:"Samidha",
+      sub:"(Daughter of Smt. Archana &amp; Shri Vinay Jatkar)",
+      share:"best wishes", family:"Dhami Family"
+   }
+}
+};
+const SD=SIDES[SIDE];
+   const CONFIG={
+  couple:"Samidha & Rahil",
+  logo:SD.logo,
+  ganpati:"assets/ganpati.png",
+  tree:"assets/Ganpati%20Tree.png",   // SVG fallback is drawn if this file is missing
+  hibiscus:"assets/hibiscus.png",
+  petal:"assets/petal.png",
+  drawTree:true,                      // false if the main BG already has a tree
+  flowerPos:[[28,48],[53,56],[42,67],[30,61],[50,38]],// five flowers, including one near the top of the tree
+  bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",gpuja:"assets/Groom-bg-haldi.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
+};
+// Page order: Main → Puja → Mehendi → Sagai (sangeet) → Haldi → Wedding (petals) → Thank-you
+
+const EVENTS={
+  puja:{always:true,bappa:true,title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:""},
+  mehendi:{title:"Mehendi te Vaavi",date:"thursday, 10th december 2026",time:"5:00 PM onwards",venue:"Family Residence, Mumbai",map:""},
+  sangeet:{title:"Sagai & Shor Sharaba",date:"friday, 11th december 2026",time:"7:00 PM onwards",venue:"Embassy Hall, The Tunga Paradise, Andheri E, Mumbai",map:""},
+  gpuja:{skin:"puja",title:"Mandap Muhurat & Randal Puja<br>Mehendi & Prem Pithi",date:"",time:"",venue:"",map:""},   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:""},
+  wedding:{always:true,title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:""}
+};
+// First name (lowercase) → events invited to. Wedding is always shown.
+const GUESTS={
+  "samu":["puja","mehendi","sangeet","haldi","wedding"],
+  "rahul":["puja","sangeet","wedding"],
+  "anita":["mehendi","haldi","wedding"]
+};
+const DEFAULT_GUEST=[];
+/* ===================================================== */
+
+const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a);
+let stage='logo',cur=0,guest='',popOpen=false,locked=false,filled=false,scenes=[],PETAL=0,FINAL=0,ps=null,introTimer=null,introPromptShown=false;
+let pts=[],drawing=false,down=null;
+const app=$('#app'),li=$('#logoImg'),frameEl=$('.frame');
+const inFrame=e=>{const r=frameEl.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom};
+
+/* ---- pixie dust (canvas is clipped to the phone frame on desktop) ---- */
+const cv=$('#dust'),cx=cv.getContext('2d');
+let P=[],dpr=Math.min(devicePixelRatio||1,2);
+function clipDust(){
+  const f=frameEl.getBoundingClientRect(),rad=parseFloat(getComputedStyle(frameEl).borderRadius)||0;
+  cv.style.clipPath=`inset(${f.top}px ${innerWidth-f.right}px ${innerHeight-f.bottom}px ${f.left}px round ${rad}px)`;
+}
+function rs(){cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0);clipDust()}
+rs();addEventListener('resize',rs);
+function dust(x,y,o={}){
+  const n=o.n||3;
+  for(let i=0;i<n;i++)P.push({x:x+rnd(-3,3),y:y+rnd(-3,3),vx:rnd(-.3,.3)*(o.spread||1),vy:rnd(-.35,.15)*(o.spread||1),l:0,m:o.tiny?rnd(55,120):rnd(40,85),s:o.tiny?rnd(.6,1.7):rnd(1.2,2.8),a:o.faint?.38:1,ph:rnd(0,6)});
+}
+const burst=(x,y,n=50,o={})=>dust(x,y,{...o,n,spread:o.spread||4});
+(function loop(){
+  cx.clearRect(0,0,innerWidth,innerHeight);
+  for(let i=P.length-1;i>=0;i--){
+    const p=P[i];p.l++;
+    if(p.l>p.m){P.splice(i,1);continue}
+    p.x+=p.vx;p.y+=p.vy+.04;p.vx*=.985;
+    const t=p.l/p.m;
+    cx.globalAlpha=Math.max(p.a*(t<.5?1:1-(t-.5)*1.7)*(.65+.35*Math.sin(p.l*.4+p.ph)),0);
+    cx.fillStyle=t>.55?'#FFE9A8':'#E8B84A';cx.shadowColor='#E8B84A';cx.shadowBlur=t>.55?3:10;
+    cx.beginPath();cx.arc(p.x,p.y,Math.max(p.s*(1-t*.6),.4),0,6.283);cx.fill();
+  }
+  cx.globalAlpha=1;requestAnimationFrame(loop);
+})();
+
+/* ---- logo fades and floats in subtly; infinity prompt follows ---- */
+li.onload=()=>{
+  li.style.display='block';
+  li.style.opacity=0;
+ li.style.transform='translateY(30px) scale(.90)';
+  li.style.transition='opacity .65s ease, transform .65s cubic-bezier(.22,.61,.36,1)';
+  $('#mono').style.display='none';
+
+  requestAnimationFrame(()=>{
+    li.style.opacity=1;
+    li.style.transform='translateY(0) scale(1)';
+  });
+  clearTimeout(window.logoFloatTimer);
+  window.logoFloatTimer=setTimeout(()=>{
+    li.style.animation='logoFloat 5s ease-in-out infinite';
+  },650);
+
+  clearTimeout(window.infinityHintTimer);
+  window.infinityHintTimer=setTimeout(()=>{
+    if(stage==='logo')$('#hint').classList.add('ready');
+  },750);
+};
+li.onerror=()=>{
+  console.error('Logo failed to load:',li.src);
+  li.style.display='none';
+  $('#mono').style.display='block';
+};
+li.src=CONFIG.logo;
+   if(SIDE==='groom'){
+  $('#blessingLine1').textContent='Sharing the joy';
+  $('#blessingLine2').textContent='Karishma, Abhishek, Ravina, Pararth, Kiara, Chiranjiv & Devanshi.';
+}
+   const logoBlessings=$('#logoBlessings');
+logoBlessings.style.display='none';
+
+/* ---- infinity gesture ---- */
+function isInfinity(){
+  if(pts.length<25)return false;
+  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),w=x1-x0,h=y1-y0;
+  if(w<110||h<w*.18||h>w*.95)return false;
+  const mx=(x0+x1)/2;
+  let L=0,R=0;
+  for(let i=1;i<pts.length-1;i++){
+    const a={x:pts[i].x-pts[i-1].x,y:pts[i].y-pts[i-1].y},c={x:pts[i+1].x-pts[i].x,y:pts[i+1].y-pts[i].y};
+    const ang=Math.atan2(a.x*c.y-a.y*c.x,a.x*c.x+a.y*c.y);
+    if(pts[i].x<mx)L+=ang;else R+=ang;
+  }
+  return Math.abs(L)>2.2&&Math.abs(R)>2.2&&L*R<0;
+}
+function infinityDone(){
+  drawing=false;
+  pts.forEach((p,i)=>{
+    if(i%2===0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6);
+  });
+
+  // Returning guest: skip the name form and enter directly.
+  if(guest){
+    build();
+    $('#nameModal').classList.remove('show');
+    $('#logo').classList.add('gone');
+    logoBlessings.style.display='none';
+    stage='scenes';
+    app.classList.add('on');
+    show(0);
+    $('#bappa').classList.add('in');
+    return;
+  }
+
+  // First visit: ask for the guest's name.
+  stage='name';
+  setTimeout(()=>{
+    $('#nameModal').classList.add('show');
+    $('#nameIn').focus({preventScroll:true});
+  },950);
+}
+
+/* ---- builders ---- */
+const FSVG=`<svg viewBox="-22 -22 44 44">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-9" rx="7.5" ry="11" fill="#E38496" stroke="#fff" stroke-width=".7" transform="rotate(${a})"/>`).join('')}<circle r="4.2" fill="#fff" opacity=".9"/><path d="M0 0L8-13" stroke="#B2AF87" stroke-width="1.3"/><circle cx="8" cy="-13" r="2" fill="#B2AF87"/></svg>`;
+const hibImg=`<img src="${CONFIG.hibiscus}" draggable="false" alt="" onerror="this.outerHTML=FSVG">`;
+const treeSVG=`<svg class="t" viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet"><g fill="none" stroke="#617764" stroke-linecap="round"><path d="M100 300C100 230 90 190 98 140 104 100 96 70 100 40" stroke-width="13"/><path d="M99 205C70 185 50 172 30 140" stroke-width="7"/><path d="M100 160C130 142 150 120 170 90" stroke-width="7"/><path d="M98 112C80 92 70 72 55 50" stroke-width="6"/></g><g fill="#1A3D28" opacity=".92"><circle cx="30" cy="135" r="22"/><circle cx="170" cy="85" r="24"/><circle cx="55" cy="45" r="22"/><circle cx="100" cy="30" r="26"/><circle cx="135" cy="125" r="18"/><circle cx="70" cy="160" r="18"/></g><g fill="#617764" opacity=".85"><circle cx="40" cy="125" r="14"/><circle cx="160" cy="75" r="15"/><circle cx="68" cy="38" r="13"/><circle cx="112" cy="22" r="14"/></g></svg>`;
+const mapUrl=e=>e.map||'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e.venue);
+const mapLink=(e,d)=>`<a class="maplink fx" style="--d:${d}s" href="${mapUrl(e)}" target="_blank" rel="noopener">Find on map ↗</a>`;
+const hostLine=(e,cls,d)=>e.hosts?`<p class="${cls} host-names" style="--d:${d}s">Hosted by ${e.hosts}</p>`:'';
+
+function evHTML(k,invited){
+  if(k==='puja'&&!invited)return `<div class="tg fx" style="--d:.7s">With blessings</div><h2 class="fx l" style="--d:.9s">Ganpati Bappa Morya</h2>`;
+  const e=EVENTS[k];
+  return `<h2 class="fx l" style="--d:.9s">${e.title}</h2>${e.date?`<p class="fx r date-time" style="--d:1.1s">${e.date}</p>`:''}${e.time?`<p class="fx l date-time" style="--d:1.3s">${e.time}</p>`:''}${e.venue?`<p class="fx r venue-row" style="--d:1.5s">${e.venue}</p>`:''}${hostLine(e,'fx l',1.65)}${e.map!==undefined&&e.map!==''?mapLink(e,1.8):''}`;
+}
+
+/* ===== INTERACTIVE SANGEET WISH STARS ===== */
+let activeConstellationStar=null;
+const myConstellationStars=new Set();
+const takenConstellationStars=new Set();
+const wishRecords=[];
+const STAR_FORTUNES=[
+ {category:"Luck",fortune:"May the life you build be full of little miracles, kind people, and beautiful surprises."},
+ {category:"Dance",fortune:"May your home always have music in the air, laughter in every room, and a reason to dance."},
+ {category:"Luck",fortune:"May good fortune follow your footsteps and may kindness find its way back to you, again and again."},
+ {category:"Dance",fortune:"May you never run out of songs to sing, places to explore, or reasons to celebrate together."},
+ {category:"Cheer",fortune:"May you collect ordinary days that feel extraordinary simply because you are sharing them."},
+ {category:"Good Fortune",fortune:"May good fortune find its way to you, again and again."},
+ {category:"New Beginnings",fortune:"A bright new chapter is closer than you think."},
+ {category:"Abundance",fortune:"May your days be rich with opportunity and plenty."},
+ {category:"Joy",fortune:"May little joys find you in the most unexpected places."},
+ {category:"Success",fortune:"May your efforts open doors you once only dreamed of."},
+ {category:"Possibility",fortune:"Something wonderful may begin with one small step."},
+ {category:"Prosperity",fortune:"May prosperity grow wherever you choose to plant your energy."},
+ {category:"Hope",fortune:"Keep a little hope close. Good things are still unfolding."},
+ {category:"Serendipity",fortune:"May the right moment meet you at just the right time."},
+ {category:"Courage",fortune:"May you find the courage to say yes to possibility."},
+ {category:"Growth",fortune:"May every season bring you closer to your fullest self."},
+ {category:"Opportunity",fortune:"May the doors meant for you open with ease."},
+ {category:"Peace",fortune:"May clarity guide your choices and peace follow them."},
+ {category:"Happiness",fortune:"May happiness find you in ordinary, everyday moments."},
+ {category:"Dreams",fortune:"May the dreams you nurture find room to flourish."},
+ {category:"Magic",fortune:"May life surprise you with more good than you expected."},
+ {category:"Strength",fortune:"May you always discover more strength within you."},
+ {category:"Luck",fortune:"May luck meet you halfway when you take the leap."},
+ {category:"Gratitude",fortune:"May you notice how much goodness already surrounds you."},
+ {category:"Possibilities",fortune:"May this be the beginning of something beautifully unexpected."}
+];
+const starShape='<svg viewBox="0 0 100 100" aria-hidden="true"><path class="star-shape" d="M50 2 C48 34 47 43 32 47 L2 50 C34 52 43 53 47 68 L50 98 C52 66 53 57 68 53 L98 50 C66 48 57 47 53 32 Z"/></svg>';
+function starId(n){return 'star-'+String(n).padStart(3,'0')}
+function randomStarPosition(existing){
+ let x=8+Math.random()*84,y=13+Math.random()*79,tries=0;
+ while(tries++<80&&existing.some(p=>Math.hypot((p.x-x)*.85,p.y-y)<8)){x=8+Math.random()*84;y=13+Math.random()*79}
+ return {x,y};
+}
+function makeConstellation(scene){
+ const layer=document.createElement('div');layer.className='constellation-layer';
+ layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a wish</div>';
+ const used=[];
+ const count=36;
+ for(let i=1;i<=count;i++){
+  const pos=randomStarPosition(used);used.push(pos);
+  const fortune=STAR_FORTUNES[(i-1)%STAR_FORTUNES.length];
+  const star={id:starId(i),x:pos.x,y:pos.y,category:fortune.category,fortune:fortune.fortune};
+  addConstellationStar(layer,star,scene);
+ }
+ const ui=document.createElement('div');ui.className='constellation-ui';
+ ui.innerHTML='<div class="constellation-card"><h3>Your little fortune</h3><div class="star-category"></div><p class="star-fortune"></p><textarea maxlength="500" aria-label="Your wish" placeholder="Leave a little wish for the couple..."></textarea><div class="constellation-actions"><button type="button" class="constellation-seal">Seal your wish ✨</button><button type="button" class="constellation-cancel">Close</button></div><p class="constellation-status" aria-live="polite"></p></div>';
+ [ui,ui.querySelector('.constellation-card')].forEach(el=>{el.addEventListener('pointerdown',e=>e.stopPropagation());el.addEventListener('pointerup',e=>e.stopPropagation())});
+ ui.addEventListener('click',e=>{if(e.target===ui)closeConstellationWish(ui)});
+ ui.querySelector('.constellation-cancel').addEventListener('click',()=>closeConstellationWish(ui));
+ ui.querySelector('.constellation-seal').addEventListener('click',()=>saveConstellationWish(scene,ui));
+ layer.appendChild(ui);scene.appendChild(layer);
+ if(new URLSearchParams(location.search).has('admin')) addConstellationAdmin(scene,layer);
+ loadConstellationStars(scene);
+}
+function addConstellationStar(layer,star,scene){
+ const b=document.createElement('button');b.type='button';b.className='constellation-star';b.dataset.starId=star.id;b.dataset.category=star.category;
+ /* each star gets its own glimmer speed + a negative delay so they never pulse in sync */
+ b.style.cssText=`left:${star.x}%;top:${star.y}%;--twinkle:${(2+Math.random()*2.2).toFixed(2)}s;animation-delay:${(-Math.random()*4).toFixed(2)}s`;
+ if(Math.random()<.67)b.classList.add('is-dim');  if(Math.random()<.15)b.style.setProperty('--big',(1.15+Math.random()*.05).toFixed(3));
+ b.innerHTML=starShape;b.setAttribute('aria-label',`${star.category} star. Open its fortune.`);b._star=star;
+ b.addEventListener('pointerdown',e=>e.stopPropagation());b.addEventListener('pointerup',e=>e.stopPropagation());
+ b.addEventListener('click',e=>{e.stopPropagation();activeConstellationStar=star;openConstellationWish(scene||layer.closest('.scene'))});
+ layer.appendChild(b);
+ return b;
+}
+function openConstellationWish(scene){const ui=scene.querySelector('.constellation-ui');if(!ui||!activeConstellationStar)return;ui.querySelector('.star-category').textContent=activeConstellationStar.category;ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;ui.querySelector('textarea').value='';ui.querySelector('.constellation-status').textContent='';ui.classList.add('open');setTimeout(()=>ui.querySelector('textarea').focus({preventScroll:true}),100)}
+function closeConstellationWish(ui){ui.classList.remove('open');activeConstellationStar=null}
+function markConstellationStar(starId,owner){document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===starId){el.classList.add('is-taken');if(owner&&owner.toLowerCase()===guest.toLowerCase()){el.classList.remove('is-dim');el.classList.add('is-gold','is-mine');myConstellationStars.add(starId)}else el.classList.remove('is-mine')}});takenConstellationStars.add(starId)}
+function loadConstellationStars(scene){
+ if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
+ window.receiveConstellationStars=data=>{if(data&&data.ok){(data.wishes||[]).forEach(w=>{markConstellationStar(w.starId,w.guest);wishRecords.push(w)}); (data.wishes||[]).filter(w=>!w.guest||w.guest.toLowerCase()!==guest.toLowerCase()).slice(-5).forEach(w=>document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===w.starId)el.classList.add('is-recent')}));(data.starIds||[]).forEach(id=>markConstellationStar(id,''));ensureAvailableStars(scene)}};
+ const sc=document.createElement('script');sc.src=CONSTELLATION_API+'?action=stars&callback=receiveConstellationStars&_='+Date.now();sc.onerror=()=>console.warn('Could not load saved constellation stars.');document.head.appendChild(sc);
+}
+function ensureAvailableStars(scene){const layer=scene.querySelector('.constellation-layer');if(!layer)return;let available=[...layer.querySelectorAll('.constellation-star')].filter(s=>!takenConstellationStars.has(s.dataset.starId)).length;let max=[...layer.querySelectorAll('.constellation-star')].length;while(available<8){max++;const pos=randomStarPosition([...layer.querySelectorAll('.constellation-star')].map(s=>({x:parseFloat(s.style.left),y:parseFloat(s.style.top)})));const f=STAR_FORTUNES[(max-1)%STAR_FORTUNES.length];const star={id:starId(max),x:pos.x,y:pos.y,category:f.category,fortune:f.fortune};addConstellationStar(layer,star,scene);available++}}
+function saveConstellationWish(scene,ui){if(!activeConstellationStar)return;const wish=ui.querySelector('textarea').value.trim(),status=ui.querySelector('.constellation-status');if(!wish){status.textContent='Write a little wish before sealing it.';return}const star=activeConstellationStar;if(takenConstellationStars.has(star.id)&&!myConstellationStars.has(star.id)){status.textContent='This star has already received a wish. Please choose another glimmer.';return}const payload={action:'saveWish',guest:guest||'Guest',starId:star.id,category:star.category,fortune:star.fortune,wish};if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID')){status.textContent='Preview mode: configure the wish service to save wishes.';return}status.textContent='Sending your wish to the stars…';const btn=ui.querySelector('.constellation-seal');btn.disabled=true;fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(()=>{myConstellationStars.add(star.id);markConstellationStar(star.id,guest);wishRecords.push({...payload});const r=ui.querySelector('.constellation-card').getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});status.textContent='Your wish is on its way to the stars ✨';ui.querySelector('textarea').value='';ensureAvailableStars(scene);setTimeout(()=>closeConstellationWish(ui),1300)}).catch(()=>{status.textContent='The wish could not be sent. Please try again.'}).finally(()=>btn.disabled=false)}
+function addConstellationAdmin(scene,layer){const open=document.createElement('button');open.type='button';open.className='constellation-admin';open.textContent='Admin wishes';const panel=document.createElement('div');panel.className='constellation-admin-panel';panel.innerHTML='<button class="admin-close" type="button">Close admin</button><h3>Guest wishes</h3><p>Deletion requires matching server-side Apps Script support and a configured admin token.</p><div class="admin-list"></div>';open.addEventListener('click',()=>{panel.classList.add('open');renderAdminWishes(panel)});panel.querySelector('.admin-close').addEventListener('click',()=>panel.classList.remove('open'));layer.append(open,panel)}
+function renderAdminWishes(panel){const list=panel.querySelector('.admin-list');list.innerHTML='';if(!wishRecords.length){list.textContent='No wishes loaded yet. Refresh the guest list from the connected sheet.';return}wishRecords.forEach(w=>{const row=document.createElement('div');row.className='admin-wish';const txt=document.createElement('div');txt.textContent=`${w.guest||'Guest'} · ${w.starId||''}: ${w.wish||''}`;row.appendChild(txt);const del=document.createElement('button');del.textContent='Delete wish';del.addEventListener('click',()=>deleteConstellationWish(w,panel));row.appendChild(del);list.appendChild(row)})}
+function deleteConstellationWish(w,panel){const token=prompt('Enter admin token to delete this wish:');if(!token)return;if(token!==ADMIN_TOKEN){alert('Incorrect admin token.');return}if(!CONSTELLATION_API){alert('Wish API is not configured.');return}fetch(CONSTELLATION_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'deleteWish',adminToken:token,starId:w.starId,guest:w.guest})}).then(()=>{wishRecords.splice(wishRecords.indexOf(w),1);takenConstellationStars.delete(w.starId);myConstellationStars.delete(w.starId);document.querySelectorAll('.constellation-star').forEach(s=>{if(s.dataset.starId===w.starId)s.classList.remove('is-taken','is-gold','is-mine')});renderAdminWishes(panel)}).catch(()=>alert('Delete request failed. Check the Apps Script deployment and logs.'))}
+
+function build(){
+  app.innerHTML='';scenes=[];filled=false;locked=false;introPromptShown=false;
+  clearTimeout(introTimer);introTimer=null;
+ const inv=new Set(guestEvents);
+  const pages=['main',...SD.order.filter(k=>inv.has(k)||EVENTS[k].always)];
+  PETAL=pages.length-1;FINAL=pages.length;
+
+  pages.forEach((k,i)=>{
+    const src=CONFIG.bg[k]||'';
+    const s=document.createElement('div');
+    s.className='scene';s.id='s'+i;s.dataset.event=(EVENTS[k]&&EVENTS[k].skin)||k;s.dataset.bappa=(EVENTS[k]&&EVENTS[k].bappa)?'1':'';
+    s.innerHTML=`<div class="ph" hidden></div>`+(src?(k==='main'?`<img class="bg" src="${src}" alt="" aria-hidden="true" fetchpriority="high">`:`<img class="bg" data-src="${src}" alt="" aria-hidden="true">`):'');
+    const ph=s.querySelector('.ph'),bg=s.querySelector('img.bg');
+    const fail=()=>{
+      ph.hidden=false;
+      ph.innerHTML=`Background image could not be loaded<br><small>Path: ${src||'none configured for '+k}</small>`+(bg?`<br><small>Resolved URL: ${bg.src}</small>`:'');
+      if(bg)console.error('Background image failed:',{path:src,resolvedURL:bg.src});
+    };
+    if(!bg)fail();
+    else{
+      bg.addEventListener('load',()=>{ph.hidden=true});
+      bg.addEventListener('error',fail);
+      if(bg.complete&&bg.naturalWidth>0)ph.hidden=true;
+    }
+
+if(k==='main'){
+  const M=SD.main;
+  const openingLines=M.lines;
+  const closingLine=SIDE==='groom'
+    ?'<div class="invite-statements invite-after-hosts"><p>'+M.afterHosts+'</p></div>'
+    :'';
+
+  s.insertAdjacentHTML('beforeend',`
+    <div class="intro fx" id="mainInvite" style="--d:.4s">
+      <img id="inviteGaneshay" src="${SD.ganeshay}" alt="Ganeshay" fetchpriority="high">
+      ${SIDE==='bride'?`<p class="invite-hosts">${M.hosts}</p>`:''}
+      <div class="invite-statements invite-opening">${openingLines.map(t=>`<p>${t}</p>`).join('')}</div>
+      ${SIDE==='groom'?`<p class="invite-hosts">${M.hosts}</p>${closingLine}`:''}
+      <h1 class="invite-name">${M.first}</h1>
+      <p class="invite-with">with</p>
+      <h2 class="invite-name invite-groom">${M.second}</h2>
+      <p class="invite-statement">${M.sub}</p>
+      <div class="invite-gap-small"></div>
+      <p class="invite-statement">${M.share}</p>
+      <p class="invite-family">${M.family}</p>
+    </div>
+    <div id="hintG">Offer Bappa a flower</div>
+    <div id="drop" aria-label="Flower offering space"></div>
+    <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
+}
+    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+    else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
+    else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+
+    if(k==='gpuja'||(k==='haldi'&&SIDE==='bride'))s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-l"><img src="assets/L-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`);     app.appendChild(s);scenes.push(s);
+    if(k==='sangeet')makeConstellation(s);
+  });
+
+  const fin=document.createElement('div');
+  fin.className='scene';fin.id='final';
+  const safeGuest=(guestDisplay||guest).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const finalBlessing1=SIDE==='groom'?'Sharing the joy':'With love & warm regards';
+  const finalBlessing2=SIDE==='groom'?'Karishma, Abhishek, Ravina, Pararth, Kiara, Chiranjiv & Devanshi.':'Blessings only';
+  fin.innerHTML=`<div class="final-greeting fx" style="--d:.3s">Dearest ${safeGuest},</div><h1><span class="fx l" style="--d:.8s;display:block">We look forward</span><span class="fx r" style="--d:1.1s;display:block">to seeing you</span></h1><img class="lg fx" style="--d:1.5s" src="${CONFIG.logo}" alt="Wedding logo" onerror="this.style.display='none'"><div class="final-blessings fx" style="--d:1.8s"><span>${finalBlessing1}</span><span>${finalBlessing2}</span></div>`;
+  app.appendChild(fin);scenes.push(fin);
+  ps=scenes[PETAL];
+
+  /* Ganpati + flower: one element that lives above the scenes */
+  app.insertAdjacentHTML('beforeend',`<div id="bappa"><div class="image-fallback" hidden></div><img class="bgan" src="${CONFIG.ganpati}" draggable="false" alt="Ganpati Bappa"><div class="bappa-flower">${hibImg}</div></div>`);
+  const gan=$('#bappa .bgan'),gf=$('#bappa .image-fallback');
+  const ganFail=()=>{
+    gf.hidden=false;
+    gf.innerHTML=`Ganpati image could not be loaded<br><small>Path: ${CONFIG.ganpati}</small><br><small>Resolved URL: ${gan.src}</small>`;
+    console.error('Ganpati image failed:',{path:CONFIG.ganpati,resolvedURL:gan.src});
+  };
+  gan.addEventListener('load',()=>{if(gan.naturalWidth>0)gf.hidden=true});
+  gan.addEventListener('error',ganFail);
+  if(gan.complete&&!gan.naturalWidth)ganFail();
+
+  /* tree artwork: fall back to the drawn SVG if the file is missing */
+  const tree=scenes[0].querySelector('[data-tree-image]');
+  if(tree){
+    const treeFail=()=>{
+      const holder=tree.parentElement;
+      if(!holder)return;
+      tree.remove();
+      if(CONFIG.drawTree)holder.insertAdjacentHTML('beforeend',treeSVG);
+      console.warn('Tree image unavailable; using SVG fallback:',CONFIG.tree);
+    };
+    tree.addEventListener('error',treeFail);
+    if(tree.complete&&!tree.naturalWidth)treeFail();
+  }
+
+  scenes[0].querySelectorAll('.flower').forEach(wireFlower);
+  scenes.forEach((sc,idx)=>{
+    const cue=sc.querySelector('.next-cue');
+    if(cue)cue.addEventListener('pointerup',e=>{e.stopPropagation();go(idx+1)});
+  });
+}
+
+/* ---- navigation ---- */
+function show(i){
+  cur=i;
+
+  const activeBg=scenes[i]?.querySelector('img.bg[data-src]');
+  if(activeBg){
+    activeBg.src=activeBg.dataset.src;
+    activeBg.removeAttribute('data-src');
+  }
+
+  const bp=$('#bappa');
+const bi=scenes.findIndex(x=>x.dataset.bappa==='1');
+  const hasUp=bi>0;
+  bp.classList.toggle('up',hasUp&&i>=1);
+  bp.classList.toggle('fromMain',!hasUp);
+  bp.classList.toggle('gone',i>Math.max(bi,0));
+  if(i===0)bp.classList.remove('offered');
+
+  if(i===PETAL&&!filled){filled=true;for(let k=0;k<26;k++)makePetal(true)}
+
+  clearTimeout(ps._hintTimer);
+  if(i===PETAL){
+    const hint=ps.querySelector('.petal-hint');
+    hint.classList.remove('show');
+    ps._hintTimer=setTimeout(()=>{if(cur===PETAL&&!popOpen)hint.classList.add('show')},2000);
+  }
+
+  scenes.forEach((s,j)=>{s.className='scene'+(j<i?' past':j==i?' active':'')+(j===PETAL&&popOpen?' dim':'')});
+
+  if(i===0){
+    const hint=$('#hintG');
+    if(introPromptShown)hint.classList.add('show');
+    else if(!introTimer)introTimer=setTimeout(()=>{
+      if(cur===0){hint.classList.add('show');introPromptShown=true}
+      introTimer=null;
+    },5000);
+  }else if(introTimer){clearTimeout(introTimer);introTimer=null}
+}
+function go(i){
+  if(i<0||i>FINAL||popOpen)return;
+  if(i===0){locked=false;scenes[0].querySelectorAll('.flower').forEach(f=>{f.style.transform='';f.style.opacity=1})}
+  show(i);
+}
+
+/* ---- name entry ---- */
+let guestEvents=[],guestDisplay='',checking=false,nameNeedsFull=false;
+const normName=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+/* local test list: used only while GUEST_SOURCE === "local" */
+const TEST_GUESTS={
+  bride:{"priya shah":{name:"Priya Shah",display:"Priya",events:["puja","mehendi","sangeet","haldi","wedding"]},
+         "rahul mehta":{name:"Rahul Mehta",display:"Rahul",events:["puja","sangeet","wedding"]}},
+  groom:{"amit verma":{name:"Amit Verma",display:"Amit",events:["sangeet","gpuja","wedding"]}}
+};
+function findGuest(name){
+  if(GUEST_SOURCE==='local'){
+    const g=(TEST_GUESTS[SIDE]||{})[normName(name)];
+    return Promise.resolve(g?{ok:true,...g}:{ok:false,error:'not_found'});
+  }
+  return new Promise((res,rej)=>{
+    const cb='cb'+Date.now(),sc=document.createElement('script');
+    const done=()=>{clearTimeout(t);delete window[cb];sc.remove()};
+    const t=setTimeout(()=>{done();rej(new Error('timeout'))},12000);
+    window[cb]=d=>{done();res(d)};
+    sc.onerror=()=>{done();rej(new Error('network'))};
+    sc.src=CONSTELLATION_API+'?action=guest&side='+SIDE+'&name='+encodeURIComponent(name)+'&callback='+cb+'&_ts='+Date.now();
+    document.head.appendChild(sc);
+  });
+}
+function nameError(msg){
+  const c=$('#nameModal .card');
+  c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');
+  let err=$('#guestError');
+  if(!err){err=document.createElement('p');err.id='guestError';err.style.cssText='color:#B34D62;font-size:.85rem;margin-top:.8rem';$('#nameIn').insertAdjacentElement('afterend',err)}
+  err.textContent=msg;
+}
+
+async function submitName(){
+  if(checking)return;
+
+  const v=$('#nameIn').value.trim().replace(/\s+/g,' ');
+  const parts=v.split(' ').filter(Boolean);
+
+  if(!v)return nameError('Please enter your first name.');
+  if(!nameNeedsFull&&parts.length!==1)
+    return nameError('Please enter your first name only.');
+  if(nameNeedsFull&&parts.length<2)
+    return nameError('Please enter your first and last name.');
+
+  checking=true;
+  $('#enterBtn').innerHTML='Checking <span class="loading-dots">...</span>';
+
+  let d;
+  try{
+    d=await findGuest(v);
+  }catch(e){
+    d={ok:false,error:'network'};
+  }
+
+  checking=false;
+  $('#enterBtn').textContent='Enter';
+
+  if(!d.ok){
+    if(d.error==='duplicate'&&!nameNeedsFull){
+      nameNeedsFull=true;
+      $('#nameIn').placeholder='Enter first and last name';
+      return nameError(
+        'We found more than one guest with that first name. Please enter your first and last name.'
+      );
+    }
+
+    const m={
+      network:'Could not check the guest list. Please try again.',
+      duplicate:'This name needs a quick manual check. Please contact the family.',
+      config:'The guest list is not configured correctly. Please contact the family.'
+    };
+
+    return nameError(
+      m[d.error]||
+      'We couldn’t find your invitation. Please check the spelling.'
+    );
+  }
+
+  nameNeedsFull=false;
+  const err=$('#guestError');
+  if(err)err.remove();
+
+  guest=d.name;
+  guestDisplay=d.display||d.name.split(' ')[0];
+  guestEvents=d.events||[];
+
+  $('#nameIn').blur();
+  build();
+  $('#nameModal').classList.remove('show');
+  $('#logo').classList.add('gone');
+  stage='scenes';
+  app.classList.add('on');
+  show(0);
+  $('#bappa').classList.add('in');
+}
+$('#enterBtn').onclick=submitName;
+$('#nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')submitName()});
+['pointerdown','pointerup'].forEach(ev=>$('#nameModal').addEventListener(ev,e=>e.stopPropagation()));
+
+/* ---- flower drag (page 1) ---- */
+function wireFlower(f){
+  let sx,sy,tx=0,ty=0;
+  const T=sc=>`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) rotate(var(--rot,0deg)) scaleX(var(--flip,1)) scale(${sc})`;
+  f.addEventListener('pointerdown',e=>{if(locked)return;e.stopPropagation();tx=ty=0;f.style.transform='';f.setPointerCapture(e.pointerId);sx=e.clientX;sy=e.clientY;f.classList.add('drag')});
+  f.addEventListener('pointermove',e=>{if(!f.classList.contains('drag'))return;tx=e.clientX-sx;ty=e.clientY-sy;f.style.transform=T(1.25);dust(e.clientX,e.clientY,{n:2,faint:true})});
+  f.addEventListener('pointerup',e=>{
+    e.stopPropagation();
+    if(!f.classList.contains('drag'))return;
+    f.classList.remove('drag');
+    const d=$('#drop').getBoundingClientRect(),dx=d.left+d.width/2,dy=d.top+d.height/2;
+    if(Math.hypot(e.clientX-dx,e.clientY-dy)<d.width*.8&&!locked){
+      locked=true;
+      const r=f.getBoundingClientRect();
+      tx+=dx-(r.left+r.width/2);ty+=dy-(r.top+r.height/2);
+      f.style.transform=T(1);
+      burst(dx,dy,90,{spread:5});
+      setTimeout(()=>{f.style.opacity=0;$('#bappa').classList.add('offered');go(1)},750);
+    }else{tx=ty=0;f.style.transform=''}
+  });
+}
+
+/* ---- petals (wedding page) ---- */
+function makePetal(pre){
+  const dur=rnd(9,17),sz=rnd(24,52),hit=Math.max(sz+26,64),p=document.createElement('div'),pi=document.createElement('span');
+  p.className='petal';
+  p.style.cssText=`width:${hit}px;height:${hit}px;left:calc(${rnd(-4,96)}% - ${hit/2}px);animation-duration:${dur}s;animation-delay:${pre?-rnd(0,dur*.9).toFixed(2):0}s;--dx:${rnd(-140,140)}px;--dx2:${rnd(-110,110)}px;--spin:${rnd(-540,540)}deg`;
+  pi.className='pi';
+  pi.style.cssText=`--s:${sz}px;--td:${rnd(2.4,5)}s;--sw:${rnd(8,30)}px;--r0:${rnd(-70,0)}deg;--r1:${rnd(0,70)}deg;--rx:${rnd(-75,75)}deg;--ry:${rnd(-75,75)}deg;--fl:${Math.random()<.5?-1:1};--o:${rnd(.42,1).toFixed(2)}`;
+  const im=new Image();
+  im.src=CONFIG.petal;im.draggable=false;im.alt='';
+  im.onerror=()=>{im.remove();pi.classList.add('fb')};
+  pi.appendChild(im);p.appendChild(pi);
+  p.addEventListener('animationend',e=>{if(e.target===p)p.remove()});
+  p.addEventListener('pointerdown',e=>e.stopPropagation());
+  p.addEventListener('pointerup',e=>{
+    e.stopPropagation();
+    const r=p.getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2,22,{spread:2.5});
+    p.remove();openPop();
+  });
+  ps.appendChild(p);
+}
+function spawnPetal(){
+  if(ps&&cur===PETAL&&!popOpen&&ps.querySelectorAll('.petal').length<34)makePetal(false);
+  setTimeout(spawnPetal,rnd(250,600));
+}
+spawnPetal();
+
+function openPop(){
+  /* a falling petal always reveals the wedding details */
+  const e=EVENTS.wedding,row=(cls,v)=>v?`<div class="row ${cls}">${v}</div>`:'';
+  $('#popCard').innerHTML=`<h2 class="fx" style="--d:.1s">${e.title}</h2>${row('date-time fx l',e.date)}${row('date-time fx r',e.time)}${row('venue-row fx l',e.venue)}${row('host-names fx r',e.hosts&&'Hosted by '+e.hosts)}${mapLink(e,1.1)}`;
+  popOpen=true;$('#pop').classList.add('show');ps.classList.add('dim');
+}
+function closePop(){popOpen=false;$('#pop').classList.remove('show');if(ps)ps.classList.remove('dim')}
+
+/* ---- last page → logo: the small logo grows and glides to the centre ---- */
+function returnToInfinity(){
+  const fl=$('#final .lg'),logo=$('#logo'),box=$('#logoBox'),hint=$('#hint'),fin=$('#final');
+
+  hint.classList.remove('ready');
+   logoBlessings.style.display='none';
+
+  if(!fl||fl.style.display==='none'){
+    logo.classList.remove('gone');
+    app.classList.remove('on');
+    stage='logo';cur=0;drawing=false;pts=[];
+     logoBlessings.style.display='none';
+    setTimeout(()=>{if(stage==='logo')hint.classList.add('ready')},2000);
+    return;
+  }
+
+  stage='returning';
+
+  const start=fl.getBoundingClientRect();
+  const clone=fl.cloneNode(true);
+  clone.className='logo-return';
+  clone.style.cssText=`left:${start.left}px;top:${start.top}px;width:${start.width}px;height:${start.height}px;opacity:1`;
+  document.body.appendChild(clone);
+
+  fl.style.visibility='hidden';
+  box.style.visibility='hidden';
+  hint.style.visibility='hidden';
+
+  fin.style.transition='opacity .6s';
+  fin.style.opacity='0';
+
+  logo.classList.remove('gone');
+
+  const target=box.getBoundingClientRect();
+
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    clone.style.left=target.left+'px';
+    clone.style.top=target.top+'px';
+    clone.style.width=target.width+'px';
+    clone.style.height=target.height+'px';
+  }));
+
+  setTimeout(()=>{
+    clone.remove();
+
+    fl.style.visibility='';
+    box.style.visibility='';
+    hint.style.visibility='';
+    fin.style.opacity='';
+    fin.style.transition='';
+
+    app.classList.remove('on');
+    $('#nameModal').classList.remove('show');
+
+    stage='logo';cur=0;drawing=false;pts=[];
+logoBlessings.style.display='none';
+    setTimeout(()=>{
+      if(stage==='logo')hint.classList.add('ready');
+    },2000);
+  },1000);
+}
+
+/* ---- global pointer handling (ignores anything outside the phone frame) ---- */
+addEventListener('pointerdown',e=>{
+  down=null;
+  if(!inFrame(e))return;
+  down={x:e.clientX,y:e.clientY};
+  if(stage==='logo'){drawing=true;pts=[{x:e.clientX,y:e.clientY}];dust(e.clientX,e.clientY,{n:4,tiny:true})}
+});
+addEventListener('pointermove',e=>{
+  if(stage==='logo'&&drawing){
+    const l=pts[pts.length-1];
+    if(Math.hypot(e.clientX-l.x,e.clientY-l.y)>=6){
+      pts.push({x:e.clientX,y:e.clientY});
+      if(pts.length%6===0&&isInfinity()){infinityDone();return}
+    }
+    dust(e.clientX,e.clientY,{n:2,tiny:true,spread:.6});
+  }else if(stage==='scenes'&&inFrame(e)&&(e.buttons||e.pointerType==='mouse')&&!e.target.closest('.flower'))dust(e.clientX,e.clientY,{n:1,faint:true,spread:.7});
+});
+addEventListener('pointerup',e=>{
+  if(stage==='logo'){
+    if(!drawing){pts=[];return}
+    drawing=false;burst(e.clientX,e.clientY,10,{tiny:true,spread:1.5});if(isInfinity())infinityDone();pts=[];return;
+  }
+  if(stage!=='scenes'||!down)return;
+  const start=down;
+  const dx=e.clientX-start.x,dy=e.clientY-start.y;
+  const moved=Math.hypot(dx,dy);
+  down=null;
+  const blocked=e.target.closest('.flower,.petal,#nameModal,a,button,input,textarea,.constellation-star,.constellation-ui,.constellation-admin,.constellation-admin-panel');
+  if(!inFrame(e)||blocked)return;
+
+  // A swipe nudges the hanging florals, then they settle back into their tiny idle sway.
+  if(moved>12){
+    const activeScene=document.querySelector('.scene.active');
+    const florals=activeScene?.querySelectorAll('.g-flor');
+    if(florals&&florals.length){
+      const direction=Math.sign(Math.abs(dx)>=Math.abs(dy)?dx:-dy)||1;
+      florals.forEach((floral,index)=>{
+        floral.classList.add('touch-swing');
+        const side=floral.classList.contains('g-l')?-1:1;
+        const impulse=direction*side;
+        const swing=3.2+index*.45;
+        const anim=floral.animate([
+          {transform:`rotate(${-impulse*swing}deg)`},
+          {transform:`rotate(${impulse*swing*1.35}deg)`,offset:.28},
+          {transform:`rotate(${-impulse*swing*.62}deg)`,offset:.57},
+          {transform:`rotate(${impulse*swing*.22}deg)`,offset:.8},
+          {transform:'rotate(0deg)'}
+        ],{duration:1550+index*150,easing:'cubic-bezier(.22,.61,.36,1)'});
+        anim.onfinish=()=>{
+          floral.classList.remove('touch-swing');
+          anim.cancel();
+        };
+      });
+    }
+    return;
+  }
+
+  if(e.target.closest('.flower,.petal'))return;
+  if(popOpen){closePop();go(FINAL);return}
+
+  const r=frameEl.getBoundingClientRect(),tapX=(e.clientX-r.left)/r.width;
+
+  if(cur===FINAL&&(tapX>=.75||e.target.closest('.lg'))){returnToInfinity();return}   /* last page: right side → logo */
+
+  if(tapX<.25){dust(e.clientX,e.clientY,{n:16,faint:true,spread:2.5});go(cur-1);return}   /* left edge: back */
+
+  if(cur===PETAL){   /* petal page: a tap pulses the prompt text */
+    const hint=ps.querySelector('.petal-hint');
+    if(hint.classList.contains('show')){
+      const t=hint.firstElementChild;
+      t.classList.remove('pulse');void t.offsetWidth;t.classList.add('pulse');
+    }
+    return;
+  }
+
+  if(cur>=1&&cur<PETAL)go(cur+1);   /* event pages: advance */
+});
+</script>
+</body>
+</html>
