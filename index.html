@@ -108,6 +108,9 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .invite-with{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);margin:.6cqh 0;position:relative;top:-1.5cqh}
 .invite-groom{margin-bottom:-.8cqh;transform:translateX(5cqw)}
 h1.invite-name{transform:translateX(-5cqw)}
+
+.groom-side h1.invite-name{transform:translateX(5cqw)}
+.groom-side .invite-groom{transform:translateX(-5cqw)}
 .invite-statement{margin:0 0 .7cqh;max-width:100%}
 /* names: pink, 0.5px stroke */
 .invite-name{font:500 clamp(70px,20cqw,96px)/1.05 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);overflow-wrap:anywhere;margin:0}
@@ -255,29 +258,18 @@ h1.invite-name{transform:translateX(-5cqw)}
 #final .lg{width:34%;margin-top:1.35rem;transition:transform .9s ease,opacity .9s ease}\n#final .final-blessings{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:.6rem;font-family:var(--f-date);font-size:clamp(10px,2.8cqw,14px);line-height:1.35;letter-spacing:.035em;text-align:center;color:var(--forest);opacity:.82;max-width:100%}
 .logo-return{position:fixed;z-index:200;object-fit:contain;pointer-events:none;transition:left .9s cubic-bezier(.2,.8,.2,1),top .9s cubic-bezier(.2,.8,.2,1),width .9s cubic-bezier(.2,.8,.2,1),height .9s cubic-bezier(.2,.8,.2,1),opacity .5s ease}
 .intro .invite-with{font-family:'BodoniVenue',serif;text-transform:none;font-variant:normal}
-/* ===== SANGEET TREES ===== */ 
-   .s-tree{position:absolute;bottom:24%;width:72%;height:76%;z-index:2;pointer-events:none;overflow:visible} 
-   .s-tree img{width:100%;height:100%;object-fit:contain;-webkit-user-drag:none} 
-   .s-tree-l{left:-22%;transform-origin:20% 100%} 
-   .s-tree-l img{object-position:bottom left} 
-   .s-tree-r{right:-22%;transform-origin:80% 100%} 
-   .s-tree-r img{object-position:bottom right} 
-   .scene.active[data-event=sangeet] 
-   .s-tree-l{animation:treeEnterL 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobbleL 15s 1.8s ease-in-out infinite} .scene.active[data-event=sangeet] 
-   .s-tree-r{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobble 17s 1.8s ease-in-out infinite} 
-   @keyframes treeEnterL{from{opacity:0;transform:translateX(-65%) rotate(-3deg)}to{opacity:1;transform:none}} 
-   @keyframes treeBobbleL{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(9px) rotate(2.4deg)}55%{transform:translateX(-6px) rotate(-1.8deg)}75%{transform:translateX(5px) rotate(1.2deg)}} 
+
 /* ===== LOGO-BG on home + last page ===== */
 #logo{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 #final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 #bappa.gone.fromMain{transform:translateY(-102cqh)}
-html[data-side=groom] #inviteGaneshay{width:clamp(58px,17cqw,82px);height:clamp(58px,17cqw,82px)}
+html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
 /* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
 .g-flor{position:absolute;top:0;z-index:2;pointer-events:none;transform-origin:50% 0;opacity:0;transition:opacity 1.6s ease .6s;will-change:transform}
 .g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
-.g-l{left:0;width:46%;--amp:1deg;--dur:9s;--dly:-2s}
-.g-r1{right:0;width:42%;--amp:.8deg;--dur:10.5s;--dly:-5s}
-.g-r2{right:12%;width:34%;--amp:1.2deg;--dur:8.5s;--dly:-7s}
+.g-l{left:-4%;width:41.4%;--amp:1deg;--dur:9s;--dly:-2s}
+.g-r1{right:-4%;width:37.8%;--amp:.8deg;--dur:10.5s;--dly:-5s}
+.g-r2{right:5%;width:30.6%;--amp:1.2deg;--dur:8.5s;--dly:-7s}
 .scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
 @keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
 @media (prefers-reduced-motion:reduce){.scene.active .g-flor{animation:none}}
@@ -306,7 +298,7 @@ html[data-side=groom] #inviteGaneshay{width:clamp(58px,17cqw,82px);height:clamp(
 /* ================= EDIT THIS SECTION ================= */
 const CONSTELLATION_API = "https://script.google.com/macros/s/AKfycbzVGBOLdb_vjlJfURxCMwrg0lEQxKmp4sEYgd09NQxZIrC6abiqPkRKULaBExR1G7O-/exec";
 const ADMIN_TOKEN = "CHANGE_THIS_TO_A_PRIVATE_ADMIN_TOKEN"; // Configure the same token in your Apps Script before using admin actions.
-const SIDE=new URLSearchParams(location.search).get('side')?.toLowerCase()==='groom'?'groom':'bride'; if(SIDE==='bride')document.documentElement.classList.add('bride-side');
+const SIDE=new URLSearchParams(location.search).get('side')?.toLowerCase()==='groom'?'groom':'bride'; document.documentElement.dataset.side=SIDE; document.documentElement.classList.add(SIDE+'-side');
 const GUEST_SOURCE="sheet";
 const SIDES={
   bride:{
@@ -319,15 +311,15 @@ const SIDES={
       share:"sharing the joy", family:"Prathama &amp; Ninad"}
   },
   groom:{
-    logo:"assets/logo-groom.png", ganeshay:"assets/groom-ganeshay.png",
+    logo:"assets/Groom-logo.png", ganeshay:"assets/groom-ganeshay.png",
     order:["sangeet","gpuja","wedding"],
     main:{
-      lines:[
-      "With the Divine Blessings of Lord Mahavirji ",
+            lines:[
+      "With the Divine Blessings of Lord Mahavirji",
       "and Our Beloved Parents Smt. Manjula &",
-      "Late Shri Maheshchandra Dhami",
-      "cordially invite you to celebrate the wedding of their son"
+      "Late Shri Maheshchandra Dhami"
       ],
+      afterHosts:"cordially invite you to celebrate the wedding of their son",
       hosts:"Smt. Sneha and Late Shri Sanjiv Dhami",
       first:"Rahil", second:"Samidha",
       sub:"(Daughter of Smt. Archana &amp; Shri Vinay Jatkar)",
@@ -449,9 +441,30 @@ function isInfinity(){
   return Math.abs(L)>2.2&&Math.abs(R)>2.2&&L*R<0;
 }
 function infinityDone(){
-  stage='name';drawing=false;
-  pts.forEach((p,i)=>{if(i%2==0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6)});
-  setTimeout(()=>{$('#nameModal').classList.add('show');$('#nameIn').focus({preventScroll:true})},950);
+  drawing=false;
+  pts.forEach((p,i)=>{
+    if(i%2===0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6);
+  });
+
+  // Returning guest: skip the name form and enter directly.
+  if(guest){
+    build();
+    $('#nameModal').classList.remove('show');
+    $('#logo').classList.add('gone');
+    logoBlessings.style.display='none';
+    stage='scenes';
+    app.classList.add('on');
+    show(0);
+    $('#bappa').classList.add('in');
+    return;
+  }
+
+  // First visit: ask for the guest's name.
+  stage='name';
+  setTimeout(()=>{
+    $('#nameModal').classList.add('show');
+    $('#nameIn').focus({preventScroll:true});
+  },950);
 }
 
 /* ---- builders ---- */
@@ -578,27 +591,36 @@ function build(){
       if(bg.complete&&bg.naturalWidth>0)ph.hidden=true;
     }
 
-  if(k==='main'){const M=SD.main;s.insertAdjacentHTML('beforeend',`
-      <div class="intro fx" id="mainInvite" style="--d:.4s">
-        <img id="inviteGaneshay" src="${SD.ganeshay}" alt="Ganeshay" fetchpriority="high">
-        <p class="invite-hosts">${M.hosts}</p>
-        <div class="invite-statements invite-opening">${M.lines.map(t=>`<p>${t}</p>`).join('')}</div>
-        <h1 class="invite-name">${M.first}</h1>
-        <p class="invite-with">with</p>
-        <h2 class="invite-name invite-groom">${M.second}</h2>
-        <p class="invite-statement">${M.sub}</p>
-        <div class="invite-gap-small"></div>
-        <p class="invite-statement">${M.share}</p>
-        <p class="invite-family">${M.family}</p>
-      </div>
-      <div id="hintG">Offer Bappa a flower</div>
-      <div id="drop" aria-label="Flower offering space"></div>
-      <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`)}
-    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="s-tree s-tree-l"><img src="assets/Sangeet-tree-L.png" alt="" draggable="false"></div><div class="s-tree s-tree-r"><img src="assets/Sangeet-tree-R.png" alt="" draggable="false"></div><div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"> <span class="next-cue-label">Tap to continue</span></button>`);
+if(k==='main'){
+  const M=SD.main;
+  const openingLines=SIDE==='groom'?M.lines.slice(0,3):M.lines;
+  const closingLine=SIDE==='groom'
+    ?'<div class="invite-statements invite-after-hosts"><p>'+M.afterHosts+'</p></div>'
+    :'';
+
+  s.insertAdjacentHTML('beforeend',`
+    <div class="intro fx" id="mainInvite" style="--d:.4s">
+      <img id="inviteGaneshay" src="${SD.ganeshay}" alt="Ganeshay" fetchpriority="high">
+      ${SIDE==='bride'?`<p class="invite-hosts">${M.hosts}</p>`:''}
+      <div class="invite-statements invite-opening">${openingLines.map(t=>`<p>${t}</p>`).join('')}</div>
+      ${SIDE==='groom'?`<p class="invite-hosts">${M.hosts}</p>${closingLine}`:''}
+      <h1 class="invite-name">${M.first}</h1>
+      <p class="invite-with">with</p>
+      <h2 class="invite-name invite-groom">${M.second}</h2>
+      <p class="invite-statement">${M.sub}</p>
+      <div class="invite-gap-small"></div>
+      <p class="invite-statement">${M.share}</p>
+      <p class="invite-family">${M.family}</p>
+    </div>
+    <div id="hintG">Offer Bappa a flower</div>
+    <div id="drop" aria-label="Flower offering space"></div>
+    <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
+}
+    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
 
-    if(k==='gpuja')s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-l"><img src="assets/L-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`);     app.appendChild(s);scenes.push(s);
+    if(k==='gpuja'||(k==='haldi'&&SIDE==='bride'))s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-l"><img src="assets/L-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`);     app.appendChild(s);scenes.push(s);
     if(k==='sangeet')makeConstellation(s);
   });
 
