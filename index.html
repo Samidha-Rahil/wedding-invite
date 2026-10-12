@@ -116,7 +116,7 @@ h1.invite-name{transform:translateX(-5cqw)}
 .scene.active#s0 .tree-art{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobble 16s 1.8s ease-in-out infinite}
 @keyframes treeEnter{from{opacity:0;transform:translateX(65%) rotate(3deg)}to{opacity:1;transform:none}}
 @keyframes treeBobble{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-9px) rotate(-2.4deg)}55%{transform:translateX(6px) rotate(1.8deg)}75%{transform:translateX(-5px) rotate(-1.2deg)}}
-.flower{position:absolute;width:46.4px;height:46.4px;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scaleX(var(--flip,1));cursor:grab;touch-action:none;z-index:7;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35));transition:transform .35s,opacity .5s;pointer-events:auto}
+.flower{position:absolute;width:44.1px;height:44.1px;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scaleX(var(--flip,1));cursor:grab;touch-action:none;z-index:7;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35));transition:transform .35s,opacity .5s;pointer-events:auto}
 .flower.drag{transition:none;cursor:grabbing;z-index:30}
 .flower img,.flower svg{width:100%;height:100%;object-fit:contain;pointer-events:none;display:block}
 
@@ -148,7 +148,7 @@ h1.invite-name{transform:translateX(-5cqw)}
 .constellation-star:focus-visible{outline:1px solid #fff;border-radius:50%}
 .constellation-star.is-gold{color:#ffd66f;filter:drop-shadow(0 0 3px #fff7d7) drop-shadow(0 0 8px #ffce68) drop-shadow(0 0 17px rgba(255,190,74,.92))}
 .constellation-star.is-mine{--lo:.85;--hi:1;color:#ffda78;filter:drop-shadow(0 0 5px #fff7d7) drop-shadow(0 0 13px #ffce68) drop-shadow(0 0 24px rgba(255,190,74,1))}
-.constellation-star.is-taken:not(.is-mine){animation:none;opacity:.3;scale:1;filter:drop-shadow(0 0 2px rgba(255,248,223,.3))}
+.constellation-star.is-taken:not(.is-mine){animation:none;opacity:.3;scale:1;filter:drop-shadow(0 0 2px rgba(255,248,223,.3))} .constellation-star.is-taken.is-recent:not(.is-mine){--lo:.6;--hi:.9;color:#ffd66f;animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite;filter:drop-shadow(0 0 3px rgba(255,214,111,.9)) drop-shadow(0 0 8px rgba(255,190,74,.55))}
 .constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
 .constellation-ui.open{opacity:1;pointer-events:auto}
 .constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
@@ -212,7 +212,7 @@ h1.invite-name{transform:translateX(-5cqw)}
 #pop .card{width:84%}
 #pop .row{margin-top:.7rem;color:var(--forest);font-size:.95rem}
 #pop .maplink{color:var(--pink)}
-#popCard h2{font-size:4.1rem;line-height:1.05;overflow-wrap:anywhere;-webkit-text-stroke:1px currentColor}
+#popCard h2{font-size:4.1rem;line-height:1.05;overflow-wrap:anywhere;-webkit-text-stroke:.5px currentColor}
 
 /* ===== FINAL PAGE ===== */
 #final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
@@ -444,7 +444,7 @@ function closeConstellationWish(ui){ui.classList.remove('open');activeConstellat
 function markConstellationStar(starId,owner){document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===starId){el.classList.add('is-taken');if(owner&&owner.toLowerCase()===guest.toLowerCase()){el.classList.remove('is-dim');el.classList.add('is-gold','is-mine');myConstellationStars.add(starId)}else el.classList.remove('is-mine')}});takenConstellationStars.add(starId)}
 function loadConstellationStars(scene){
  if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
- window.receiveConstellationStars=data=>{if(data&&data.ok){(data.wishes||[]).forEach(w=>{markConstellationStar(w.starId,w.guest);wishRecords.push(w)});(data.starIds||[]).forEach(id=>markConstellationStar(id,''));ensureAvailableStars(scene)}};
+ window.receiveConstellationStars=data=>{if(data&&data.ok){(data.wishes||[]).forEach(w=>{markConstellationStar(w.starId,w.guest);wishRecords.push(w)}); (data.wishes||[]).filter(w=>!w.guest||w.guest.toLowerCase()!==guest.toLowerCase()).slice(-5).forEach(w=>document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===w.starId)el.classList.add('is-recent')}));(data.starIds||[]).forEach(id=>markConstellationStar(id,''));ensureAvailableStars(scene)}};
  const sc=document.createElement('script');sc.src=CONSTELLATION_API+'?action=stars&callback=receiveConstellationStars&_='+Date.now();sc.onerror=()=>console.warn('Could not load saved constellation stars.');document.head.appendChild(sc);
 }
 function ensureAvailableStars(scene){const layer=scene.querySelector('.constellation-layer');if(!layer)return;let available=[...layer.querySelectorAll('.constellation-star')].filter(s=>!takenConstellationStars.has(s.dataset.starId)).length;let max=[...layer.querySelectorAll('.constellation-star')].length;while(available<8){max++;const pos=randomStarPosition([...layer.querySelectorAll('.constellation-star')].map(s=>({x:parseFloat(s.style.left),y:parseFloat(s.style.top)})));const f=STAR_FORTUNES[(max-1)%STAR_FORTUNES.length];const star={id:starId(max),x:pos.x,y:pos.y,category:f.category,fortune:f.fortune};addConstellationStar(layer,star,scene);available++}}
