@@ -109,6 +109,10 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .invite-groom{margin-bottom:-.8cqh;transform:translateX(5cqw)}
 h1.invite-name{transform:translateX(-5cqw)}
 
+/* Groom page: Groom left, Bride right */
+.groom-side h1.invite-name{transform:translateX(-8cqw)}
+.groom-side .invite-groom{transform:translateX(8cqw)}
+
 .groom-side h1.invite-name{transform:translateX(5cqw)}
 .groom-side .invite-groom{transform:translateX(-5cqw)}
 .invite-statement{margin:0 0 .7cqh;max-width:100%}
@@ -315,7 +319,8 @@ const SIDES={
     order:["sangeet","gpuja","wedding"],
     main:{
             lines:[
-      "With the Divine Blessings of Lord Mahavirji",
+      "With the Divine Blessings of".
+      "Lord Mahavirji",
       "and Our Beloved Parents Smt. Manjula &",
       "Late Shri Maheshchandra Dhami"
       ],
