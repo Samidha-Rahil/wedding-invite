@@ -682,14 +682,14 @@ function go(i){
 /* ---- name entry ---- */
 let guestEvents=[],guestDisplay='',checking=false,nameNeedsFull=false;
 const normName=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
-/* local test list: used only while GUEST_SOURCE === "local" */
+/* local test list: used only while GUEST_SOURCE === "sheet" */
 const TEST_GUESTS={
   bride:{"priya shah":{name:"Priya Shah",display:"Priya",events:["puja","mehendi","sangeet","haldi","wedding"]},
          "rahul mehta":{name:"Rahul Mehta",display:"Rahul",events:["puja","sangeet","wedding"]}},
   groom:{"amit verma":{name:"Amit Verma",display:"Amit",events:["sangeet","gpuja","wedding"]}}
 };
 function findGuest(name){
-  if(GUEST_SOURCE==='local'){
+  if(GUEST_SOURCE==='sheet'){
     const g=(TEST_GUESTS[SIDE]||{})[normName(name)];
     return Promise.resolve(g?{ok:true,...g}:{ok:false,error:'not_found'});
   }
