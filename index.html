@@ -121,9 +121,11 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .constellation-heading{position:absolute;top:6%;left:8%;width:84%;text-align:center;color:#fff;font:clamp(.7rem,2.8vw,.9rem) var(--f-date);letter-spacing:.16em;text-transform:uppercase;text-shadow:0 0 12px rgba(255,255,255,.7);pointer-events:none}
 .constellation-subtitle{display:block;margin-top:.55rem;font:clamp(.68rem,2.8vw,.85rem) var(--f-venue);letter-spacing:.04em;text-transform:none}
 .constellation-speck{position:absolute;color:#fff;line-height:1;pointer-events:none;opacity:.45;animation:starTwinkle var(--twinkle,3s) ease-in-out infinite alternate;text-shadow:0 0 5px rgba(255,255,255,.8)}
-.constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;filter:drop-shadow(0 0 3px rgba(255,255,255,.65));animation:starTwinkle var(--twinkle,2.8s) ease-in-out infinite alternate;-webkit-tap-highlight-color:transparent}
-.constellation-star svg{display:block;width:100%;height:100%;overflow:visible}
-.constellation-star .star-shape{fill:currentColor;opacity:.74}
+.constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:18px;height:18px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;filter:drop-shadow(0 0 2px rgba(255,255,255,.4));animation:starTwinkle var(--twinkle,2.8s) ease-in-out infinite alternate;-webkit-tap-highlight-color:transparent}
+.constellation-star svg{display:block;width:7px;height:7px;overflow:visible}
+.constellation-star .star-shape{fill:currentColor;opacity:1}
+.constellation-star.is-dim{opacity:.2;filter:drop-shadow(0 0 1px rgba(255,248,223,.18))}
+.constellation-star:not(.is-dim):not(.is-taken){opacity:.42}
 .constellation-star::after{content:attr(data-category);position:absolute;left:50%;bottom:calc(100% - 2px);transform:translateX(-50%);padding:.3rem .55rem;border-radius:20px;background:rgba(20,38,32,.9);color:#fff;font:.58rem var(--f-date);letter-spacing:.08em;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s}
 .constellation-star:hover::after,.constellation-star:focus-visible::after{opacity:1}
 .constellation-star:focus-visible{outline:1px solid #fff;border-radius:50%}
@@ -132,13 +134,13 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .constellation-star.is-mine{color:#ffda78;filter:drop-shadow(0 0 5px #fff7d7) drop-shadow(0 0 13px #ffce68) drop-shadow(0 0 24px rgba(255,190,74,1));z-index:2}
 .constellation-star.is-mine .star-shape{opacity:1}
 .constellation-star.is-taken:not(.is-mine){opacity:.3;filter:drop-shadow(0 0 2px rgba(255,248,223,.3))}
-@keyframes starTwinkle{from{opacity:.35;scale:.9}to{opacity:1;scale:1.05}}
+@keyframes starTwinkle{from{scale:.94}to{scale:1.04}}
 .constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
 .constellation-ui.open{opacity:1;pointer-events:auto}
 .constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
 .constellation-card h3{font:1.65rem var(--f-names);font-weight:400;color:var(--pink);margin-bottom:.45rem}
 .constellation-card .star-category{font:.68rem var(--f-date);letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:.8rem}
-.constellation-card .star-fortune{font:1.05rem/1.5 var(--f-venue);margin-bottom:1rem}
+.constellation-card .star-fortune{font:1.2rem/1.5 var(--f-venue);font-weight:700;margin-bottom:1rem}
 .constellation-card textarea{display:block;width:100%;min-height:90px;resize:vertical;border:1px solid var(--olive);border-radius:12px;background:#fff;color:var(--forest);padding:.8rem;font:1rem/1.4 var(--f-venue);outline:none}
 .constellation-card textarea:focus{border-color:var(--pink)}
 .constellation-actions{display:flex;gap:.6rem;margin-top:.8rem}
@@ -321,8 +323,7 @@ function isInfinity(){
   if(pts.length<25)return false;
   const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),w=x1-x0,h=y1-y0;
   if(w<110||h<w*.18||h>w*.95)return false;
-  const b=$('#logoBox').getBoundingClientRect(),mx=(x0+x1)/2,my=(y0+y1)/2;
-  if(mx<b.left-70||mx>b.right+70||my<b.top-70||my>b.bottom+70)return false;
+  const mx=(x0+x1)/2,my=(y0+y1)/2;
   let L=0,R=0;
   for(let i=1;i<pts.length-1;i++){
     const a={x:pts[i].x-pts[i-1].x,y:pts[i].y-pts[i-1].y},c={x:pts[i+1].x-pts[i].x,y:pts[i+1].y-pts[i].y};
@@ -380,13 +381,9 @@ function randomStarPosition(existing){
 }
 function makeConstellation(scene){
  const layer=document.createElement('div');layer.className='constellation-layer';
- layer.innerHTML='<div class="constellation-heading">Choose a glimmer &amp; Rewrite the stars<span class="constellation-subtitle">Choose a glimmer, discover your fortune, leave a wish</span></div>';
+ layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a Wish</div>';
  const used=[];
- for(let i=0;i<52;i++){
-  const pos=randomStarPosition(used);used.push(pos);
-  const dot=document.createElement('span');dot.className='constellation-speck';dot.textContent=i%5===0?'✧':'·';
-  dot.style.cssText=`left:${pos.x}%;top:${pos.y}%;font-size:${i%5===0?12:7}px;--twinkle:${2+(i%5)*.6}s;animation-delay:${(i%7)*-.4}s`;layer.appendChild(dot);
- }
+ const count=36;
  const count=36;
  for(let i=1;i<=count;i++){
   const pos=randomStarPosition(used);used.push(pos);
@@ -406,15 +403,16 @@ function makeConstellation(scene){
 }
 function addConstellationStar(layer,star){
  const b=document.createElement('button');b.type='button';b.className='constellation-star';b.dataset.starId=star.id;b.dataset.category=star.category;
- b.style.cssText=`left:${star.x}%;top:${star.y}%;--twinkle:${2.1+(star.x%4)*.35}s;animation-delay:${(star.x%5)*-.3}s`;
- b.innerHTML=starShape;b.setAttribute('aria-label',`${star.category} star. Open its fortune.`);b._star=star;
+b.style.cssText=`left:${star.x}%;top:${star.y}%;--twinkle:${2.1+(star.x%4)*.35}s;animation-delay:${(star.x%5)*-.3}s`;
+if(Math.random()<.67)b.classList.add('is-dim');
+b.innerHTML=starShape;b.setAttribute('aria-label',`${star.category} star. Open its fortune.`);b._star=star;
  b.addEventListener('pointerdown',e=>e.stopPropagation());b.addEventListener('pointerup',e=>e.stopPropagation());
  b.addEventListener('click',()=>{activeConstellationStar=star;openConstellationWish(layer.closest('.scene'))});layer.appendChild(b);
  return b;
 }
 function openConstellationWish(scene){const ui=scene.querySelector('.constellation-ui');if(!ui||!activeConstellationStar)return;ui.querySelector('.star-category').textContent=activeConstellationStar.category;ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;ui.querySelector('textarea').value='';ui.querySelector('.constellation-status').textContent='';ui.classList.add('open');setTimeout(()=>ui.querySelector('textarea').focus({preventScroll:true}),100)}
 function closeConstellationWish(ui){ui.classList.remove('open');activeConstellationStar=null}
-function markConstellationStar(starId,owner){document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===starId){el.classList.add('is-taken');if(owner&&owner.toLowerCase()===guest.toLowerCase()){el.classList.add('is-gold','is-mine');myConstellationStars.add(starId)}else el.classList.remove('is-mine')}});takenConstellationStars.add(starId)}
+function markConstellationStar(starId,owner){document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===starId){el.classList.add('is-taken');if(owner&&owner.toLowerCase()===guest.toLowerCase()){el.classList.remove('is-dim');el.classList.add('is-gold','is-mine');myConstellationStars.add(starId)}else el.classList.remove('is-mine')}});takenConstellationStars.add(starId)}
 function loadConstellationStars(scene){
  if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
  window.receiveConstellationStars=data=>{if(data&&data.ok){(data.wishes||[]).forEach(w=>{markConstellationStar(w.starId,w.guest);wishRecords.push(w)});(data.starIds||[]).forEach(id=>markConstellationStar(id,''));ensureAvailableStars(scene)}};
@@ -452,7 +450,7 @@ function build(){
     }
 
     if(k==='main')s.insertAdjacentHTML('beforeend',`<div class="intro fx" id="mainInvite" style="--d:.4s">   <img id="inviteGaneshay" src="assets/ganeshay.png" alt="Ganeshay" fetchpriority="high">   <div class="invite-gap"></div>   <p class="invite-hosts">Smt. Archana &amp; Shri Vinay Jatkar</p>   <div class="invite-statements invite-opening">     <p>With joy and warmth in their hearts, cordially</p>     <p>invite you to celebrate the wedding festivities of</p>     <p>their beloved daughter</p>   </div>   <h1 class="invite-name">Samidha</h1>   <p class="invite-with">with</p>   <h2 class="invite-name invite-groom">Rahil</h2>   <p class="invite-statement">(Son of Smt. Sneha &amp; Late Shri Sanjiv Dhami)</p>   <div class="invite-gap invite-gap-small"></div>   <p class="invite-statement">sharing the joy</p>   <p class="invite-family">Prathama &amp; Ninad</p> </div> <div id="hintG">Offer Bappa a flower</div> <div id="drop" aria-label="Flower offering space"></div> <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
-    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="sangeet-stars" aria-hidden="true">${Array.from({length:24},(_,i)=>{const x=5+Math.random()*90,y=5+Math.random()*90;return `<span class="glimmer-star" style="left:${x}%;top:${y}%;--delay:${(i*.21).toFixed(2)}s"></span>`}).join('')}</div><div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
+    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="pixie-orbit"></span><span class="next-cue-label">Tap to continue</span></button>`);
 
