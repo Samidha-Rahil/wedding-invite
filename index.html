@@ -151,7 +151,29 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .constellation-admin-panel{position:absolute;inset:0;z-index:35;padding:1rem;background:rgba(10,24,19,.94);color:#fff;overflow:auto;pointer-events:auto;display:none}
 .constellation-admin-panel.open{display:block}.constellation-admin-panel h3{font:1.4rem var(--f-names);margin:1rem 0}.admin-wish{padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.2);font:.8rem/1.4 var(--f-venue);overflow-wrap:anywhere}.admin-wish button{margin:.4rem .3rem 0 0;padding:.35rem .5rem;border:0;border-radius:6px;background:#d7b45a;color:#17271e;font-size:.7rem}.admin-close{position:sticky;top:0;float:right;padding:.45rem .65rem;border:0;border-radius:8px}
 
-/* ===== EVENT PAGES ===== */
+
+/* ===== SANGEET FORTUNE READABILITY ===== */
+.constellation-heading{
+  font-size:1.05rem;
+  font-weight:600;
+  line-height:1.4;
+}
+.constellation-card h3{
+  font-size:1.45rem;
+  font-weight:700;
+  line-height:1.25;
+}
+.star-category{
+  font-size:1rem;
+  font-weight:700;
+  line-height:1.4;
+}
+.star-fortune{
+  font-size:1.2rem;
+  font-weight:700;
+  line-height:1.5;
+}
+  /* ===== EVENT PAGES ===== */
 .ev-over{position:absolute;left:0;right:0;bottom:10%;padding:5rem 1.5rem 2.6rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
 .ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
@@ -309,7 +331,7 @@ li.onload=()=>{
   clearTimeout(window.infinityHintTimer);
   window.infinityHintTimer=setTimeout(()=>{
     if(stage==='logo')$('#hint').classList.add('ready');
-  },2000);
+  },1000);
 };
 li.onerror=()=>{
   console.error('Logo failed to load:',li.src);
@@ -359,18 +381,31 @@ const myConstellationStars=new Set();
 const takenConstellationStars=new Set();
 const wishRecords=[];
 const STAR_FORTUNES=[
- {category:"Luck",fortune:"May the life you build together be full of little miracles, kind people, and beautiful surprises."},
+ {category:"Luck",fortune:"May the life you build be full of little miracles, kind people, and beautiful surprises."},
  {category:"Dance",fortune:"May your home always have music in the air, laughter in every room, and a reason to dance."},
- {category:"Cheer",fortune:"May the happiest moments of your life become the stories you tell and retell for years."},
- {category:"Future",fortune:"May every new chapter bring you closer to the dreams you have shared and the ones yet to come."},
- {category:"Love",fortune:"May you keep choosing each other, in the grand celebrations and in the quiet moments nobody else sees."},
- {category:"Future",fortune:"May you always find courage in each other and wonder in the life you create together."},
- {category:"Love",fortune:"May you always be each other's safest place, favourite person, and reason to smile."},
  {category:"Luck",fortune:"May good fortune follow your footsteps and may kindness find its way back to you, again and again."},
  {category:"Dance",fortune:"May you never run out of songs to sing, places to explore, or reasons to celebrate together."},
  {category:"Cheer",fortune:"May you collect ordinary days that feel extraordinary simply because you are sharing them."},
- {category:"Future",fortune:"May the dreams you bring into this marriage grow into a life even more beautiful than you imagined."},
- {category:"Love",fortune:"May the love surrounding you today stay with you through every season, every change, and every new beginning."}
+ {category:"Good Fortune",fortune:"May good fortune find its way to you, again and again."},
+  {category:"New Beginnings",fortune:"A bright new chapter is closer than you think."},
+  {category:"Abundance",fortune:"May your days be rich with opportunity and plenty."},
+  {category:"Joy",fortune:"May little joys find you in the most unexpected places."},
+  {category:"Success",fortune:"May your efforts open doors you once only dreamed of."},
+  {category:"Possibility",fortune:"Something wonderful may begin with one small step."},
+  {category:"Prosperity",fortune:"May prosperity grow wherever you choose to plant your energy."},
+  {category:"Hope",fortune:"Keep a little hope close. Good things are still unfolding."},
+  {category:"Serendipity",fortune:"May the right moment meet you at just the right time."},
+  {category:"Courage",fortune:"May you find the courage to say yes to possibility."},
+  {category:"Growth",fortune:"May every season bring you closer to your fullest self."},
+  {category:"Opportunity",fortune:"May the doors meant for you open with ease."},
+  {category:"Peace",fortune:"May clarity guide your choices and peace follow them."},
+  {category:"Happiness",fortune:"May happiness find you in ordinary, everyday moments."},
+  {category:"Dreams",fortune:"May the dreams you nurture find room to flourish."},
+  {category:"Magic",fortune:"May life surprise you with more good than you expected."},
+  {category:"Strength",fortune:"May you always discover more strength within you."},
+  {category:"Luck",fortune:"May luck meet you halfway when you take the leap."},
+  {category:"Gratitude",fortune:"May you notice how much goodness already surrounds you."},
+  {category:"Possibilities",fortune:"May this be the beginning of something beautifully unexpected."}
 ];
 const starShape='<svg viewBox="0 0 100 100" aria-hidden="true"><path class="star-shape" d="M50 2 C48 34 47 43 32 47 L2 50 C34 52 43 53 47 68 L50 98 C52 66 53 57 68 53 L98 50 C66 48 57 47 53 32 Z"/></svg>';
 function starId(n){return 'star-'+String(n).padStart(3,'0')}
@@ -588,11 +623,11 @@ function wireFlower(f){
 
 /* ---- petals (wedding page) ---- */
 function makePetal(pre){
-  const dur=rnd(9,17),sz=rnd(34,72),hit=Math.max(sz+40,84),p=document.createElement('div'),pi=document.createElement('span');
+  const dur=rnd(9,17),sz=rnd(24,52),hit=Math.max(sz+26,64),p=document.createElement('div'),pi=document.createElement('span');
   p.className='petal';
   p.style.cssText=`width:${hit}px;height:${hit}px;left:calc(${rnd(-4,96)}% - ${hit/2}px);animation-duration:${dur}s;animation-delay:${pre?-rnd(0,dur*.9).toFixed(2):0}s;--dx:${rnd(-140,140)}px;--dx2:${rnd(-110,110)}px;--spin:${rnd(-540,540)}deg`;
   pi.className='pi';
-  pi.style.cssText=`--s:${sz}px;--td:${rnd(2.4,5)}s;--sw:${rnd(8,30)}px;--r0:${rnd(-70,0)}deg;--r1:${rnd(0,70)}deg;--rx:${rnd(-75,75)}deg;--ry:${rnd(-75,75)}deg;--fl:${Math.random()<.5?-1:1};--o:${rnd(.82,1).toFixed(2)}`;
+  pi.style.cssText=`--s:${sz}px;--td:${rnd(2.4,5)}s;--sw:${rnd(8,30)}px;--r0:${rnd(-70,0)}deg;--r1:${rnd(0,70)}deg;--rx:${rnd(-75,75)}deg;--ry:${rnd(-75,75)}deg;--fl:${Math.random()<.5?-1:1};--o:${rnd(.42,1).toFixed(2)}`;
   const im=new Image();
   im.src=CONFIG.petal;im.draggable=false;im.alt='';
   im.onerror=()=>{im.remove();pi.classList.add('fb')};
