@@ -234,7 +234,12 @@ h1.invite-name{transform:translateX(-8cqw)}
 .groom-side .scene[data-event=puja] .ev-over p,
 .groom-side .scene[data-event=puja] .ev-over .maplink{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.4)}
 .groom-side .scene[data-event=puja] .ev-over{top:16%;bottom:auto;padding:0 .8rem;text-align:center}
-.groom-side .scene[data-event=puja] .ev-over h2{font-size:clamp(3.6rem,16cqw,5.4rem);line-height:1.02}
+
+.groom-side .scene[data-event=puja] .ev-over h2{
+  font-size:calc(clamp(3.6rem,16cqw,5.4rem) - 3px);
+  line-height:1.02;
+}
+
 .groom-side .scene[data-event=puja] .next-cue-label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .next-cue{position:absolute;right:1.1rem;bottom:1.2rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
 .next-cue-label{text-shadow:0 1px 5px rgba(26,61,40,.5)}
@@ -363,11 +368,11 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite;
 }
 
-/* Static tree, enlarged and aligned to the top centre */
+/* Static tree: top edge aligned; horizontal centre at frame's right edge */
 .puja-tree{
   position:absolute;
   top:0;
-  left:50%;
+  left:100%;
   transform:translateX(-50%);
   width:110%;
   height:82%;
@@ -433,10 +438,21 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
   .scene.active .g-flor{animation:none}
 }
 
-   /* GPUJA: raise the pendulums, keep the longer one on the right */
+  
+/* GPUJA: use the same edge positions and widths as bride's Haldi */
 .scene[data-event=puja] .g-flor{top:-2%}
-.scene[data-event=puja] .g-r1{left:auto;right:24px;width:37.8%}
-.scene[data-event=puja] .g-r2{left:24px;right:auto;width:30.6%}
+.scene[data-event=puja] .g-r1{
+  left:auto;
+  right:12px;
+  width:37.8%;
+  --dur:14s;
+}
+.scene[data-event=puja] .g-r2{
+  right:auto;
+  left:12px;
+  width:37.8%;
+  --dur:16s;
+}
 
 </style>
 </head>
