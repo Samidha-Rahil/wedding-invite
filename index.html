@@ -718,7 +718,7 @@ if(k==='main'){
       <p class="invite-statement">${M.share}</p>
       <p class="invite-family">${M.family}</p>
     </div>
-    <div id="hintG">Bring Bappa his favourite bloom</div>
+    <div id="hintG">Drag and offer Bappa His favourite flower</div>
     <div id="drop" aria-label="Flower offering space"></div>
     <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
 }
