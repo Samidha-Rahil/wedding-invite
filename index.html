@@ -621,9 +621,30 @@ const STAR_FORTUNES=[
 ];
 const starShape='<svg viewBox="0 0 100 100" aria-hidden="true"><path class="star-shape" d="M50 2 C48 34 47 43 32 47 L2 50 C34 52 43 53 47 68 L50 98 C52 66 53 57 68 53 L98 50 C66 48 57 47 53 32 Z"/></svg>';
 function starId(n){return 'star-'+String(n).padStart(3,'0')}
-function randomStarPosition(existing){
- let x=8+Math.random()*84,y=13+Math.random()*79,tries=0;
- while(tries++<80&&existing.some(p=>Math.hypot((p.x-x)*.85,p.y-y)<8)){x=8+Math.random()*84;y=13+Math.random()*79}
+function randomStarPosition(existing,scene){
+ const sceneRect=scene.getBoundingClientRect();
+ const text=scene.querySelector('.ev-over');
+ const textRect=text?text.getBoundingClientRect():null;
+ const pad=24;
+ let x=8+Math.random()*84,y=15+Math.random()*75,tries=0;
+
+ function overlapsText(px,py){
+  if(py<15)return true;
+  if(!textRect)return false;
+  const sx=sceneRect.left+sceneRect.width*px/100;
+  const sy=sceneRect.top+sceneRect.height*py/100;
+  return sx>=textRect.left-pad&&sx<=textRect.right+pad&&
+         sy>=textRect.top-pad&&sy<=textRect.bottom+pad;
+ }
+
+ while(tries++<300&&(
+   existing.some(p=>Math.hypot((p.x-x)*.85,p.y-y)<8)||
+   overlapsText(x,y)
+ )){
+  x=8+Math.random()*84;
+  y=15+Math.random()*75;
+ }
+
  return {x,y};
 }
 function makeConstellation(scene){
