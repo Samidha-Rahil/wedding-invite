@@ -186,7 +186,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 .ev-over{position:absolute;left:0;right:0;bottom:10%;top:auto;padding:0 .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
 .ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
-.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(3.5rem,15cqw,4.9rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
+.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(3.5rem,15cqw,4.9rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere} html[data-side=groom] .scene[data-event=puja] .ev-over h2{   font-size:calc(clamp(3.5rem,15cqw,4.9rem) - 3px); }
 .bride-side .scene[data-event=mehendi] .ev-over h2,
 .bride-side .scene[data-event=haldi] .ev-over h2{
   font-size:clamp(4.1rem,17.5cqw,5.7rem);
@@ -292,20 +292,136 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 /* ===== PUJA WEDDING BELLS: slow, natural pendulum motion ===== */ 
 .w-bell{   position:absolute;   top:-2%;   z-index:1;   pointer-events:none;   transform-origin:50% 0;   opacity:0;   will-change:transform; } .w-bell img{   display:block;   width:100%;   height:auto;   -webkit-user-drag:none; } .w-bell-left{   left:24px;   width:27%;   --amp:2deg;   --dur:16s;   --dly:-3s; } .w-bell-r2{   right:70px;   width:25%;   --amp:2.2deg;   --dur:18s;   --dly:-8s; } .w-bell-r1{   right:24px;   width:34%;   --amp:2.4deg;   --dur:19s;   --dly:-5s; } .scene.active .w-bell{   opacity:1;   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite; }  /* Static tree above the right-side bells, cropped like the main-page tree */ .puja-tree{   position:absolute;   right:-31%;   bottom:0;   width:72.5%;   height:65%;   object-fit:contain;   object-position:bottom right;   z-index:2;   pointer-events:none; }  @media (prefers-reduced-motion:reduce){   .scene.active .w-bell{animation:none} }  
 
-/* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
-.g-flor{position:absolute;top:0;z-index:2;pointer-events:none;transform-origin:50% 0;opacity:0;transition:opacity 1.6s ease .6s;will-change:transform}
-.g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
-.g-r1{right:-4%;width:37.8%;--amp:1.3deg;--dur:15s;--dly:-5s}
-.g-r2{right:5%;width:30.6%;--amp:1.6deg;--dur:17s;--dly:-7s}
+   /* ===== BRIDE PUJA: WEDDING BELLS ===== */
+.w-bell{
+  position:absolute;
+  top:0;
+  z-index:1;
+  height:48%;
+  max-height:48%;
+  pointer-events:none;
+  transform-origin:50% 0;
+  opacity:0;
+  will-change:transform;
+}
 
-/* GPUJA: raise the pendulums, keep the longer one on the right */
+.w-bell img{
+  display:block;
+  width:100%;
+  height:100%;
+  max-height:48cqh;
+  object-fit:contain;
+  object-position:top center;
+  -webkit-user-drag:none;
+}
+
+/* Left bell: close to the left frame */
+.w-bell-left{
+  left:35px;
+  width:23%;
+  --amp:2.2deg;
+  --dur:17s;
+  --dly:-4s;
+}
+
+/* Right-side bells: longer one at the outer edge */
+.w-bell-r1{
+  right:24px;
+  width:28%;
+  --amp:2.5deg;
+  --dur:19s;
+  --dly:-7s;
+}
+
+/* Smaller bell sits between R1 and the right frame */
+.w-bell-r2{
+  right:70px;
+  width:22%;
+  --amp:2.3deg;
+  --dur:18s;
+  --dly:-10s;
+}
+
+.scene.active .w-bell{
+  opacity:1;
+  animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite;
+}
+
+/* Static tree, enlarged and aligned to the top centre */
+.puja-tree{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:110%;
+  height:82%;
+  object-fit:contain;
+  object-position:top center;
+  z-index:2;
+  pointer-events:none;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .scene.active .w-bell{animation:none}
+}
+/* ===== GPUJA + BRIDE HALDI FLORALS ===== */
+.g-flor{
+  position:absolute;
+  top:-2%;
+  z-index:2;
+  pointer-events:none;
+  transform-origin:50% 0;
+  opacity:0;
+  transition:opacity 1.6s ease .6s;
+  will-change:transform;
+}
+.g-flor img{
+  display:block;
+  width:100%;
+  height:auto;
+  -webkit-user-drag:none;
+}
+
+/* Longer floral: extreme right, close to the frame */
+.g-r1{
+  left:auto;
+  right:24px;
+  width:37.8%;
+  --amp:1.8deg;
+  --dur:16s;
+  --dly:-5s;
+}
+
+/* Shorter floral: exchange to the extreme left.
+   Match its width to the longer floral. */
+.g-r2{
+  right:auto;
+  left:24px;
+  width:37.8%;
+  --amp:1.9deg;
+  --dur:18s;
+  --dly:-8s;
+}
+
+.scene.active .g-flor{
+  opacity:1;
+  animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite;
+}
+
+@keyframes pendulum{
+  0%,100%{transform:rotate(calc(var(--amp)*-1))}
+  50%{transform:rotate(var(--amp))}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .scene.active .g-flor{animation:none}
+}
+
+   /* GPUJA: raise the pendulums, keep the longer one on the right */
 .scene[data-event=puja] .g-flor{top:-2%}
 .scene[data-event=puja] .g-r1{left:auto;right:24px;width:37.8%}
 .scene[data-event=puja] .g-r2{left:24px;right:auto;width:30.6%}
 
-.scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
-@keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
-@media (prefers-reduced-motion:reduce){.scene.active .g-flor{animation:none}}
 </style>
 </head>
 <body>
@@ -691,7 +807,31 @@ if(k==='main'){
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
 
-    if(k==='gpuja'||(k==='haldi'&&SIDE==='bride')){   s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`); }  if(k==='puja'&&SIDE==='bride'){   s.insertAdjacentHTML('afterbegin',`     <div class="w-bell w-bell-left"><img src="assets/l-wedding-bells.png" alt="" draggable="false"></div>     <div class="w-bell w-bell-r2"><img src="assets/R2-wedding-bells.png" alt="" draggable="false"></div>     <div class="w-bell w-bell-r1"><img src="assets/R1-wedding-bells.png" alt="" draggable="false"></div>     <img class="puja-tree" src="assets/Ganpati%20Tree.png" alt="" draggable="false">   `); }  app.appendChild(s); scenes.push(s);
+        if(k==='gpuja'||(k==='haldi'&&SIDE==='bride')){
+      s.insertAdjacentHTML('afterbegin',`
+        <div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div>
+        <div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>
+      `);
+    }
+
+    if(k==='puja'&&SIDE==='bride'){
+      s.insertAdjacentHTML('afterbegin',`
+        <div class="w-bell w-bell-left">
+          <img src="assets/l-wedding-bells.png" alt="" draggable="false">
+        </div>
+        <div class="w-bell w-bell-r2">
+          <img src="assets/R2-wedding-bells.png" alt="" draggable="false">
+        </div>
+        <div class="w-bell w-bell-r1">
+          <img src="assets/R1-wedding-bells.png" alt="" draggable="false">
+        </div>
+        <img class="puja-tree" src="assets/Ganpati%20Tree.png" alt="" draggable="false">
+      `);
+    }
+
+    app.appendChild(s);
+    scenes.push(s);
+     
     if(k==='sangeet')makeConstellation(s);
   });
 
