@@ -414,6 +414,7 @@ const inFrame=e=>{const r=frameEl.getBoundingClientRect();return e.clientX>=r.le
 /* ---- pixie dust (canvas is clipped to the phone frame on desktop) ---- */
 const cv=$('#dust'),cx=cv.getContext('2d');
 let P=[],dpr=Math.min(devicePixelRatio||1,2);
+if(!cx)console.error('Pixie-dust canvas could not get a 2D context.');
 function clipDust(){
   const f=frameEl.getBoundingClientRect(),rad=parseFloat(getComputedStyle(frameEl).borderRadius)||0;
   cv.style.clipPath=`inset(${f.top}px ${innerWidth-f.right}px ${innerHeight-f.bottom}px ${f.left}px round ${rad}px)`;
@@ -466,6 +467,7 @@ function offeringPixieDust(){
 }
 
 (function loop(){
+  if(!cx)return;
   cx.clearRect(0,0,innerWidth,innerHeight);
   for(let i=P.length-1;i>=0;i--){
     const p=P[i];p.l++;
@@ -507,7 +509,11 @@ li.onerror=()=>{
   $('#mono').style.display='block';
 };
 li.src=CONFIG.logo;
-   const logoBlessings=$('#logoBlessings');
+if(li.complete){
+  if(li.naturalWidth>0)li.onload();
+  else if(li.src)li.onerror();
+}
+const logoBlessings=$('#logoBlessings');
 logoBlessings.style.display='none';
 
 /* ---- infinity gesture ---- */
@@ -801,15 +807,6 @@ if(k==='main'){
     }
   });
 
-    }
-
-    if(scenes[idx+1]?.dataset.key==='sangeet'){
-      sc.addEventListener('pointerup',e=>{
-        if(e.target.closest('a,button,input,textarea'))return;
-        go(idx+1);
-      });
-    }
-  });
 }
 
 /* ===== EXTRAS: haptics, sounds, flower flight, splash, drips, shooting stars ===== */
@@ -975,65 +972,14 @@ function go(i){
     });
   }
 
-  const target=scenes[i];
-  const key=target?.dataset.key;
-  const frameRect=frameEl.getBoundingClientRect();
-
-  const x=Math.max(0,Math.min(frameRect.width,lastTap.x-frameRect.left));
-  const y=Math.max(0,Math.min(frameRect.height,lastTap.y-frameRect.top));
-
-  // Haldi/GPUJA: preserve the turmeric transition in either direction.
-  if(['haldi','gpuja'].includes(key)){
+  // Keep the original turmeric transition only when moving forward to
+  // the Haldi page (bride) or the groom-side GPUJA/Haldi page.
+  if(i>cur&&['haldi','gpuja'].includes(scenes[i]?.dataset.key)){
     turmericSplash();
   }
 
+  // No special transition for Sangeet. All other pages use the normal scene transition.
   show(i);
-
-  // Sangeet: reveal the actual page from the tap point, without a colour fill.
-  if(key==='sangeet'){
-    const radius=Math.hypot(frameRect.width,frameRect.height)*1.1;
-
-    const reveal=target.animate([
-      {clipPath:`circle(0px at ${x}px ${y}px)`},
-      {clipPath:`circle(${radius}px at ${x}px ${y}px)`}
-    ],{
-      duration:850,
-      easing:'cubic-bezier(.2,.75,.25,1)',
-      fill:'forwards'
-    });
-
-    reveal.onfinish=()=>{
-      target.style.clipPath='';
-      reveal.cancel();
-    };
-  }
-}
-
-
-  const openingSangeet=i>cur&&scenes[i]?.dataset.key==='sangeet';
-  const r=frameEl.getBoundingClientRect();
-  const x=Math.max(0,Math.min(r.width,lastTap.x-r.left));
-  const y=Math.max(0,Math.min(r.height,lastTap.y-r.top));
-  const radius=Math.max(
-    Math.hypot(x,y),
-    Math.hypot(r.width-x,y),
-    Math.hypot(x,r.height-y),
-    Math.hypot(r.width-x,r.height-y)
-  );
-
-  show(i);
-
-  if(openingSangeet){
-    const target=scenes[i];
-    target.animate([
-      {clipPath:`circle(0px at ${x}px ${y}px)`},
-      {clipPath:`circle(${radius}px at ${x}px ${y}px)`}
-    ],{
-      duration:850,
-      easing:'cubic-bezier(.2,.75,.25,1)',
-      fill:'forwards'
-    });
-  }
 }
 
 /* ---- name entry ---- */
