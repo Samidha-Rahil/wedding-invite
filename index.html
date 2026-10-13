@@ -294,9 +294,9 @@ h1.invite-name{transform:translateX(-8cqw)}
 #bappa.gone.fromMain{transform:translateY(-102cqh)}
 html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
 /* ===== SWAYING DECOR: bride puja bells, gpuja + bride haldi florals ===== */
-:root{--bell-w:10%;--flor-w:34%;--flor-edge:5px}
-.w-bell,.g-flor{position:absolute;pointer-events:none;transform-origin:50% 0;opacity:0;will-change:transform}
-.w-bell img,.g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
+:root{--bell-w:10%;}
+.w-bell,{position:absolute;pointer-events:none;transform-origin:50% 0;opacity:0;will-change:transform}
+.w-bell img,img{display:block;width:100%;height:auto;-webkit-user-drag:none}
 
 /* bells: all three share one width (--bell-w); only their heights differ */
 .w-bell{top:0;z-index:1;width:var(--bell-w)}
@@ -307,14 +307,9 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 /* tree: left edge in by 5%, lifted by 10% */
 .puja-tree{position:absolute;top:-10%;left:102.5%;transform:translateX(-50%);width:105%;height:82%;object-fit:contain;object-position:top center;z-index:2;pointer-events:none}
 
-/* florals: same width, each exactly --flor-edge from its own frame edge */
-.g-flor{top:-2%;z-index:2;width:var(--flor-w);transition:opacity 1.6s ease .6s}
-.g-r1{right:var(--flor-edge);--amp:1.8deg;--dur:14s;--dly:-5s}
-.g-r2{left:var(--flor-edge);--amp:1.9deg;--dur:16s;--dly:-8s}
-
-.scene.active .w-bell,.scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
+.scene.active .w-bell,.scene.active {opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
 @keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
-@media (prefers-reduced-motion:reduce){.scene.active .w-bell,.scene.active .g-flor{animation:none}}
+@media (prefers-reduced-motion:reduce){.scene.active .w-bell,.scene.active {animation:none}}
 
    /* ===== TURMERIC SPLASH + DRIPS (haldi / gpuja) ===== */
 .splash{position:absolute;inset:0;z-index:45;pointer-events:none;overflow:hidden}
@@ -336,7 +331,7 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 .flower-fly{position:fixed;z-index:150;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35))}
 .flower-fly img,.flower-fly svg{width:100%;height:100%;object-fit:contain;display:block}
 #popCard{position:relative}
-.pop-orn{position:absolute;top:-24px;left:50%;width:48px;height:48px;margin-left:-24px;transform:rotate(10deg);transition:opacity .3s;filter:drop-shadow(0 0 6px rgba(227,132,150,.7));animation:ornPulse 2.6s ease-in-out infinite} .pop-orn img{width:100%;height:100%;object-fit:contain;display:block} @keyframes ornPulse{0%,100%{transform:rotate(35deg) scale(1)}50%{transform:rotate(35deg) scale(1.14)}}
+.pop-orn{position:absolute;top:-24px;left:50%;width:48px;height:48px;margin-left:-24px;transform:rotate(10deg);transition:opacity .3s;filter:drop-shadow(0 0 6px rgba(227,132,150,.7));animation:ornPulse 2.6s ease-in-out infinite} .pop-orn img{width:100%;height:100%;object-fit:contain;display:block} @keyframes ornPulse{0%,100%{transform:rotate(10deg) scale(1)}50%{transform:rotate(10deg) scale(1.14)}}
 .petal-fly{position:fixed;z-index:150;pointer-events:none}
 /* ===== FINAL DECOR OVERRIDES: keep this block last ===== */
 /* bells: one shared width (20% smaller than before) */
@@ -345,11 +340,8 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 .scene .w-bell-left{left:35px!important;top:0!important;translate:0 -30%}
 .scene .w-bell-r2{right:70px!important;translate:0 20%important;left:auto!important}
 .scene .w-bell-r1{right:12px!important;left:auto!important}
+.scene .w-bell-r1,.scene .w-bell-r2{translate:0 20%}
 
-/* florals (gpuja + haldi): same width, 15px from their own edges */
-.scene .g-flor{width:34%!important}
-.scene .g-r1{right:15px!important;left:auto!important}
-.scene .g-r2{left:15px!important;right:auto!important}
 </style>
 </head>
 <body>
@@ -734,13 +726,6 @@ if(k==='main'){
     else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
-
-        if(k==='gpuja'||(k==='haldi'&&SIDE==='bride')){
-      s.insertAdjacentHTML('afterbegin',`
-        <div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div>
-        <div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>
-      `);
-    }
 
     if(k==='puja'&&SIDE==='bride'){
       s.insertAdjacentHTML('afterbegin',`
@@ -1148,7 +1133,7 @@ function flyPetalToCard(pr,pc,fl=1){
     c.animate([
       {transform:'translate(0,0) rotate(0deg) scale(1)'},
       {transform:`translate(${dx*.5}px,${dy*.5-30}px) rotate(120deg) scale(1.2)`,offset:.5},
-      {transform:`translate(${dx}px,${dy}px) rotate(35deg) scale(${size/sz})`}
+      {transform:`translate(${dx}px,${dy}px) rotate(10deg) scale(${size/sz})`}
     ],{duration:900,easing:'cubic-bezier(.35,.7,.3,1)',fill:'forwards'}).onfinish=()=>{
       clearInterval(trail);orn.appendChild(pc);c.remove();orn.style.opacity=1;
       burst(t.left+t.width/2,t.top+t.height/2,20,{spread:2});
