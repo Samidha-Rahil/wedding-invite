@@ -731,21 +731,6 @@ if(k==='main'){
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
 
-    if(k==='puja'&&SIDE==='bride'){
-      s.insertAdjacentHTML('afterbegin',`
-        <div class="w-bell w-bell-left">
-          <img src="assets/l-wedding-bells.png" alt="" draggable="false">
-        </div>
-        <div class="w-bell w-bell-r2">
-          <img src="assets/R2-wedding-bells.png" alt="" draggable="false">
-        </div>
-        <div class="w-bell w-bell-r1">
-          <img src="assets/R1-wedding-bells.png" alt="" draggable="false">
-        </div>
-        <img class="puja-tree" src="assets/Ganpati%20Tree.png" alt="" draggable="false">
-      `);
-    }
-
     app.appendChild(s);
     scenes.push(s);
      
