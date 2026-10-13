@@ -337,7 +337,7 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 .flower-fly{position:fixed;z-index:150;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35))}
 .flower-fly img,.flower-fly svg{width:100%;height:100%;object-fit:contain;display:block}
 #popCard{position:relative}
-.pop-orn{position:absolute;top:-22px;left:50%;width:44px;height:44px;margin-left:-22px;transition:opacity .3s;animation:ganpatiFloat 4s ease-in-out infinite;transform:rotate(-20deg)}
+.pop-orn{position:absolute;top:-24px;left:50%;width:48px;height:48px;margin-left:-24px;transform:rotate(35deg);transition:opacity .3s;filter:drop-shadow(0 0 6px rgba(227,132,150,.7));animation:ornPulse 2.6s ease-in-out infinite} .pop-orn img{width:100%;height:100%;object-fit:contain;display:block} @keyframes ornPulse{0%,100%{transform:rotate(35deg) scale(1)}50%{transform:rotate(35deg) scale(1.14)}}
 .petal-fly{position:fixed;z-index:150;pointer-events:none}
 </style>
 </head>
@@ -1110,7 +1110,7 @@ function makePetal(pre){
     e.stopPropagation();
     const r=p.getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,22,{spread:2.5});
-    const pr=pi.getBoundingClientRect(),pc=pi.cloneNode(true);p.remove();buzz(15);openPop();flyPetalToCard(pr,pc);
+    const pr=pi.getBoundingClientRect(),pim=pi.querySelector('img'),pc=(pim||pi).cloneNode(true),fl=parseFloat(getComputedStyle(pi).getPropertyValue('--fl'))||1;p.remove();buzz(15);openPop();flyPetalToCard(pr,pc,fl);
   });
   ps.appendChild(p);
 }
@@ -1120,7 +1120,31 @@ function spawnPetal(){
 }
 spawnPetal();
 
-function flyPetalToCard(pr,pc){   const card=$('#popCard'),orn=document.createElement('div');   orn.className='pop-orn';orn.style.opacity=0;card.appendChild(orn);   requestAnimationFrame(()=>{     const t=orn.getBoundingClientRect(),sz=Math.max(pr.width,24),       sx=pr.left+pr.width/2,sy=pr.top+pr.height/2,dx=t.left+t.width/2-sx,dy=t.top+t.height/2-sy;     pc.style.animation='none';pc.style.width='100%';pc.style.height='100%';pc.style.transform='none';     const c=document.createElement('div');c.className='petal-fly';     c.style.cssText=`left:${sx-sz/2}px;top:${sy-sz/2}px;width:${sz}px;height:${sz}px`;     c.appendChild(pc);document.body.appendChild(c);     const trail=setInterval(()=>{const b=c.getBoundingClientRect();dust(b.left+b.width/2,b.top+b.height/2,{n:2,tiny:true})},40);     c.animate([       {transform:'translate(0,0) rotate(0deg) scale(1)'},       {transform:`translate(${dx*.5}px,${dy*.5-30}px) rotate(120deg) scale(1.2)`,offset:.5},       {transform:`translate(${dx}px,${dy}px) rotate(-20deg) scale(${t.width/sz})`}     ],{duration:900,easing:'cubic-bezier(.35,.7,.3,1)',fill:'forwards'}).onfinish=()=>{       clearInterval(trail);orn.appendChild(pc);c.remove();orn.style.opacity=1;       burst(t.left+t.width/2,t.top+t.height/2,20,{spread:2});     };   }); } function openPop(){
+function flyPetalToCard(pr,pc,fl=1){
+  const card=$('#popCard'),orn=document.createElement('div');
+  orn.className='pop-orn';orn.style.opacity=0;card.appendChild(orn);
+  requestAnimationFrame(()=>{
+    const t=orn.getBoundingClientRect(),size=orn.offsetWidth,sz=Math.max(pr.width,24),
+      sx=pr.left+pr.width/2,sy=pr.top+pr.height/2,
+      dx=t.left+t.width/2-sx,dy=t.top+t.height/2-sy;
+    /* keep the original petal artwork and its flip */
+    if(pc.classList.contains('pi'))pc.style.cssText='--s:44px;animation:none;opacity:1';
+    else pc.style.cssText=`width:100%;height:100%;object-fit:contain;display:block;transform:scaleX(${fl})`;
+    const c=document.createElement('div');c.className='petal-fly';
+    c.style.cssText=`left:${sx-sz/2}px;top:${sy-sz/2}px;width:${sz}px;height:${sz}px`;
+    c.appendChild(pc);document.body.appendChild(c);
+    const trail=setInterval(()=>{const b=c.getBoundingClientRect();dust(b.left+b.width/2,b.top+b.height/2,{n:2,tiny:true})},40);
+    c.animate([
+      {transform:'translate(0,0) rotate(0deg) scale(1)'},
+      {transform:`translate(${dx*.5}px,${dy*.5-30}px) rotate(120deg) scale(1.2)`,offset:.5},
+      {transform:`translate(${dx}px,${dy}px) rotate(35deg) scale(${size/sz})`}
+    ],{duration:900,easing:'cubic-bezier(.35,.7,.3,1)',fill:'forwards'}).onfinish=()=>{
+      clearInterval(trail);orn.appendChild(pc);c.remove();orn.style.opacity=1;
+      burst(t.left+t.width/2,t.top+t.height/2,20,{spread:2});
+    };
+  });
+} 
+function openPop(){
   /* a falling petal always reveals the wedding details */
   const e=EVENTS.wedding,row=(cls,v)=>v?`<div class="row ${cls}">${v}</div>`:'';
   $('#popCard').innerHTML=`<h2 class="fx" style="--d:.1s">${e.title}</h2>${row('date-time fx l',e.date)}${row('date-time fx r',e.time)}${row('venue-row fx l',e.venue)}${row('host-names fx r',e.hosts&&'Hosted by '+e.hosts)}${mapLink(e,1.1)}`;
