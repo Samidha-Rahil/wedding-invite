@@ -782,6 +782,7 @@ if(k==='main'){
   }
 
   scenes[0].querySelectorAll('.flower').forEach(wireFlower);
+ 
   scenes.forEach((sc,idx)=>{
     const cue=sc.querySelector('.next-cue');
 
@@ -790,6 +791,16 @@ if(k==='main'){
         e.stopPropagation();
         go(idx+1);
       });
+    }
+
+    if(scenes[idx+1]?.dataset.key==='sangeet'){
+      sc.addEventListener('pointerup',e=>{
+        if(e.target.closest('a,button,input,textarea,.constellation-layer'))return;
+        go(idx+1);
+      });
+    }
+  });
+
     }
 
     if(scenes[idx+1]?.dataset.key==='sangeet'){
@@ -952,12 +963,52 @@ const bi=scenes.findIndex(x=>x.dataset.bappa==='1');
   }
   stopAmbient();startAmbient(scenes[i]);
 }
+
 function go(i){
   if(i<0||i>FINAL||popOpen)return;
-  if(i===0){locked=false;scenes[0].querySelectorAll('.flower').forEach(f=>{f.style.transform='';f.style.opacity=1})}
-  if(i>cur&&['haldi','gpuja'].includes(scenes[i]&&scenes[i].dataset.key)){
+
+  if(i===0){
+    locked=false;
+    scenes[0].querySelectorAll('.flower').forEach(f=>{
+      f.style.transform='';
+      f.style.opacity=1;
+    });
+  }
+
+  const target=scenes[i];
+  const key=target?.dataset.key;
+  const frameRect=frameEl.getBoundingClientRect();
+
+  const x=Math.max(0,Math.min(frameRect.width,lastTap.x-frameRect.left));
+  const y=Math.max(0,Math.min(frameRect.height,lastTap.y-frameRect.top));
+
+  // Haldi/GPUJA: preserve the turmeric transition in either direction.
+  if(['haldi','gpuja'].includes(key)){
     turmericSplash();
   }
+
+  show(i);
+
+  // Sangeet: reveal the actual page from the tap point, without a colour fill.
+  if(key==='sangeet'){
+    const radius=Math.hypot(frameRect.width,frameRect.height)*1.1;
+
+    const reveal=target.animate([
+      {clipPath:`circle(0px at ${x}px ${y}px)`},
+      {clipPath:`circle(${radius}px at ${x}px ${y}px)`}
+    ],{
+      duration:850,
+      easing:'cubic-bezier(.2,.75,.25,1)',
+      fill:'forwards'
+    });
+
+    reveal.onfinish=()=>{
+      target.style.clipPath='';
+      reveal.cancel();
+    };
+  }
+}
+
 
   const openingSangeet=i>cur&&scenes[i]?.dataset.key==='sangeet';
   const r=frameEl.getBoundingClientRect();
