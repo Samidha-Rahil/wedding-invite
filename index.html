@@ -233,7 +233,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 .groom-side .scene[data-event=puja] .ev-over h2,
 .groom-side .scene[data-event=puja] .ev-over p,
 .groom-side .scene[data-event=puja] .ev-over .maplink{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.4)}
-.groom-side .scene[data-event=puja] .ev-over{top:12%;bottom:auto;padding:0 .8rem;text-align:center}
+.groom-side .scene[data-event=puja] .ev-over{top:16%;bottom:auto;padding:0 .8rem;text-align:center}
 .groom-side .scene[data-event=puja] .ev-over h2{font-size:clamp(3.6rem,16cqw,5.4rem);line-height:1.02}
 .groom-side .scene[data-event=puja] .next-cue-label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .next-cue{position:absolute;right:1.1rem;bottom:1.2rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
@@ -290,7 +290,20 @@ h1.invite-name{transform:translateX(-8cqw)}
 #bappa.gone.fromMain{transform:translateY(-102cqh)}
 html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
 /* ===== PUJA WEDDING BELLS: slow, natural pendulum motion ===== */ 
-.w-bell{   position:absolute;   top:-2%;   z-index:1;   pointer-events:none;   transform-origin:50% 0;   opacity:0;   will-change:transform; } .w-bell img{   display:block;   width:100%;   height:auto;   -webkit-user-drag:none; } .w-bell-left{   left:24px;   width:27%;   --amp:2deg;   --dur:16s;   --dly:-3s; } .w-bell-r2{   right:70px;   width:25%;   --amp:2.2deg;   --dur:18s;   --dly:-8s; } .w-bell-r1{   right:24px;   width:34%;   --amp:2.4deg;   --dur:19s;   --dly:-5s; } .scene.active .w-bell{   opacity:1;   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite; }  /* Static tree above the right-side bells, cropped like the main-page tree */ .puja-tree{   position:absolute;   right:-31%;   bottom:0;   width:72.5%;   height:65%;   object-fit:contain;   object-position:bottom right;   z-index:2;   pointer-events:none; }  @media (prefers-reduced-motion:reduce){   .scene.active .w-bell{animation:none} }  
+.w-bell{   position:absolute;   top:-2%;   z-index:1;   pointer-events:none;   transform-origin:50% 0;   opacity:0;   will-change:transform; } .w-bell img{   display:block;   width:100%;   height:auto;   -webkit-user-drag:none; } .w-bell-left{   left:24px;   width:27%;   --amp:2deg;   --dur:16s;   --dly:-3s; } .w-bell-r2{   right:70px;   width:25%;   --amp:2.2deg;   --dur:18s;   --dly:-8s; } .w-bell-r1{   right:24px;   width:34%;   --amp:2.4deg;   --dur:19s;   --dly:-5s; } .scene.active .w-bell{   opacity:1;   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite; }  /* Static tree above the right-side bells, cropped like the main-page tree */ 
+ .puja-tree{
+  position:absolute;
+  top:0;
+  left:100%;
+  transform:translateX(-50%);
+  width:110%;
+  height:82%;
+  object-fit:contain;
+  object-position:top center;
+  z-index:2;
+  pointer-events:none;
+}  
+   @media (prefers-reduced-motion:reduce){   .scene.active .w-bell{animation:none} }  
 
    /* ===== BRIDE PUJA: WEDDING BELLS ===== */
 .w-bell{
@@ -315,30 +328,33 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
   -webkit-user-drag:none;
 }
 
-/* Left bell: close to the left frame */
+/* Left bell stays in its current position */
 .w-bell-left{
   left:35px;
-  width:23%;
+  right:auto;
+  width:24%;
   --amp:2.2deg;
-  --dur:17s;
+  --dur:15s;
   --dly:-4s;
 }
 
-/* Right-side bells: longer one at the outer edge */
+/* Longer bell at the extreme right */
 .w-bell-r1{
-  right:24px;
-  width:28%;
-  --amp:2.5deg;
-  --dur:19s;
+  left:auto;
+  right:12px;
+  width:24%;
+  --amp:2.9deg;
+  --dur:16s;
   --dly:-7s;
 }
 
-/* Smaller bell sits between R1 and the right frame */
+/* Shortest bell stays between the other bell and the right edge */
 .w-bell-r2{
+  left:auto;
   right:70px;
-  width:22%;
+  width:24%;
   --amp:2.3deg;
-  --dur:18s;
+  --dur:15.5s;
   --dly:-10s;
 }
 
@@ -385,10 +401,10 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 /* Longer floral: extreme right, close to the frame */
 .g-r1{
   left:auto;
-  right:24px;
+  right:12px;
   width:37.8%;
   --amp:1.8deg;
-  --dur:16s;
+  --dur:14s;
   --dly:-5s;
 }
 
@@ -396,10 +412,10 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
    Match its width to the longer floral. */
 .g-r2{
   right:auto;
-  left:24px;
+  left:12px;
   width:37.8%;
   --amp:1.9deg;
-  --dur:18s;
+  --dur:16s;
   --dly:-8s;
 }
 
@@ -496,7 +512,7 @@ const EVENTS={
   puja:{always:true,bappa:true,title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   mehendi:{title:"Mehendi te Vaavi",date:"thursday, 10th december 2026",time:"5:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   sangeet:{title:"Sagai & Shor Sharaba",date:"friday, 11th december 2026",time:"7:00 PM onwards",venue:"Embassy Hall, The Tunga Paradise, Andheri E, Mumbai",map:"https://maps.app.goo.gl/GceAwj1eoHQRVYf56"},
-  gpuja:{skin:"puja",title:"Mandap Muhurat & Randal Puja<br>Mehendi & Prem Pithi",date:"saturday, 12th december 2026",time:"10:00 AM onwards",venue:"Orchid Hall, Lodha Eternis",map:"https://maps.app.goo.gl/JrvUhVTGP5fqonHS8"},   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
+  gpuja:{skin:"puja",title:"Mandap Muhurat &<br>Randal Puja<br>Mehendi & Prem Pithi",date:"saturday, 12th december 2026",time:"10:00 AM onwards",venue:"Orchid Hall, Lodha Eternis",map:"https://maps.app.goo.gl/JrvUhVTGP5fqonHS8"},   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   wedding:{always:true,title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:"https://maps.app.goo.gl/tzmzjRDrhJN4GLGJ7"}
 };
 // First name (lowercase) → events invited to. Wedding is always shown.
