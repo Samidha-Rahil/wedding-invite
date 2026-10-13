@@ -120,7 +120,7 @@ h1.invite-name{transform:translateX(-5cqw)}
 /* names: pink, 0.5px stroke */
 .invite-name{font:500 clamp(70px,20cqw,96px)/1.05 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);overflow-wrap:anywhere;margin:0}
 .invite-family{font:500 clamp(36px,10.5cqw,50px)/1.1 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);margin-top:0;overflow-wrap:anywhere}
-#hintG{position:absolute;bottom:max(1.1rem,env(safe-area-inset-bottom));left:5%;width:90%;z-index:3;text-align:center;white-space:normal;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.9rem,3.75cqw,1.2rem);letter-spacing:.08em;color:var(--forest);text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 28px rgba(255,255,255,.6)}
+#hintG{position:absolute;bottom:max(1.1rem,env(safe-area-inset-bottom));left:5%;width:90%;z-index:3;text-align:center;white-space:normal;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.855rem,3.56cqw,1.14rem);letter-spacing:.08em;color:var(--forest);text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 28px rgba(255,255,255,.6)}
 #hintG.show{animation:petalFadeIn 1.8s ease-out both,petalGlow 2.8s 1.8s ease-in-out infinite}
 .offer-sparkle{position:fixed;width:3px;height:3px;border-radius:50%;background:#fff4bf;box-shadow:0 0 5px 2px rgba(255,239,175,.8);pointer-events:none;z-index:101;animation:offerSparkle 1.25s ease-out forwards}
 @keyframes offerSparkle{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:.8}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.1)}}
@@ -288,11 +288,17 @@ h1.invite-name{transform:translateX(-5cqw)}
 #final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 #bappa.gone.fromMain{transform:translateY(-102cqh)}
 html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
-/* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
+/* ===== PUJA WEDDING BELLS: slow, natural pendulum motion ===== */ .w-bell{   position:absolute;   top:-2%;   z-index:1;   pointer-events:none;   transform-origin:50% 0;   opacity:0;   will-change:transform; } .w-bell img{   display:block;   width:100%;   height:auto;   -webkit-user-drag:none; } .w-bell-left{   left:24px;   width:27%;   --amp:2deg;   --dur:16s;   --dly:-3s; } .w-bell-r2{   right:70px;   width:25%;   --amp:2.2deg;   --dur:18s;   --dly:-8s; } .w-bell-r1{   right:24px;   width:34%;   --amp:2.4deg;   --dur:19s;   --dly:-5s; } .scene.active .w-bell{   opacity:1;   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite; }  /* Static tree above the right-side bells, cropped like the main-page tree */ .puja-tree{   position:absolute;   right:-31%;   bottom:0;   width:72.5%;   height:65%;   object-fit:contain;   object-position:bottom right;   z-index:2;   pointer-events:none; }  @media (prefers-reduced-motion:reduce){   .scene.active .w-bell{animation:none} }  /* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
 .g-flor{position:absolute;top:0;z-index:2;pointer-events:none;transform-origin:50% 0;opacity:0;transition:opacity 1.6s ease .6s;will-change:transform}
 .g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
 .g-r1{right:-4%;width:37.8%;--amp:1.3deg;--dur:15s;--dly:-5s}
 .g-r2{right:5%;width:30.6%;--amp:1.6deg;--dur:17s;--dly:-7s}
+
+/* GPUJA: raise the pendulums, keep the longer one on the right */
+.scene[data-event=puja] .g-flor{top:-2%}
+.scene[data-event=puja] .g-r1{left:auto;right:24px;width:37.8%}
+.scene[data-event=puja] .g-r2{left:24px;right:auto;width:30.6%}
+
 .scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
 @keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
 @media (prefers-reduced-motion:reduce){.scene.active .g-flor{animation:none}}
@@ -406,16 +412,34 @@ function offeringPixieDust(){
   const flowers=[...document.querySelectorAll('#s0 .flower')];
   const target=document.querySelector('#drop');
   if(!flowers.length||!target)return;
-  const tr=target.getBoundingClientRect(),tx=tr.left+tr.width/2,ty=tr.top+tr.height/2;
+
+  const tr=target.getBoundingClientRect();
+  const tx=tr.left+tr.width/2;
+  const ty=tr.top+tr.height/2;
+
   flowers.forEach((f,index)=>{
-    const r=f.getBoundingClientRect(),sx=r.left+r.width/2,sy=r.top+r.height/2;
-    for(let step=1;step<=9;step++){
-      const t=step/10;
+    const r=f.getBoundingClientRect();
+    const sx=r.left+r.width/2;
+    const sy=r.top+r.height/2;
+
+    for(let step=0;step<15;step++){
+      const t=step/17;
+      const x=sx+(tx-sx)*t;
+      const y=sy+(ty-sy)*t;
+
       setTimeout(()=>{
-        const x=sx+(tx-sx)*t,y=sy+(ty-sy)*t;
-        dust(x,y,{n:1,tiny:true,faint:true,spread:.22});
-        if(step===9&&index===0)dust(tx,ty,{n:5,tiny:true,faint:true,spread:.5});
-      },step*105+index*45);
+        const sparkle=document.createElement('span');
+        sparkle.className='offer-sparkle';
+        sparkle.style.left=x+'px';
+        sparkle.style.top=y+'px';
+        sparkle.style.setProperty('--dx',(tx-x)+'px');
+        sparkle.style.setProperty('--dy',(ty-y)+'px');
+        sparkle.style.animationDuration=(.65+Math.random()*.55)+'s';
+        sparkle.style.width=(2+Math.random()*2)+'px';
+        sparkle.style.height=sparkle.style.width;
+        document.body.appendChild(sparkle);
+        sparkle.addEventListener('animationend',()=>sparkle.remove(),{once:true});
+      },step*65+index*35);
     }
   });
 }
@@ -659,7 +683,7 @@ if(k==='main'){
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
 
-    if(k==='gpuja'||(k==='haldi'&&SIDE==='bride'))s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`);     app.appendChild(s);scenes.push(s);
+    if(k==='gpuja'||(k==='haldi'&&SIDE==='bride')){   s.insertAdjacentHTML('afterbegin',`<div class="g-flor g-r1"><img src="assets/R1-haldi-florals.png" alt="" draggable="false"></div><div class="g-flor g-r2"><img src="assets/R2-haldi-florals.png" alt="" draggable="false"></div>`); }  if(k==='puja'&&SIDE==='bride'){   s.insertAdjacentHTML('afterbegin',`     <div class="w-bell w-bell-left"><img src="assets/l-wedding-bells.png" alt="" draggable="false"></div>     <div class="w-bell w-bell-r2"><img src="assets/R2-wedding-bells.png" alt="" draggable="false"></div>     <div class="w-bell w-bell-r1"><img src="assets/R1-wedding-bells.png" alt="" draggable="false"></div>     <img class="puja-tree" src="assets/Ganpati%20Tree.png" alt="" draggable="false">   `); }  app.appendChild(s); scenes.push(s);
     if(k==='sangeet')makeConstellation(s);
   });
 
@@ -997,8 +1021,17 @@ addEventListener('pointerup',e=>{
   const blocked=e.target.closest('.flower,.petal,#nameModal,a,button,input,textarea,.constellation-star,.constellation-ui,.constellation-admin,.constellation-admin-panel');
   if(!inFrame(e)||blocked)return;
 
-  // Ignore swipes here; floral movement stays natural and idle.
-  if(moved>12)return;
+  // Remind guests to offer a flower if they try to swipe past the opening page.
+  if(moved>12){
+    if(cur===0&&dx< -12&&!e.target.closest('.flower')){
+      const hint=$('#hintG');
+      hint.classList.remove('show');
+      void hint.offsetWidth;
+      hint.classList.add('show');
+      introPromptShown=true;
+    }
+    return;
+  }
 
   if(e.target.closest('.flower,.petal'))return;
   if(popOpen){closePop();go(FINAL);return}
