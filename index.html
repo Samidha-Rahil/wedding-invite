@@ -125,7 +125,6 @@ h1.invite-name{transform:translateX(-8cqw)}
 #hintG.show{   animation:petalFadeIn 1.2s ease-out both,              hintPromptPulse 2.2s 1.2s ease-in-out infinite; }  @keyframes hintPromptPulse{   0%,100%{     opacity:.85;     text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 24px rgba(255,255,255,.65);   }   50%{     opacity:1;     text-shadow:0 0 10px #fff,0 0 22px rgba(255,244,191,1),0 0 36px rgba(255,239,175,.95);   } }
 .offer-sparkle{position:fixed;width:3px;height:3px;border-radius:50%;background:#fff4bf;box-shadow:0 0 5px 2px rgba(255,239,175,.8);pointer-events:none;z-index:101;animation:offerSparkle 1.25s ease-out forwards}
 @keyframes offerSparkle{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:.8}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.1)}}
-#hintG.show{   animation:petalFadeIn 1.2s ease-out both,              hintPromptPulse 2.2s 1.2s ease-in-out infinite; }  @keyframes hintPromptPulse{   0%,100%{     opacity:.85;     text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 24px rgba(255,255,255,.65);   }   50%{     opacity:1;     text-shadow:0 0 10px #fff,0 0 22px rgba(255,244,191,1),0 0 36px rgba(255,239,175,.95);   } }
 #drop{position:absolute;left:50%;bottom:calc(7% - 39px);width:78px;height:78px;margin-left:-39px;border-radius:50%;border:1.5px dashed var(--white);box-shadow:0 0 20px rgba(255,255,255,.45),inset 0 0 18px rgba(227,132,150,.38);animation:pulse 2.6s infinite;z-index:6}
 .tree-art{position:absolute;right:-31%;bottom:0;width:72.5%;height:65%;z-index:5;pointer-events:none;overflow:visible;transform-origin:80% 100%}
 .tree-art img,.tree-art svg.t{width:100%;height:100%}
@@ -195,7 +194,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* Sangeet title is intentionally large on both sides */
 .bride-side .scene[data-event=sangeet] .ev-over h2,
 .groom-side .scene[data-event=sangeet] .ev-over h2{
-  font-size:clamp(4.3rem,18.5cqw,6rem);
+  font-size:clamp(4.6rem,20cqw,6.4rem);
   line-height:1;
 }
    .ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
@@ -294,166 +293,29 @@ h1.invite-name{transform:translateX(-8cqw)}
 #final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 #bappa.gone.fromMain{transform:translateY(-102cqh)}
 html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
-/* ===== PUJA WEDDING BELLS: slow, natural pendulum motion ===== */ 
-.w-bell{   position:absolute;   top:-2%;   z-index:1;   pointer-events:none;   transform-origin:50% 0;   opacity:0;   will-change:transform; } .w-bell img{   display:block;   width:100%;   height:auto;   -webkit-user-drag:none; } .w-bell-left{   left:24px;   width:27%;   --amp:2deg;   --dur:16s;   --dly:-3s; } .w-bell-r2{   right:70px;   width:25%;   --amp:2.2deg;   --dur:18s;   --dly:-8s; } .w-bell-r1{   right:24px;   width:34%;   --amp:2.4deg;   --dur:19s;   --dly:-5s; } .scene.active .w-bell{   opacity:1;   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite; }  /* Static tree above the right-side bells, cropped like the main-page tree */ 
- .puja-tree{
-  position:absolute;
-  top:0;
-  left:100%;
-  transform:translateX(-50%);
-  width:110%;
-  height:82%;
-  object-fit:contain;
-  object-position:top center;
-  z-index:2;
-  pointer-events:none;
-}  
-   @media (prefers-reduced-motion:reduce){   .scene.active .w-bell{animation:none} }  
+/* ===== SWAYING DECOR: bride puja bells, gpuja + bride haldi florals ===== */
+:root{--bell-w:24%;--bell-short-w:19%;--flor-w:37.8%;--flor-edge:6px}
+.w-bell,.g-flor{position:absolute;pointer-events:none;transform-origin:50% 0;opacity:0;will-change:transform}
+.w-bell img,.g-flor img{display:block;width:100%;-webkit-user-drag:none}
 
-   /* ===== BRIDE PUJA: WEDDING BELLS ===== */
-.w-bell{
-  position:absolute;
-  top:0;
-  z-index:1;
-  height:48%;
-  max-height:48%;
-  pointer-events:none;
-  transform-origin:50% 0;
-  opacity:0;
-  will-change:transform;
-}
+.w-bell{top:0;z-index:1;width:var(--bell-w);height:48%}
+.w-bell img{height:100%;max-height:48cqh;object-fit:contain;object-position:top center}
+.w-bell-left{left:35px;--amp:2.2deg;--dur:15s;--dly:-4s}
+.w-bell-r1{right:12px;--amp:2.9deg;--dur:16s;--dly:-7s}
+/* shorter bell: narrower so all three match, kept centred in its old slot */
+.w-bell-r2{width:var(--bell-short-w);right:calc(70px + (var(--bell-w) - var(--bell-short-w))/2);--amp:2.3deg;--dur:15.5s;--dly:-10s}
 
-.w-bell img{
-  display:block;
-  width:100%;
-  height:100%;
-  max-height:48cqh;
-  object-fit:contain;
-  object-position:top center;
-  -webkit-user-drag:none;
-}
+/* tree: left edge in by 5%, lifted by 10% */
+.puja-tree{position:absolute;top:-10%;left:102.5%;transform:translateX(-50%);width:105%;height:82%;object-fit:contain;object-position:top center;z-index:2;pointer-events:none}
 
-/* Left bell stays in its current position */
-.w-bell-left{
-  left:35px;
-  right:auto;
-  width:24%;
-  --amp:2.2deg;
-  --dur:15s;
-  --dly:-4s;
-}
+/* florals: gap to the frame edge halved (12px -> 6px) */
+.g-flor{top:-2%;z-index:2;transition:opacity 1.6s ease .6s}
+.g-r1{right:var(--flor-edge);width:var(--flor-w);--amp:1.8deg;--dur:14s;--dly:-5s}
+.g-r2{left:var(--flor-edge);width:var(--flor-w);--amp:1.9deg;--dur:16s;--dly:-8s}
 
-/* Longer bell at the extreme right */
-.w-bell-r1{
-  left:auto;
-  right:12px;
-  width:24%;
-  --amp:2.9deg;
-  --dur:16s;
-  --dly:-7s;
-}
-
-/* Shortest bell stays between the other bell and the right edge */
-.w-bell-r2{
-  left:auto;
-  right:70px;
-  width:24%;
-  --amp:2.3deg;
-  --dur:15.5s;
-  --dly:-10s;
-}
-
-.scene.active .w-bell{
-  opacity:1;
-  animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite;
-}
-
-/* Static tree: top edge aligned; horizontal centre at frame's right edge */
-.puja-tree{
-  position:absolute;
-  top:0;
-  left:100%;
-  transform:translateX(-50%);
-  width:110%;
-  height:82%;
-  object-fit:contain;
-  object-position:top center;
-  z-index:2;
-  pointer-events:none;
-}
-
-@media (prefers-reduced-motion:reduce){
-  .scene.active .w-bell{animation:none}
-}
-/* ===== GPUJA + BRIDE HALDI FLORALS ===== */
-.g-flor{
-  position:absolute;
-  top:-2%;
-  z-index:2;
-  pointer-events:none;
-  transform-origin:50% 0;
-  opacity:0;
-  transition:opacity 1.6s ease .6s;
-  will-change:transform;
-}
-.g-flor img{
-  display:block;
-  width:100%;
-  height:auto;
-  -webkit-user-drag:none;
-}
-
-/* Longer floral: extreme right, close to the frame */
-.g-r1{
-  left:auto;
-  right:12px;
-  width:37.8%;
-  --amp:1.8deg;
-  --dur:14s;
-  --dly:-5s;
-}
-
-/* Shorter floral: exchange to the extreme left.
-   Match its width to the longer floral. */
-.g-r2{
-  right:auto;
-  left:12px;
-  width:37.8%;
-  --amp:1.9deg;
-  --dur:16s;
-  --dly:-8s;
-}
-
-.scene.active .g-flor{
-  opacity:1;
-  animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite;
-}
-
-@keyframes pendulum{
-  0%,100%{transform:rotate(calc(var(--amp)*-1))}
-  50%{transform:rotate(var(--amp))}
-}
-
-@media (prefers-reduced-motion:reduce){
-  .scene.active .g-flor{animation:none}
-}
-
-  
-/* GPUJA: use the same edge positions and widths as bride's Haldi */
-.scene[data-event=puja] .g-flor{top:-2%}
-.scene[data-event=puja] .g-r1{
-  left:auto;
-  right:12px;
-  width:37.8%;
-  --dur:14s;
-}
-.scene[data-event=puja] .g-r2{
-  right:auto;
-  left:12px;
-  width:37.8%;
-  --dur:16s;
-}
-
+.scene.active .w-bell,.scene.active .g-flor{opacity:1;animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite}
+@keyframes pendulum{0%,100%{transform:rotate(calc(var(--amp)*-1))}50%{transform:rotate(var(--amp))}}
+@media (prefers-reduced-motion:reduce){.scene.active .w-bell,.scene.active .g-flor{animation:none}}
 </style>
 </head>
 <body>
@@ -527,7 +389,7 @@ const SD=SIDES[SIDE];
 const EVENTS={
   puja:{always:true,bappa:true,title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   mehendi:{title:"Mehendi te Vaavi",date:"thursday, 10th december 2026",time:"5:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
-  sangeet:{title:"Sagai & Shor Sharaba",date:"friday, 11th december 2026",time:"7:00 PM onwards",venue:"Embassy Hall, The Tunga Paradise, Andheri E, Mumbai",map:"https://maps.app.goo.gl/GceAwj1eoHQRVYf56"},
+  sangeet:{title:"Sagai &<br>Shor Sharaba",date:"friday, 11th december 2026",time:"7:00 PM onwards",venue:"Embassy Hall, The Tunga Paradise, Andheri E, Mumbai",map:"https://maps.app.goo.gl/GceAwj1eoHQRVYf56"},
   gpuja:{skin:"puja",title:"Mandap Muhurat &<br>Randal Puja<br>Mehendi & Prem Pithi",date:"saturday, 12th december 2026",time:"10:00 AM onwards",venue:"Orchid Hall, Lodha Eternis",map:"https://maps.app.goo.gl/JrvUhVTGP5fqonHS8"},   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   wedding:{always:true,title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:"https://maps.app.goo.gl/tzmzjRDrhJN4GLGJ7"}
 };
@@ -989,7 +851,27 @@ const TEST_GUESTS={
          "rahul mehta":{name:"Rahul Mehta",display:"Rahul",events:["puja","sangeet","wedding"]}},
   groom:{"amit verma":{name:"Amit Verma",display:"Amit",events:["sangeet","gpuja","wedding"]}}
 };
+/* ---- guest lookup: warm-up ping + cache ---- */
+const GL_KEY='guestCache.'+SIDE;
+const glCache=(()=>{try{return JSON.parse(localStorage.getItem(GL_KEY)||'{}')}catch(e){return{}}})();
+window.__ping=()=>{};
+if(GUEST_SOURCE!=='local'){
+  const w=document.createElement('script');
+  w.src=CONSTELLATION_API+'?action=ping&callback=__ping&_='+Date.now();
+  w.onload=w.onerror=()=>w.remove();
+  document.head.appendChild(w);
+}
 function findGuest(name){
+  if(GUEST_SOURCE==='local')return fetchGuest(name);
+  const key=normName(name);
+  const lookup=fetchGuest(name).then(d=>{
+    if(d&&d.ok){glCache[key]=d;try{localStorage.setItem(GL_KEY,JSON.stringify(glCache))}catch(e){}}
+    return d;
+  });
+  /* repeat visitors: answer instantly, refresh in the background */
+  return glCache[key]?(lookup.catch(()=>{}),Promise.resolve(glCache[key])):lookup;
+}
+function fetchGuest(name){
   if(GUEST_SOURCE==='local'){
     const g=(TEST_GUESTS[SIDE]||{})[normName(name)];
     return Promise.resolve(g?{ok:true,...g}:{ok:false,error:'not_found'});
@@ -997,7 +879,7 @@ function findGuest(name){
   return new Promise((res,rej)=>{
     const cb='cb'+Date.now(),sc=document.createElement('script');
     const done=()=>{clearTimeout(t);delete window[cb];sc.remove()};
-    const t=setTimeout(()=>{done();rej(new Error('timeout'))},12000);
+    const t=setTimeout(()=>{done();rej(new Error('timeout'))},8000);
     window[cb]=d=>{done();res(d)};
     sc.onerror=()=>{done();rej(new Error('network'))};
     sc.src=CONSTELLATION_API+'?action=guest&side='+SIDE+'&name='+encodeURIComponent(name)+'&callback='+cb+'&_ts='+Date.now();
