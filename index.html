@@ -9,7 +9,7 @@
 @font-face{font-family:'MiltonOne';src:url('assets/font/milton-one.one.otf') format('opentype');font-display:swap}
 @font-face{font-family:'CinzelInvite';src:url('assets/font/CinzelRegular-3jEM.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'BodoniVenue';src:url('assets/font/Bodoni%20SvtyTwo%20ITC%20TT%20Book.ttf') format('truetype');font-display:swap}
-:root{--pink:#E38496;--forest:#1A3D28;--white:#fff;--sage:#617764;--olive:#B2AF87;--cream:#F9EDD5;
+:root{--fw:min(100vw,calc(100dvh*1080/2412));font-size:calc(var(--fw)/26.9);--pink:#E38496;--forest:#1A3D28;--white:#fff;--sage:#617764;--olive:#B2AF87;--cream:#F9EDD5;
 --f-names:'MiltonOne',serif;--f-date:'CinzelInvite',serif;--f-venue:'BodoniVenue',serif;--fd:'MiltonOne',serif;--fb:'CinzelInvite',serif}
 
 /* ===== BASE ===== */
@@ -21,10 +21,10 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
    Desktops / tablets: the invite is shown inside a phone-shaped frame.
    The frame is a size container, so every vw/vh below is written as cqw/cqh
    (relative to the frame, not the browser window). Result: identical visuals everywhere. */
-.frame{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,480px);height:100vh;height:100dvh;container-type:size;overflow:hidden;background:var(--cream);box-shadow:0 0 60px rgba(97,119,100,.25)}
+.frame{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:var(--fw);height:calc(var(--fw)*2412/1080);container-type:size;overflow:hidden;background:var(--cream);box-shadow:0 0 60px rgba(97,119,100,.25)}
 @media (min-width:600px) and (min-height:500px){
   html,body{background:linear-gradient(160deg,#e9dfc8,#cfd6c2)}
-  .frame{height:min(92vh,860px);height:min(92dvh,860px);width:min(430px,46vh);width:min(430px,46dvh);border-radius:38px;box-shadow:0 0 0 10px #1c1c1c,0 30px 80px rgba(26,61,40,.35)}
+  :root{--fw:calc(min(92dvh,860px)*1080/2412)}   .frame{border-radius:38px;box-shadow:0 0 0 10px #1c1c1c,0 30px 80px rgba(26,61,40,.35)}
 }
 #dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:100}
 
