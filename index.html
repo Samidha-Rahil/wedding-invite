@@ -106,25 +106,26 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .invite-opening{margin-bottom:1.2cqh}
 .invite-opening p{margin:0}
 .invite-with{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);margin:.6cqh 0;position:relative;top:-1.5cqh}
-.invite-groom{margin-bottom:-.8cqh;transform:translateX(5cqw)}
-h1.invite-name{transform:translateX(-5cqw)}
+.invite-groom{margin-bottom:-.8cqh;transform:translateX(8cqw)}
+h1.invite-name{transform:translateX(-8cqw)}
 
 /* Groom main page: keep the bride-side layout, with names slightly separated */
-.groom-side h1.invite-name{transform:translate(-12cqw,1.2cqh)}
+.groom-side h1.invite-name{transform:translate(-15cqw,1.2cqh)}
 .groom-side .invite-with{transform:translateY(.5cqh)}
-.groom-side .invite-groom{transform:translate(12cqw,calc(1.2cqh - 8px))}
+.groom-side .invite-groom{transform:translate(15cqw,calc(1.2cqh - 12px))}
 .groom-side .invite-groom ~ .invite-statement,
 .groom-side .invite-groom ~ .invite-gap-small,
-.groom-side .invite-groom ~ .invite-family{transform:translateY(-8px)}
+.groom-side .invite-groom ~ .invite-family{transform:translateY(-12px)}
+.groom-side .invite-family{position:relative;top:-4px}
 .invite-statement{margin:0 0 .7cqh;max-width:100%}
 /* names: pink, 0.5px stroke */
 .invite-name{font:500 clamp(70px,20cqw,96px)/1.05 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);overflow-wrap:anywhere;margin:0}
 .invite-family{font:500 clamp(36px,10.5cqw,50px)/1.1 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);margin-top:0;overflow-wrap:anywhere}
 #hintG{position:absolute;bottom:max(1.1rem,env(safe-area-inset-bottom));left:5%;width:90%;z-index:3;text-align:center;white-space:normal;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.855rem,3.56cqw,1.14rem);letter-spacing:.08em;color:var(--forest);text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 28px rgba(255,255,255,.6)}
-#hintG.show{animation:petalFadeIn 1.8s ease-out both,petalGlow 2.8s 1.8s ease-in-out infinite}
+#hintG.show{   animation:petalFadeIn 1.2s ease-out both,              hintPromptPulse 2.2s 1.2s ease-in-out infinite; }  @keyframes hintPromptPulse{   0%,100%{     opacity:.85;     text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 24px rgba(255,255,255,.65);   }   50%{     opacity:1;     text-shadow:0 0 10px #fff,0 0 22px rgba(255,244,191,1),0 0 36px rgba(255,239,175,.95);   } }
 .offer-sparkle{position:fixed;width:3px;height:3px;border-radius:50%;background:#fff4bf;box-shadow:0 0 5px 2px rgba(255,239,175,.8);pointer-events:none;z-index:101;animation:offerSparkle 1.25s ease-out forwards}
 @keyframes offerSparkle{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:.8}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.1)}}
-#hintG.show{animation:petalFadeIn 1.8s ease-out both,petalGlow 2.8s 1.8s ease-in-out infinite}
+#hintG.show{   animation:petalFadeIn 1.2s ease-out both,              hintPromptPulse 2.2s 1.2s ease-in-out infinite; }  @keyframes hintPromptPulse{   0%,100%{     opacity:.85;     text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 24px rgba(255,255,255,.65);   }   50%{     opacity:1;     text-shadow:0 0 10px #fff,0 0 22px rgba(255,244,191,1),0 0 36px rgba(255,239,175,.95);   } }
 #drop{position:absolute;left:50%;bottom:calc(7% - 39px);width:78px;height:78px;margin-left:-39px;border-radius:50%;border:1.5px dashed var(--white);box-shadow:0 0 20px rgba(255,255,255,.45),inset 0 0 18px rgba(227,132,150,.38);animation:pulse 2.6s infinite;z-index:6}
 .tree-art{position:absolute;right:-31%;bottom:0;width:72.5%;height:65%;z-index:5;pointer-events:none;overflow:visible;transform-origin:80% 100%}
 .tree-art img,.tree-art svg.t{width:100%;height:100%}
@@ -243,7 +244,7 @@ h1.invite-name{transform:translateX(-5cqw)}
 @keyframes cuePulse{0%,100%{transform:scale(.94);opacity:.55;box-shadow:0 0 0 0 rgba(227,132,150,.18)}50%{transform:scale(1.04);opacity:1;box-shadow:0 0 0 5px rgba(227,132,150,0)}}
 
 /* ===== WEDDING PAGE: FALLING PETALS ===== */
-.petal-hint{position:absolute;top:30%;left:5%;width:90%;transform:translateY(-50%);z-index:20;text-align:center;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.9rem,3.75cqw,1.2rem);line-height:1.2;letter-spacing:.07em;color:var(--pink);text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.95),0 0 34px rgba(227,132,150,.65)}
+.petal-hint{position:absolute;top:30%;left:5%;width:90%;transform:translateY(-50%);z-index:20;text-align:center;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.855rem,3.56cqw,1.14rem);line-height:1.2;letter-spacing:.07em;color:var(--pink);text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.95),0 0 34px rgba(227,132,150,.65)}
 .petal-hint.show{animation:petalPromptEntrance 1.4s ease-out both,petalSoftGlow 3.2s 1.4s ease-in-out infinite}
 .scene.dim .petal-hint{opacity:0 !important;transition:opacity .4s}
 .hint-text{display:inline-block;transform-origin:center}
@@ -288,7 +289,10 @@ h1.invite-name{transform:translateX(-5cqw)}
 #final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 #bappa.gone.fromMain{transform:translateY(-102cqh)}
 html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
-/* ===== PUJA WEDDING BELLS: slow, natural pendulum motion ===== */ .w-bell{   position:absolute;   top:-2%;   z-index:1;   pointer-events:none;   transform-origin:50% 0;   opacity:0;   will-change:transform; } .w-bell img{   display:block;   width:100%;   height:auto;   -webkit-user-drag:none; } .w-bell-left{   left:24px;   width:27%;   --amp:2deg;   --dur:16s;   --dly:-3s; } .w-bell-r2{   right:70px;   width:25%;   --amp:2.2deg;   --dur:18s;   --dly:-8s; } .w-bell-r1{   right:24px;   width:34%;   --amp:2.4deg;   --dur:19s;   --dly:-5s; } .scene.active .w-bell{   opacity:1;   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite; }  /* Static tree above the right-side bells, cropped like the main-page tree */ .puja-tree{   position:absolute;   right:-31%;   bottom:0;   width:72.5%;   height:65%;   object-fit:contain;   object-position:bottom right;   z-index:2;   pointer-events:none; }  @media (prefers-reduced-motion:reduce){   .scene.active .w-bell{animation:none} }  /* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
+/* ===== PUJA WEDDING BELLS: slow, natural pendulum motion ===== */ 
+.w-bell{   position:absolute;   top:-2%;   z-index:1;   pointer-events:none;   transform-origin:50% 0;   opacity:0;   will-change:transform; } .w-bell img{   display:block;   width:100%;   height:auto;   -webkit-user-drag:none; } .w-bell-left{   left:24px;   width:27%;   --amp:2deg;   --dur:16s;   --dly:-3s; } .w-bell-r2{   right:70px;   width:25%;   --amp:2.2deg;   --dur:18s;   --dly:-8s; } .w-bell-r1{   right:24px;   width:34%;   --amp:2.4deg;   --dur:19s;   --dly:-5s; } .scene.active .w-bell{   opacity:1;   animation:pendulum var(--dur) cubic-bezier(.37,0,.63,1) var(--dly) infinite; }  /* Static tree above the right-side bells, cropped like the main-page tree */ .puja-tree{   position:absolute;   right:-31%;   bottom:0;   width:72.5%;   height:65%;   object-fit:contain;   object-position:bottom right;   z-index:2;   pointer-events:none; }  @media (prefers-reduced-motion:reduce){   .scene.active .w-bell{animation:none} }  
+
+/* ===== GROOM HALDI FLORALS: pendulum, pivot = top centre ===== */
 .g-flor{position:absolute;top:0;z-index:2;pointer-events:none;transform-origin:50% 0;opacity:0;transition:opacity 1.6s ease .6s;will-change:transform}
 .g-flor img{display:block;width:100%;height:auto;-webkit-user-drag:none}
 .g-r1{right:-4%;width:37.8%;--amp:1.3deg;--dur:15s;--dly:-5s}
@@ -389,7 +393,7 @@ const DEFAULT_GUEST=[];
 /* ===================================================== */
 
 const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a);
-let stage='logo',cur=0,guest='',popOpen=false,locked=false,filled=false,scenes=[],PETAL=0,FINAL=0,ps=null,introTimer=null,introPromptShown=false;
+let stage='logo',cur=0,guest='',popOpen=false,locked=false,filled=false,scenes=[],PETAL=0,FINAL=0,ps=null,introTimer=null,introTrailTimer=null,introPromptShown=false;
 let pts=[],drawing=false,down=null;
 const app=$('#app'),li=$('#logoImg'),frameEl=$('.frame');
 const inFrame=e=>{const r=frameEl.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom};
@@ -411,7 +415,8 @@ const burst=(x,y,n=50,o={})=>dust(x,y,{...o,n,spread:o.spread||4});
 function offeringPixieDust(){
   const flowers=[...document.querySelectorAll('#s0 .flower')];
   const target=document.querySelector('#drop');
-  if(!flowers.length||!target)return;
+
+  if(cur!==0||!flowers.length||!target)return;
 
   const tr=target.getBoundingClientRect();
   const tx=tr.left+tr.width/2;
@@ -422,24 +427,27 @@ function offeringPixieDust(){
     const sx=r.left+r.width/2;
     const sy=r.top+r.height/2;
 
-    for(let step=0;step<15;step++){
-      const t=step/17;
+    for(let step=1;step<=14;step++){
+      const t=step/16;
       const x=sx+(tx-sx)*t;
       const y=sy+(ty-sy)*t;
 
       setTimeout(()=>{
+        if(cur!==0)return;
+
         const sparkle=document.createElement('span');
         sparkle.className='offer-sparkle';
         sparkle.style.left=x+'px';
         sparkle.style.top=y+'px';
         sparkle.style.setProperty('--dx',(tx-x)+'px');
         sparkle.style.setProperty('--dy',(ty-y)+'px');
-        sparkle.style.animationDuration=(.65+Math.random()*.55)+'s';
-        sparkle.style.width=(2+Math.random()*2)+'px';
-        sparkle.style.height=sparkle.style.width;
+        sparkle.style.animationDuration='.95s';
+        sparkle.style.width='3px';
+        sparkle.style.height='3px';
+
         document.body.appendChild(sparkle);
         sparkle.addEventListener('animationend',()=>sparkle.remove(),{once:true});
-      },step*65+index*35);
+      },step*55+index*100);
     }
   });
 }
@@ -760,12 +768,39 @@ const bi=scenes.findIndex(x=>x.dataset.bappa==='1');
 
   if(i===0){
     const hint=$('#hintG');
-    if(introPromptShown)hint.classList.add('show');
-    else if(!introTimer)introTimer=setTimeout(()=>{
-      if(cur===0){hint.classList.add('show');introPromptShown=true;offeringPixieDust()}
+
+    if(introPromptShown){
+      hint.classList.add('show');
+
+      if(!introTrailTimer){
+        offeringPixieDust();
+        introTrailTimer=setInterval(offeringPixieDust,2600);
+      }
+    }else if(!introTimer){
+      introTimer=setTimeout(()=>{
+        if(cur===0){
+          hint.classList.add('show');
+          introPromptShown=true;
+          offeringPixieDust();
+
+          if(!introTrailTimer){
+            introTrailTimer=setInterval(offeringPixieDust,2600);
+          }
+        }
+        introTimer=null;
+      },5000);
+    }
+  }else{
+    if(introTimer){
+      clearTimeout(introTimer);
       introTimer=null;
-    },5000);
-  }else if(introTimer){clearTimeout(introTimer);introTimer=null}
+    }
+
+    if(introTrailTimer){
+      clearInterval(introTrailTimer);
+      introTrailTimer=null;
+    }
+  }
 }
 function go(i){
   if(i<0||i>FINAL||popOpen)return;
