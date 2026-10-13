@@ -728,8 +728,24 @@ if(k==='main'){
     <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
 }
     else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+    
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
-    else s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+    else {
+      if(k==='puja'&&SIDE==='bride'){
+        s.insertAdjacentHTML('beforeend',`
+          <div class="w-bell w-bell-left">
+            <img src="assets/l-wedding-bells.png" alt="" draggable="false">
+          </div>
+          <div class="w-bell w-bell-r1">
+            <img src="assets/R1-wedding-bells.png" alt="" draggable="false">
+          </div>
+          <div class="w-bell w-bell-r2">
+            <img src="assets/R2-wedding-bells.png" alt="" draggable="false">
+          </div>
+        `);
+      }
+      s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+    }
 
     app.appendChild(s);
     scenes.push(s);
