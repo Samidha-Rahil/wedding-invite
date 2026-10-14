@@ -330,7 +330,7 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 .petal-fly{position:fixed;z-index:150;pointer-events:none}
 
 /* ===== HALDI: recurring gold shimmer on the title (every 5s while the page is open) ===== */ 
-   .scene[data-event=haldi] .ev-over h2{position:relative} .scene[data-event=haldi] .ev-over h2::after{content:attr(data-t);position:absolute;inset:0;color:transparent;-webkit-text-stroke:0;text-shadow:none;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,205,70,.95) 46%,#fff0a8 50%,rgba(255,190,50,.95) 54%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:150% 0;-webkit-background-clip:text;background-clip:text} .scene.active[data-event=haldi] .ev-over h2::after{animation:haldiSweep 5s ease-in-out 2.6s infinite} @keyframes haldiSweep{0%{background-position:150% 0}44%,100%{background-position:-50% 0}} .powder{position:absolute;z-index:6;width:var(--s);height:var(--s);border-radius:50%;pointer-events:none;background:#FFE9A8;box-shadow:0 0 6px 2px rgba(255,200,70,.85);opacity:0;animation:powderRise 2.4s ease-out forwards} @keyframes powderRise{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy)*-1)) scale(.3)}} 
+   .scene[data-event=haldi] .ev-over h2{position:relative} .scene[data-event=haldi] .ev-over h2::after{content:attr(data-t);position:absolute;inset:0;color:transparent;-webkit-text-stroke:0;text-shadow:none;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,205,70,.95) 46%,#fff0a8 50%,rgba(255,190,50,.95) 54%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:150% 0;-webkit-background-clip:text;background-clip:text} .scene.active[data-event=haldi] .ev-over h2::after{animation:haldiSweep 8s ease-in-out 2.6s infinite} @keyframes haldiSweep{0%{background-position:150% 0}44%,100%{background-position:-50% 0}} .powder{position:absolute;z-index:6;width:var(--s);height:var(--s);border-radius:50%;pointer-events:none;background:#FFE9A8;box-shadow:0 0 6px 2px rgba(255,200,70,.85);opacity:0;animation:powderRise 2.4s ease-out forwards} @keyframes powderRise{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy)*-1)) scale(.3)}} 
 </style>
 </head>
 <body>
@@ -619,30 +619,34 @@ const starShape='<svg viewBox="0 0 100 100" aria-hidden="true"><path class="star
 function starId(n){return 'star-'+String(n).padStart(3,'0')}
 function randomStarPosition(existing,scene){
  const sceneRect=scene.getBoundingClientRect();
- const text=scene.querySelector('.ev-over');
- const textRect=text?text.getBoundingClientRect():null;
- const pad=24;
- let x=8+Math.random()*84,y=15+Math.random()*75,tries=0;
+ const title=scene.querySelector('.ev-over h2');
+ const map=scene.querySelector('.ev-over .maplink');
+ const cue=scene.querySelector('.next-cue');
+ const pad=18;
+ let x=6+Math.random()*88,y=15+Math.random()*80,tries=0;
 
- function overlapsText(px,py){
-  if(py<15)return true;
-  if(!textRect)return false;
+ function nearElement(px,py,el,extra=pad){
+  if(!el)return false;
+  const r=el.getBoundingClientRect();
   const sx=sceneRect.left+sceneRect.width*px/100;
   const sy=sceneRect.top+sceneRect.height*py/100;
-  return sx>=textRect.left-pad&&sx<=textRect.right+pad&&
-         sy>=textRect.top-pad&&sy<=textRect.bottom+pad;
+  return sx>=r.left-extra&&sx<=r.right+extra&&
+         sy>=r.top-extra&&sy<=r.bottom+extra;
  }
-
- while(tries++<300&&(
-   existing.some(p=>Math.hypot((p.x-x)*.85,p.y-y)<8)||
-   overlapsText(x,y)
+ function blocked(px,py){
+  // Keep stars around the title, not on top of it; protect both navigation targets.
+  return py<13||nearElement(px,py,title,20)||nearElement(px,py,map,22)||nearElement(px,py,cue,28);
+ }
+ while(tries++<500&&(
+   existing.some(p=>Math.hypot((p.x-x)*.85,p.y-y)<7)||
+   blocked(x,y)
  )){
-  x=8+Math.random()*84;
-  y=15+Math.random()*75;
+  x=6+Math.random()*88;
+  y=15+Math.random()*80;
  }
-
  return {x,y};
 }
+
 function makeConstellation(scene){
  const layer=document.createElement('div');layer.className='constellation-layer';
  layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a wish</div>';
@@ -1312,15 +1316,17 @@ addEventListener('pointerup',e=>{
   const blocked=e.target.closest('.flower,.petal,#nameModal,a,button,input,textarea,.constellation-star,.constellation-ui,.constellation-admin,.constellation-admin-panel');
   if(!inFrame(e)||blocked)return;
 
-  // Remind guests to offer a flower if they try to swipe past the opening page.
-  if(moved>12){
-    if(cur===0&&dx< -12&&!e.target.closest('.flower')){
-      const hint=$('#hintG');
-      hint.classList.remove('show');
-      void hint.offsetWidth;
-      hint.classList.add('show');
-      introPromptShown=true;
-    }
+  // Any ordinary tap or swipe on the main page pulses the flower-drag prompt.
+  if(cur===0&&!e.target.closest('.flower')){
+    const hint=$('#hintG');
+    hint.classList.remove('show');
+    void hint.offsetWidth;
+    hint.classList.add('show');
+    const label=hint.querySelector('.hint-text');
+    if(label){label.classList.remove('pulse');void label.offsetWidth;label.classList.add('pulse')}
+    introPromptShown=true;
+    if(moved>12)return;
+  }else if(moved>12){
     return;
   }
 
