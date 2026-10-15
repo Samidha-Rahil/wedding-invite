@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>You're Invited</title>
 <style>
-/* ===== FONTS (files live in assets/font/) ===== */
+/* ===== FONTS ===== */
 @font-face{font-family:'MiltonOne';src:url('assets/font/milton-one.one.otf') format('opentype');font-display:swap}
 @font-face{font-family:'CinzelInvite';src:url('assets/font/CinzelRegular-3jEM.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'BodoniVenue';src:url('assets/font/Bodoni%20SvtyTwo%20ITC%20TT%20Book.ttf') format('truetype');font-display:swap}
@@ -16,15 +16,12 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--cream);color:var(--forest);font-family:var(--fb);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
 
-/* ===== PHONE FRAME =====
-   Phones: full screen (max 480px wide).
-   Desktops / tablets: the invite is shown inside a phone-shaped frame.
-   The frame is a size container, so every vw/vh below is written as cqw/cqh
-   (relative to the frame, not the browser window). Result: identical visuals everywhere. */
+/* ===== PHONE FRAME (size container: all cqw/cqh are relative to it) ===== */
 .frame{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:var(--fw);height:calc(var(--fw)*2412/1080);container-type:size;overflow:hidden;background:var(--cream);box-shadow:0 0 60px rgba(97,119,100,.25)}
 @media (min-width:600px) and (min-height:500px){
   html,body{background:linear-gradient(160deg,#e9dfc8,#cfd6c2)}
-  :root{--fw:calc(min(92dvh,860px)*1180/2412)} .frame{border-radius:38px;box-shadow:0 0 0 10px #1c1c1c,0 30px 80px rgba(26,61,40,.35)}
+  :root{--fw:calc(min(92dvh,860px)*1180/2412)}
+  .frame{border-radius:38px;box-shadow:0 0 0 10px #1c1c1c,0 30px 80px rgba(26,61,40,.35)}
 }
 #dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:100}
 
@@ -32,6 +29,8 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .fx{opacity:0}
 .fx.l{--a:flyL}.fx.r{--a:flyR}
 .scene.active:not(#s0) .fx,#nameModal.show .fx,#pop.show .fx{animation:var(--a,flyU) 1.3s cubic-bezier(.2,.8,.2,1) var(--d,.6s) both}
+/* while a page is leaving, keep its text visible so it travels with the transition */
+.scene.hide .fx{opacity:1;animation:none}
 @keyframes flyU{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
 @keyframes flyL{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}
 @keyframes flyR{from{opacity:0;transform:translateX(90px)}to{opacity:1;transform:none}}
@@ -39,7 +38,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 @keyframes ganpatiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
 /* ===== LOGO SCREEN ===== */
-#logo{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cream);transition:opacity 1.2s}
+#logo{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat;transition:opacity 1.2s}
 #logo.gone{opacity:0;pointer-events:none}
 #logoBox{width:66%;aspect-ratio:1;display:grid;place-items:center}
 #logoBox img{width:100%;height:100%;object-fit:contain}
@@ -47,7 +46,6 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .mono small{display:block;font-size:1rem;letter-spacing:.35em;color:var(--forest);margin-top:.6rem;font-family:var(--f-date)}
 #hint{margin-top:2.2rem;font-size:clamp(.9rem,3.75cqw,1.2rem);letter-spacing:.15em;text-transform:uppercase;color:var(--pink);opacity:0;animation:none;transition:opacity .8s ease}
 #hint.ready{opacity:.85;animation:hintFloat 4s ease-in-out infinite}
-#logoBlessings{position:absolute;bottom:3%;left:0;width:100%;display:none;flex-direction:column;align-items:center;gap:4px;font-family:var(--f-date);font-size:clamp(11px,3.5cqw,17px);line-height:1.35;letter-spacing:.04em;text-align:center;color:var(--forest);opacity:.8;pointer-events:none}
 @keyframes hintFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.045)}}
 #hint .inf{display:inline-block;font-size:2.565em;line-height:0;vertical-align:-.1em;margin:0 .08em}
@@ -66,13 +64,32 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .btn{margin-top:1rem;width:100%;padding:.85rem;border:0;border-radius:12px;background:var(--pink);color:var(--white);font:.95rem var(--fb);letter-spacing:.28em;text-transform:uppercase;cursor:pointer}
 .shake{animation:shake .4s}
 @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.loading-dots{display:inline-block;font-weight:700;letter-spacing:.12em;background:linear-gradient(90deg,#E38496 0%,#B2AF87 45%,#1A3D28 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:dotShimmer 1.1s linear infinite}
+@keyframes dotShimmer{from{background-position:100% 0}to{background-position:-100% 0}}
 
-/* ===== SCENES ===== */
+/* ===== KONTEXT TRANSITION (container = #app, pages = .layer) ===== */
 #app{position:absolute;inset:0;opacity:0;transition:opacity 1.2s}
 #app.on{opacity:1}
-.scene{--hl:var(--pink);position:absolute;inset:0;background:var(--cream);transform:translateY(100%);transition:transform 1s cubic-bezier(.65,0,.25,1);overflow:hidden}
-.scene.active{transform:none}
-.scene.past{transform:translateY(-100%)}
+.kontext{width:100%;height:100%}
+.kontext .layer{position:absolute;width:100%;height:100%;top:0;left:0;visibility:hidden}
+.kontext .layer.show{visibility:visible}
+.kontext.capable{perspective:1000px;transform-style:preserve-3d}
+.kontext.capable .layer{transform:translateZ(-100px)}
+.kontext.capable .layer.show{transform:translateZ(0)}
+.kontext.capable.animate .layer.show.right{animation:show-right 1s forwards ease}
+.kontext.capable.animate .layer.hide.right{animation:hide-right 1s forwards ease}
+.kontext.capable.animate .layer.show.left{animation:show-left 1s forwards ease}
+.kontext.capable.animate .layer.hide.left{animation:hide-left 1s forwards ease}
+@keyframes show-right{0%{transform:translateZ(-200px)}40%{transform:translate(40%,0) scale(.8) rotateY(-20deg)}100%{transform:translateZ(0)}}
+@keyframes hide-right{0%{transform:translateZ(0);visibility:visible}40%{transform:translate(-40%,0) scale(.8) rotateY(20deg)}100%{transform:translateZ(-200px);visibility:hidden}}
+@keyframes show-left{0%{transform:translateZ(-200px)}40%{transform:translate(-40%,0) scale(.8) rotateY(20deg)}100%{transform:translateZ(0)}}
+@keyframes hide-left{0%{transform:translateZ(0);visibility:visible}40%{transform:translate(40%,0) scale(.8) rotateY(-20deg)}100%{transform:translateZ(-200px);visibility:hidden}}
+.kontext .layer .dimmer{display:block;position:absolute;inset:0;z-index:100;pointer-events:none;visibility:hidden;background:transparent}
+.kontext.capable.animate .layer .dimmer{transition:background 1s ease}
+.kontext.capable.animate .layer.hide .dimmer{visibility:visible;background:rgba(0,0,0,.7)}
+
+/* ===== SCENES ===== */
+.scene{--hl:var(--pink);background:var(--cream);overflow:hidden}
 .scene[data-event=mehendi],.scene[data-event=haldi]{--hl:var(--white)}
 .scene img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .9s;z-index:0}
 .scene.dim img.bg{opacity:.22}
@@ -80,50 +97,36 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .scene[data-event=puja] img.bg{object-position:center top}
 .ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:2rem;background:var(--cream);color:var(--forest);font-size:.85rem;letter-spacing:.1em;z-index:1}
 .ph[hidden],.image-fallback[hidden]{display:none}
-.image-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:1rem;text-align:center;color:var(--forest);font-size:.85rem;letter-spacing:.04em;background:var(--cream);z-index:1}
 
 /* ===== PAGE 1: BLESSING + OFFERING ===== */
-/* all text is forest green; only the bride / groom / family names stay pink */
 .intro{position:absolute;top:2%;left:5%;width:90%;height:96%;padding-top:0;padding-bottom:6cqh;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--forest);text-shadow:0 0 6px rgba(255,255,255,.55);pointer-events:none;overflow:visible}
+.bride-side .intro{padding-bottom:calc(6cqh + 3cqh)}
 .scene.active#s0 .intro{animation:flyU 1.3s .4s both}
-/* Bride main page: nudge all text slightly higher (increase 3cqh to move more) */ .bride-side .intro{padding-bottom:calc(6cqh + 3cqh)} /* Ganeshay: small, pinned to the very top of the frame */
 #inviteGaneshay{position:absolute;top:0;left:50%;transform:translateX(-50%);display:block;width:clamp(58px,17cqw,82px);height:clamp(58px,17cqw,82px);object-fit:contain}
+html[data-side=groom] #inviteGaneshay{width:clamp(76px,22cqw,106px);height:clamp(76px,22cqw,106px)}
 .invite-gap-small{height:1.5cqh;min-height:5px;flex-shrink:0}
-.invite-hosts{
-  font-family:var(--f-date);
-  font-size:clamp(11px,3.5cqw,17px);
-  line-height:1.2;
-  letter-spacing:.035em;
-  white-space:nowrap;
-  width:max-content;
-  max-width:100%;
-  margin:0 auto 1.2cqh;
-}
- .bride-side .invite-hosts{
-  font-size:calc(clamp(11px,3.5cqw,17px) + 2.5px);
-}
+.invite-hosts{font-family:var(--f-date);font-size:clamp(11px,3.5cqw,17px);line-height:1.2;letter-spacing:.035em;white-space:nowrap;width:max-content;max-width:100%;margin:0 auto 1.2cqh}
+.bride-side .invite-hosts{font-size:calc(clamp(11px,3.5cqw,17px) + 2.5px)}
 .invite-statements{font:clamp(9px,3.4cqw,13px)/1.2 var(--f-venue);letter-spacing:.01em}
-.invite-statement{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);letter-spacing:.01em}
+.invite-statement{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);letter-spacing:.01em;margin:0 0 .7cqh;max-width:100%}
 .invite-opening{margin-bottom:1.2cqh}
 .invite-opening p{margin:0}
-.invite-with{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);margin:.6cqh 0;position:relative;top:-1.5cqh}
+.invite-with{font:clamp(12px,3.4cqw,16px)/1.2 'BodoniVenue',serif;margin:.6cqh 0;position:relative;top:-1.5cqh}
 .invite-groom{margin-bottom:-.8cqh;transform:translateX(8cqw)}
 h1.invite-name{transform:translateX(-8cqw)}
-
-/* Groom main page: keep the bride-side layout, with names slightly separated */
 .groom-side h1.invite-name{transform:translate(-15cqw,1.2cqh)}
 .groom-side .invite-with{transform:translateY(.5cqh)}
 .groom-side .invite-groom{transform:translate(15cqw,calc(1.2cqh - 12px))}
-.groom-side .invite-groom ~ .invite-statement,
-.groom-side .invite-groom ~ .invite-gap-small,
-.groom-side .invite-groom ~ .invite-family{transform:translateY(-12px)}
+.groom-side .invite-groom ~ .invite-statement,.groom-side .invite-groom ~ .invite-gap-small,.groom-side .invite-groom ~ .invite-family{transform:translateY(-12px)}
 .groom-side .invite-family{position:relative;top:-4px}
-.invite-statement{margin:0 0 .7cqh;max-width:100%}
-/* names: pink, 0.5px stroke */
-.invite-name{font:500 clamp(70px,20cqw,96px)/1.05 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);overflow-wrap:anywhere;margin:0}
+.invite-name{font:500 clamp(70px,20cqw,96px)/1.05 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);overflow-wrap:anywhere;margin:0;position:relative}
 .invite-family{font:500 clamp(36px,10.5cqw,50px)/1.1 var(--f-names);color:var(--pink);-webkit-text-stroke:.5px var(--pink);text-shadow:0 2px 8px rgba(26,61,40,.45);margin-top:0;overflow-wrap:anywhere}
+.invite-name::after{content:attr(data-t);position:absolute;inset:0;color:transparent;-webkit-text-stroke:0;text-shadow:none;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,236,170,.95) 47%,#fff 50%,rgba(255,214,111,.95) 53%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:150% 0;-webkit-background-clip:text;background-clip:text}
+.scene.active#s0 .invite-name::after{animation:foilSweep 2.2s ease-in-out 2.3s 1 both}
+@keyframes foilSweep{from{background-position:150% 0}to{background-position:-50% 0}}
 #hintG{position:absolute;bottom:max(1.1rem,env(safe-area-inset-bottom));left:5%;width:90%;z-index:3;text-align:center;white-space:normal;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.855rem,3.56cqw,1.14rem);letter-spacing:.08em;color:var(--forest);text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 28px rgba(255,255,255,.6)}
-#hintG.show{   animation:petalFadeIn 1.2s ease-out both,              hintPromptPulse 2.2s 1.2s ease-in-out infinite; }  @keyframes hintPromptPulse{   0%,100%{     opacity:.85;     text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 24px rgba(255,255,255,.65);   }   50%{     opacity:1;     text-shadow:0 0 10px #fff,0 0 22px rgba(255,244,191,1),0 0 36px rgba(255,239,175,.95);   } }
+#hintG.show{animation:petalFadeIn 1.2s ease-out both,hintPromptPulse 2.2s 1.2s ease-in-out infinite}
+@keyframes hintPromptPulse{0%,100%{opacity:.85;text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 24px rgba(255,255,255,.65)}50%{opacity:1;text-shadow:0 0 10px #fff,0 0 22px rgba(255,244,191,1),0 0 36px rgba(255,239,175,.95)}}
 .offer-sparkle{position:fixed;width:3px;height:3px;border-radius:50%;background:#fff4bf;box-shadow:0 0 5px 2px rgba(255,239,175,.8);pointer-events:none;z-index:101;animation:offerSparkle 1.25s ease-out forwards}
 @keyframes offerSparkle{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:.8}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.1)}}
 #drop{position:absolute;left:50%;bottom:calc(7% - 39px);width:78px;height:78px;margin-left:-39px;border-radius:50%;border:1.5px dashed var(--white);box-shadow:0 0 20px rgba(255,255,255,.45),inset 0 0 18px rgba(227,132,150,.38);animation:pulse 2.6s infinite;z-index:6}
@@ -137,25 +140,23 @@ h1.invite-name{transform:translateX(-8cqw)}
 .flower.drag{transition:none;cursor:grabbing;z-index:30}
 .flower img,.flower svg{width:100%;height:100%;object-fit:contain;pointer-events:none;display:block}
 
-/* ===== GANPATI + FLOWER (one element shared by pages 1 and 2) =====
-   Moves with transforms and the SAME easing/duration as the scenes, so it glides
-   with the background. On leaving page 2 it exits upward in sync with the slide
-   (no fade-out). Geometry: page 1 = top 49% / height 49%; page 2 = top 8% / height 46%. */
-#bappa{position:absolute;left:17%;width:66%;top:47.5%;height:49%;z-index:4;pointer-events:none;transform-origin:50% 100%;transition:transform 1s cubic-bezier(.65,0,.25,1);will-change:transform}
-#bappa.up{transform:translateY(-41cqh) scale(.939)}
-#bappa.gone{transform:translateY(-144cqh) scale(.939)}
-#bappa img.bgan{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom center;opacity:0;filter:drop-shadow(0 5px 10px rgba(26,61,40,.12))}
-#bappa.in img.bgan{animation:flyU 1.5s .5s cubic-bezier(.2,.8,.2,1) both,ganpatiFloat 4.5s 2s ease-in-out infinite}
-.bappa-flower{position:absolute;z-index:3;left:50%;bottom:3%;width:61.6px;height:61.6px;transform:translateX(-50%);opacity:0;transition:opacity .5s;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35))}
-.bappa-flower img,.bappa-flower svg{width:100%;height:100%;object-fit:contain;display:block}
-#bappa.offered .bappa-flower{opacity:1;transition:none;transform:translateX(-50%) rotate(45deg);animation:flowerSettle .45s cubic-bezier(.2,.8,.2,1) both}
-@keyframes flowerSettle{from{transform:translateX(-50%) rotate(45deg) scale(1.2)}to{transform:translateX(-50%) rotate(45deg) scale(1)}}
+/* ===== GANPATI (one copy lives inside each page that shows him) ===== */
+.gan{position:absolute;z-index:4;pointer-events:none}
+.gan-main{left:17%;width:66%;top:47.5%;height:49%}
+.gan-puja{left:19%;width:62%;top:9.5%;height:46%;--gd:.35s}
+.gan img.bgan{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom center;opacity:0;filter:drop-shadow(0 5px 10px rgba(26,61,40,.12))}
+.scene.active .gan img.bgan{animation:flyU 1.5s var(--gd,.5s) cubic-bezier(.2,.8,.2,1) both,ganpatiFloat 4.5s calc(var(--gd,.5s) + 1.5s) ease-in-out infinite}
+.gan .image-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:1rem;text-align:center;font-size:.85rem;background:var(--cream)}
+.gflower{position:absolute;z-index:3;left:50%;bottom:3%;width:61.6px;height:61.6px;transform:translateX(-50%);opacity:0;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35))}
+.gflower img,.gflower svg{width:100%;height:100%;object-fit:contain;display:block}
+.gan.offered .gflower{opacity:1;transform:translateX(-50%) rotate(45deg)}
+.gan.spin .gflower{animation:flowerSpin 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes flowerSpin{from{transform:translateX(-50%) rotate(-315deg) scale(.6)}to{transform:translateX(-50%) rotate(45deg) scale(1)}}
 
-/* ===== SAGAI CONSTELLATION (glimmering wish stars) ===== */
+/* ===== SAGAI CONSTELLATION ===== */
 .constellation-layer{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none}
 .constellation-heading{position:absolute;top:6%;left:8%;width:84%;text-align:center;color:#fff;font:600 1.05rem/1.4 var(--f-date);letter-spacing:.16em;text-transform:uppercase;text-shadow:0 0 12px rgba(255,255,255,.7);pointer-events:none}
-/* the button is a 34px tap target; the visible sparkle is 10px */
-.constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:21;--lo:.3;--hi:1;filter:drop-shadow(0 0 3px rgba(255,248,223,.85));animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+.constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:21;--lo:.3;--hi:1;filter:drop-shadow(0 0 3px rgba(255,248,223,.85));animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite}
 .constellation-star svg{display:block;width:calc(10px*var(--big,1));height:calc(10px*var(--big,1));overflow:visible;pointer-events:none}
 .constellation-star .star-shape{fill:currentColor}
 .constellation-star.is-dim{--lo:.12;--hi:.55}
@@ -165,7 +166,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 .constellation-star:focus-visible{outline:1px solid #fff;border-radius:50%}
 .constellation-star.is-gold{color:#ffd66f;filter:drop-shadow(0 0 3px #fff7d7) drop-shadow(0 0 8px #ffce68) drop-shadow(0 0 17px rgba(255,190,74,.92))}
 .constellation-star.is-mine{--lo:.85;--hi:1;color:#ffda78;filter:drop-shadow(0 0 5px #fff7d7) drop-shadow(0 0 13px #ffce68) drop-shadow(0 0 24px rgba(255,190,74,1))}
-.constellation-star.is-taken:not(.is-mine){animation:none;opacity:.5;scale:1;color:#ffd66f;filter:drop-shadow(0 0 3px rgba(255,214,111,.9)) drop-shadow(0 0 8px rgba(255,190,74,.6))} 
+.constellation-star.is-taken:not(.is-mine){animation:none;opacity:.5;scale:1;color:#ffd66f;filter:drop-shadow(0 0 3px rgba(255,214,111,.9)) drop-shadow(0 0 8px rgba(255,190,74,.6))}
 .constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
 .constellation-ui.open{opacity:1;pointer-events:auto}
 .constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
@@ -180,159 +181,131 @@ h1.invite-name{transform:translateX(-8cqw)}
 .constellation-status{min-height:1.3em;margin-top:.75rem;font:.8rem/1.4 var(--f-venue);color:var(--sage)}
 .constellation-admin{position:absolute;right:.7rem;top:.7rem;z-index:32;padding:.4rem .55rem;border:1px solid rgba(255,255,255,.6);border-radius:8px;background:rgba(12,28,23,.75);color:#fff;font:.55rem var(--f-date);letter-spacing:.04em;pointer-events:auto}
 .constellation-admin-panel{position:absolute;inset:0;z-index:35;padding:1rem;background:rgba(10,24,19,.94);color:#fff;overflow:auto;pointer-events:auto;display:none}
-.constellation-admin-panel.open{display:block}.constellation-admin-panel h3{font:1.4rem var(--f-names);margin:1rem 0}.admin-wish{padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.2);font:.8rem/1.4 var(--f-venue);overflow-wrap:anywhere}.admin-wish button{margin:.4rem .3rem 0 0;padding:.35rem .5rem;border:0;border-radius:6px;background:#d7b45a;color:#17271e;font-size:.7rem}.admin-close{position:sticky;top:0;float:right;padding:.45rem .65rem;border:0;border-radius:8px}
+.constellation-admin-panel.open{display:block}
+.constellation-admin-panel h3{font:1.4rem var(--f-names);margin:1rem 0}
+.admin-wish{padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.2);font:.8rem/1.4 var(--f-venue);overflow-wrap:anywhere}
+.admin-wish button{margin:.4rem .3rem 0 0;padding:.35rem .5rem;border:0;border-radius:6px;background:#d7b45a;color:#17271e;font-size:.7rem}
+.admin-close{position:sticky;top:0;float:right;padding:.45rem .65rem;border:0;border-radius:8px}
 
 /* ===== EVENT PAGES ===== */
 .ev-over{position:absolute;left:0;right:0;bottom:10%;top:auto;padding:0 .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
 .ev-over h2,.ev-over p{font-weight:500;-webkit-text-stroke:.3px currentColor}
-.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(3.5rem,15cqw,4.9rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere} html[data-side=groom] .scene[data-event=puja] .ev-over h2{   font-size:calc(clamp(3.5rem,15cqw,4.9rem) - 3px); }
-.bride-side .scene[data-event=mehendi] .ev-over h2,
-.bride-side .scene[data-event=haldi] .ev-over h2{
-  font-size:clamp(4.1rem,17.5cqw,5.7rem);
-  line-height:1;
-}
-/* Sangeet title is intentionally large on both sides */
-.bride-side .scene[data-event=sangeet] .ev-over h2,
-.groom-side .scene[data-event=sangeet] .ev-over h2{
-  font-size:clamp(4.6rem,20cqw,6.4rem);
-  line-height:1;
-}
-   .ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
+.ev-over h2{font-family:var(--f-names);font-weight:500;font-size:clamp(3.5rem,15cqw,4.9rem);line-height:.95;color:var(--hl);margin:.2rem 0 .5rem;overflow-wrap:anywhere}
+.ev-over p{color:var(--white);font-size:1rem;margin:.18rem 0}
+.bride-side .scene[data-event=mehendi] .ev-over h2,.bride-side .scene[data-event=haldi] .ev-over h2{font-size:clamp(4.1rem,17.5cqw,5.7rem);line-height:1}
+.bride-side .scene[data-event=sangeet] .ev-over h2,.groom-side .scene[data-event=sangeet] .ev-over h2{font-size:clamp(4.6rem,20cqw,6.4rem);line-height:1}
 .date-time,.host-names{font-family:var(--f-date)}
 .venue-row{font-family:var(--f-venue)}
-
-.loading-dots{
-  display:inline-block;
-  font-weight:700;
-  letter-spacing:.12em;
-  background:linear-gradient(
-    90deg,
-    #E38496 0%,
-    #B2AF87 45%,
-    #1A3D28 100%
-  );
-  background-size:200% 100%;
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  animation:dotShimmer 1.1s linear infinite;
-}
-
-@keyframes dotShimmer{
-  from{background-position:100% 0}
-  to{background-position:-100% 0}
-}
-
-   .maplink{display:inline-block;margin-top:.9rem;padding:.55rem 1.3rem;border:1px solid currentColor;border-radius:999px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;pointer-events:auto;cursor:pointer}
+.maplink{display:inline-block;margin-top:.9rem;padding:.55rem 1.3rem;border:1px solid currentColor;border-radius:999px;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;pointer-events:auto;cursor:pointer}
 .ev-over .maplink{color:var(--white)}
 .scene[data-event=puja] .ev-over p,.scene[data-event=puja] .ev-over .maplink{color:var(--sage);text-shadow:0 1px 4px rgba(249,237,213,.55)}
-.scene[data-event=puja] .ev-over h2{font-size:clamp(3.5rem,15cqw,4.9rem)}
-/* Groom GPUJA uses the puja skin; keep every visible event detail white. */
-.groom-side .scene[data-event=puja] .ev-over,
-.groom-side .scene[data-event=puja] .ev-over h2,
-.groom-side .scene[data-event=puja] .ev-over p,
-.groom-side .scene[data-event=puja] .ev-over .maplink{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+/* Groom GPUJA uses the puja skin; every visible detail stays white */
+.groom-side .scene[data-event=puja] .ev-over,.groom-side .scene[data-event=puja] .ev-over h2,.groom-side .scene[data-event=puja] .ev-over p,.groom-side .scene[data-event=puja] .ev-over .maplink{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.4)}
 .groom-side .scene[data-event=puja] .ev-over{top:16%;bottom:auto;padding:0 .8rem;text-align:center}
-
-.groom-side .scene[data-event=puja] .ev-over h2{
-  font-size:calc(clamp(3.6rem,16cqw,5.4rem) - 3px);
-  line-height:1.02;
-}
-
+.groom-side .scene[data-event=puja] .ev-over h2{font-size:calc(clamp(3.6rem,16cqw,5.4rem) - 3px);line-height:1.02}
 .groom-side .scene[data-event=puja] .next-cue-label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .next-cue{position:absolute;right:1.1rem;bottom:2.4rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
 .next-cue-label{text-shadow:0 1px 5px rgba(26,61,40,.5)}
-.back-cue{position:absolute;left:1.1rem;bottom:2.4rem;z-index:12;width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid currentColor;border-radius:50%;background:rgba(255,255,255,.12);color:var(--hl);opacity:.45;cursor:pointer;pointer-events:auto;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:opacity .3s} .back-cue:active{opacity:.8} .back-cue svg{width:14px;height:14px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round} .groom-side .scene[data-event=puja] .back-cue{color:#fff} 
-   /* Mehendi bells: --r = rest position (share of the bell's own height above the frame), --d = how far it drops */ .m-bell{position:absolute;top:0;z-index:4;height:var(--bh,34cqh);width:max-content;pointer-events:none;--r:-45%;--d:14%;transform:translateY(var(--r));will-change:transform} .m-bell img{display:block;height:100%;width:auto;max-width:none;object-fit:contain;-webkit-user-drag:none} .m-bell-1{right:10px;--r:-45%} .m-bell-2{right:10px;--r:-50%} .m-bell-3{right:20px;--r:-60%} /* 6s loop: 1 down → 2 down → 1 up → 3 down → 2 up → 3 up, then a short rest */ .scene.active .m-bell{animation:mBellSwing 6s ease-in-out infinite} .scene.active .m-bell-1{animation-delay:0s} .scene.active .m-bell-2{animation-delay:1s} .scene.active .m-bell-3{animation-delay:2s} @keyframes mBellSwing{   0%{transform:translateY(var(--r))}   25%{transform:translateY(calc(var(--r) + var(--d)))}   50%,100%{transform:translateY(var(--r))} } .pixie-orbit{position:relative;display:block;width:27px;height:27px;border:1px solid currentColor;border-radius:50%;animation:cuePulse 2.2s ease-in-out infinite}
+.back-cue{position:absolute;left:1.1rem;bottom:2.4rem;z-index:12;width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid currentColor;border-radius:50%;background:rgba(255,255,255,.12);color:var(--hl);opacity:.45;cursor:pointer;pointer-events:auto;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:opacity .3s}
+.back-cue:active{opacity:.8}
+.back-cue svg{width:14px;height:14px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.groom-side .scene[data-event=puja] .back-cue{color:#fff}
+
+/* ===== BELLS: pop in from the top with a bounce ===== */
+@keyframes bellPop{
+  0%{transform:translateY(-140%);animation-timing-function:cubic-bezier(.5,0,.9,.6)}
+  45%{transform:translateY(18px);animation-timing-function:ease-out}
+  65%{transform:translateY(-9px);animation-timing-function:ease-in-out}
+  82%{transform:translateY(4px);animation-timing-function:ease-in-out}
+  100%{transform:translateY(0)}
+}
+/* Mehendi bells: natural size. --r = rest position (share of own height above the frame) */
+.m-bell{position:absolute;top:0;z-index:4;pointer-events:none;transform:translateY(var(--r))}
+.m-bell img{display:block;width:auto;height:auto;max-width:none;-webkit-user-drag:none;will-change:transform}
+.m-bell-1{right:10px;--r:-25%}
+.m-bell-2{right:10px;--r:-30%}
+.m-bell-3{right:20px;--r:-40%}
+.scene.active .m-in{animation:bellPop 1.1s var(--pd,0s) both}
+/* constant 4.5s loop, each bell 1.5s after the previous: when 3 starts rising, 1 starts dropping */
+.scene.active .m-bell img{animation:mBellSwing 4.5s ease-in-out var(--sd,1.4s) infinite}
+@keyframes mBellSwing{0%{transform:translateY(0)}33%{transform:translateY(26px)}66%,100%{transform:translateY(0)}}
+/* Bride Puja wedding bells: pendulum + pop in */
+.w-bell{position:absolute;top:-40px;height:75cqh;width:max-content;z-index:4;pointer-events:none;transform-origin:top center;animation:bellPendulum 4.8s ease-in-out infinite alternate;will-change:transform}
+.w-pop{height:100%}
+.scene.active .w-pop{animation:bellPop 1.1s var(--pd,0s) both}
+.w-bell img{display:block;height:100%;width:auto;max-width:none;object-fit:contain;-webkit-user-drag:none}
+.w-bell-left{left:15px;height:95cqh;animation-duration:5.2s;animation-delay:-1.1s}
+.w-bell-r1{right:10px;top:70px;height:calc(75cqh - 70px);animation-duration:4.8s;animation-delay:-.4s}
+.w-bell-r2{right:50px;top:70px;height:35cqh;animation-duration:5.5s;animation-delay:-1.8s}
+@keyframes bellPendulum{0%{transform:rotate(-4deg)}100%{transform:rotate(4deg)}}
+/* Tree on bride Puja: slides in from the right (no wobble) */
+.puja-tree{position:absolute;right:-45%;top:-10%;bottom:auto;width:96%;height:100%;z-index:5;pointer-events:none;overflow:visible;transform-origin:80% 0}
+.puja-tree img,.puja-tree svg.t{display:block;width:100%;height:100%;object-fit:contain;object-position:top right}
+.scene.active[data-key=puja] .puja-tree{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) .35s both}
+/* Yellow petals (bride Puja): fall to the bottom of the Ganpati frame, then drift and fade slowly */
+.ypetal{--yb:calc(55.5cqh + 40px);position:absolute;top:-40px;display:grid;place-items:center;z-index:6;pointer-events:none;animation:yellowFall linear forwards;will-change:transform,opacity}
+.ypetal .pi.fb{background:#F4BE43;box-shadow:0 0 8px rgba(232,169,43,.6)}
+@keyframes yellowFall{
+  0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0}
+  8%{opacity:1}
+  62%{transform:translate3d(var(--dx),var(--yb),0) rotate(var(--spin));opacity:1}
+  100%{transform:translate3d(calc(var(--dx) + var(--sx)),calc(var(--yb) + 8cqh),0) rotate(calc(var(--spin)*1.3));opacity:0}
+}
+.pixie-orbit{position:relative;display:block;width:27px;height:27px;border:1px solid currentColor;border-radius:50%;animation:cuePulse 2.2s ease-in-out infinite}
 .pixie-orbit::before,.pixie-orbit::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
 .pixie-orbit::before{top:2px;right:1px}.pixie-orbit::after{bottom:1px;left:2px}
 @keyframes cuePulse{0%,100%{transform:scale(.94);opacity:.55;box-shadow:0 0 0 0 rgba(227,132,150,.18)}50%{transform:scale(1.04);opacity:1;box-shadow:0 0 0 5px rgba(227,132,150,0)}}
 
+/* ===== SHOOTING STARS (sangeet) + HALDI SHIMMER ===== */
+.shoot{position:absolute;z-index:5;width:var(--len);height:2px;border-radius:2px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.95));box-shadow:0 0 8px rgba(255,255,255,.7);transform-origin:0 50%;animation:shootRun 1.1s ease-in forwards}
+@keyframes shootRun{0%{opacity:0;transform:rotate(25deg) translateX(0)}15%{opacity:1}100%{opacity:0;transform:rotate(25deg) translateX(300px)}}
+.scene[data-event=haldi] .ev-over h2{position:relative}
+.scene[data-event=haldi] .ev-over h2::after{content:attr(data-t);position:absolute;inset:0;color:transparent;-webkit-text-stroke:0;text-shadow:none;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,205,70,.95) 46%,#fff0a8 50%,rgba(255,190,50,.95) 54%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:150% 0;-webkit-background-clip:text;background-clip:text}
+.scene.active[data-event=haldi] .ev-over h2::after{animation:haldiSweep 8s ease-in-out 2.6s infinite}
+@keyframes haldiSweep{0%{background-position:150% 0}44%,100%{background-position:-50% 0}}
+.powder{position:absolute;z-index:6;width:var(--s);height:var(--s);border-radius:50%;pointer-events:none;background:#FFE9A8;box-shadow:0 0 6px 2px rgba(255,200,70,.85);opacity:0;animation:powderRise 2.4s ease-out forwards}
+@keyframes powderRise{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy)*-1)) scale(.3)}}
+
 /* ===== WEDDING PAGE: FALLING PETALS ===== */
 .petal-hint{position:absolute;top:30%;left:5%;width:90%;transform:translateY(-50%);z-index:20;text-align:center;opacity:0;pointer-events:none;font-family:var(--fb);font-size:clamp(.855rem,3.56cqw,1.14rem);line-height:1.2;letter-spacing:.07em;color:var(--pink);text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.95),0 0 34px rgba(227,132,150,.65)}
 .petal-hint.show{animation:petalPromptEntrance 1.4s ease-out both,petalSoftGlow 3.2s 1.4s ease-in-out infinite}
-.scene.dim .petal-hint{opacity:0 !important;transition:opacity .4s}
+.scene.dim .petal-hint{opacity:0!important;transition:opacity .4s}
 .hint-text{display:inline-block;transform-origin:center}
 .hint-text.pulse{animation:hintPulse 1.6s ease-in-out 1}
 @keyframes hintPulse{0%,50%,100%{transform:scale(1)}25%,75%{transform:scale(1.05)}}
 @keyframes petalFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:.9;transform:none}}
-@keyframes petalGlow{0%,100%{opacity:.72;transform:scale(1)}50%{opacity:1;transform:scale(1.035)}}
 @keyframes petalPromptEntrance{from{opacity:0;transform:translateY(calc(-50% + 28px))}to{opacity:1;transform:translateY(-50%)}}
-@keyframes petalSoftGlow{
-  0%,100%{opacity:1;text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.9),0 0 30px rgba(227,132,150,.55)}
-  50%{opacity:1;text-shadow:0 0 12px #fff,0 0 24px #E38496,0 0 40px rgba(227,132,150,.75)}
-}
+@keyframes petalSoftGlow{0%,100%{opacity:1;text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.9),0 0 30px rgba(227,132,150,.55)}50%{opacity:1;text-shadow:0 0 12px #fff,0 0 24px #E38496,0 0 40px rgba(227,132,150,.75)}}
 .petal{position:absolute;top:-90px;display:grid;place-items:center;animation:fall linear forwards;z-index:5;cursor:pointer;will-change:transform}
 .pi{display:block;width:var(--s);height:var(--s);pointer-events:none;animation:tumble var(--td) ease-in-out infinite alternate;opacity:var(--o,1)}
 .pi img{width:100%;height:100%;object-fit:contain;display:block;-webkit-user-drag:none}
 .pi.fb{width:calc(var(--s)*.6);height:calc(var(--s)*.85);border-radius:70% 0 70% 0;background:var(--pink);box-shadow:0 0 10px rgba(227,132,150,.6)}
 @keyframes fall{0%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(var(--dx2),58cqh,0) rotate(calc(var(--spin)*.5))}100%{transform:translate3d(var(--dx),122cqh,0) rotate(var(--spin))}}
 @keyframes tumble{from{transform:perspective(420px) scaleX(var(--fl)) rotate(var(--r0)) rotateX(0) rotateY(0) translateX(calc(var(--sw)*-1))}to{transform:perspective(420px) scaleX(var(--fl)) rotate(var(--r1)) rotateX(var(--rx)) rotateY(var(--ry)) translateX(var(--sw))}}
-
-/* wedding details pop-up */
 #pop{position:absolute;inset:0;z-index:40;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .5s}
 #pop.show{opacity:1;pointer-events:auto}
-#pop:not(.show) .maplink{pointer-events:none}  .scene:not(.active) .maplink{   pointer-events:none!important; }  .scene[data-event=wedding] .maplink{   display:none!important; }
+#pop:not(.show) .maplink{pointer-events:none}
+.scene:not(.active) .maplink{pointer-events:none!important}
+.scene[data-event=wedding] .maplink{display:none!important}
 #pop .card{width:84%}
 #pop .row{margin-top:.7rem;color:var(--forest);font-size:.95rem}
 #pop .maplink{color:var(--pink)}
+#popCard{position:relative}
 #popCard h2{font-size:4.1rem;line-height:1.05;overflow-wrap:anywhere;-webkit-text-stroke:.5px currentColor}
+.pop-orn{position:absolute;top:-24px;left:50%;width:48px;height:48px;margin-left:-24px;transform:rotate(10deg);transition:opacity .3s;filter:drop-shadow(0 0 6px rgba(227,132,150,.7));animation:ornPulse 2.6s ease-in-out infinite}
+.pop-orn img{width:100%;height:100%;object-fit:contain;display:block}
+@keyframes ornPulse{0%,100%{transform:rotate(10deg) scale(1)}50%{transform:rotate(10deg) scale(1.14)}}
+.petal-fly{position:fixed;z-index:150;pointer-events:none}
 
 /* ===== FINAL PAGE ===== */
-#final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem}
+#final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 .final-greeting,#final h1{font-family:var(--fd);font-weight:500;color:var(--pink);-webkit-text-stroke:.3px currentColor}
 .final-greeting{font-size:clamp(1.8rem,7cqw,2.6rem);line-height:1.2;margin-bottom:1.3rem}
 #final h1{font-size:clamp(4.8rem,22cqw,6.8rem);line-height:1.05;text-wrap:balance}
 #final .lg{width:34%;margin-top:1.35rem;transition:transform .9s ease,opacity .9s ease}
 #final .final-blessings{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:.6rem;font-family:var(--f-date);font-size:clamp(10px,2.8cqw,14px);line-height:1.35;letter-spacing:.035em;text-align:center;color:var(--forest);opacity:.82;max-width:100%}
-/* Groom final page follows the same layout as the bride: blessings stay below the logo */
 .logo-return{position:fixed;z-index:200;object-fit:contain;pointer-events:none;transition:left .9s cubic-bezier(.2,.8,.2,1),top .9s cubic-bezier(.2,.8,.2,1),width .9s cubic-bezier(.2,.8,.2,1),height .9s cubic-bezier(.2,.8,.2,1),opacity .5s ease}
-.intro .invite-with{font-family:'BodoniVenue',serif;text-transform:none;font-variant:normal}
-
-/* ===== LOGO-BG on home + last page ===== */
-#logo{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
-#final{background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
-#bappa.gone.fromMain{transform:translateY(-102cqh)}
-html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height:clamp(76px,22cqw,106px); }
-
-/* ===== BRIDE PUJA WEDDING BELLS ===== */ 
-   .w-bell{   position:absolute;   top:-40px;   height:75cqh;   width:max-content;   z-index:4;   pointer-events:none;   transform-origin:top center;   animation:bellPendulum 4.8s ease-in-out infinite alternate;   will-change:transform; }  
-   .w-bell img{   display:block;   height:100%;   width:auto;   max-width:none;   object-fit:contain;   -webkit-user-drag:none; }  
-   .w-bell-left{   left:15px;   height:95cqh;   animation-duration:5.2s;   animation-delay:-1.1s; }  
-   .w-bell-r1{   right:10px;   top:70px;   height:calc(75cqh - 70px);   animation-duration:4.8s;   animation-delay:-.4s; }  
-   .w-bell-r2{   right:50px;   top:70px;   height:35cqh;   animation-duration:5.5s;   animation-delay:-1.8s; }  
-   @keyframes bellPendulum{   0%{transform:rotate(-4deg)}   100%{transform:rotate(4deg)} }
-
-/* Tree on the bride's Puja page; bells go behind. */
-.puja-tree{position:absolute;right:-45%;top:-10%;bottom:auto;width:96%;height:100%;z-index:5;pointer-events:none;overflow:visible}
-.puja-tree img,.puja-tree svg.t{display:block;width:100%;height:100%;object-fit:contain;object-position:top right} /* tree slides in from the right like the main page, no bobble */ .puja-tree{transform-origin:80% 0} .scene.active[data-key=puja] .puja-tree{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) .35s both}  /* yellow petal shower (Puja, bride). --yb = how far down they fall = bottom of the Ganpati frame */ .ypetal{--yb:calc(55.5cqh + 30px);position:absolute;top:-40px;display:grid;place-items:center;z-index:6;pointer-events:none;animation:yellowFall linear forwards;will-change:transform,opacity} .ypetal .pi.fb{background:#F4BE43;box-shadow:0 0 8px rgba(232,169,43,.6)} @keyframes yellowFall{   0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0}   8%{opacity:1}   62%{transform:translate3d(var(--dx),var(--yb),0) rotate(var(--spin));opacity:1}   100%{transform:translate3d(calc(var(--dx) + var(--sx)),calc(var(--yb) + 8cqh),0) rotate(calc(var(--spin)*1.3));opacity:0} }
-
-   /* ===== TURMERIC SPLASH + DRIPS (haldi / gpuja) ===== */
-.splash{position:absolute;inset:0;z-index:45;pointer-events:none;overflow:hidden}
-.splash-fill{position:absolute;inset:0;background:radial-gradient(circle at var(--x) var(--y),#F4BE43,#E8A92B 55%,#D98F12)}
-.splash-blob{position:absolute;border-radius:50%;background:#F4BE43;box-shadow:0 0 6px 2px rgba(232,169,43,.8)}
-.drip{position:absolute;top:-4px;left:var(--x);width:var(--w);height:0;margin-left:calc(var(--w)/-2);z-index:8;pointer-events:none;border-radius:0 0 50% 50%;background:linear-gradient(#E8A92B,#D98F12);animation:dripRun 3.6s ease-in both}
-.drip::after{content:"";position:absolute;left:50%;bottom:calc(var(--w)*-.9);width:calc(var(--w)*1.8);height:calc(var(--w)*2);margin-left:calc(var(--w)*-.9);border-radius:50% 50% 55% 55%/40% 40% 60% 60%;background:#D98F12}
-@keyframes dripRun{0%{height:0;opacity:1;transform:none}55%{height:var(--len);opacity:1;transform:none}78%{height:var(--len);opacity:1;transform:translateY(0)}100%{height:var(--len);opacity:0;transform:translateY(55cqh)}}
-
-/* ===== SHOOTING STARS (sangeet) ===== */
-.shoot{position:absolute;z-index:5;width:var(--len);height:2px;border-radius:2px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.95));box-shadow:0 0 8px rgba(255,255,255,.7);transform-origin:0 50%;animation:shootRun 1.1s ease-in forwards}
-@keyframes shootRun{0%{opacity:0;transform:rotate(25deg) translateX(0)}15%{opacity:1}100%{opacity:0;transform:rotate(25deg) translateX(300px)}}
-
-/* ===== GOLD-FOIL SHIMMER on the couple's names (page 1, once) ===== */
-.invite-name{position:relative}
-.invite-name::after{content:attr(data-t);position:absolute;inset:0;color:transparent;-webkit-text-stroke:0;text-shadow:none;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,236,170,.95) 47%,#fff 50%,rgba(255,214,111,.95) 53%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:150% 0;-webkit-background-clip:text;background-clip:text}
-.scene.active#s0 .invite-name::after{animation:foilSweep 2.2s ease-in-out 2.3s 1 both}
-@keyframes foilSweep{from{background-position:150% 0}to{background-position:-50% 0}}
-.flower-fly{position:fixed;z-index:150;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35))}
-.flower-fly img,.flower-fly svg{width:100%;height:100%;object-fit:contain;display:block}
-#popCard{position:relative}
-.pop-orn{position:absolute;top:-24px;left:50%;width:48px;height:48px;margin-left:-24px;transform:rotate(10deg);transition:opacity .3s;filter:drop-shadow(0 0 6px rgba(227,132,150,.7));animation:ornPulse 2.6s ease-in-out infinite} .pop-orn img{width:100%;height:100%;object-fit:contain;display:block} @keyframes ornPulse{0%,100%{transform:rotate(10deg) scale(1)}50%{transform:rotate(10deg) scale(1.14)}}
-.petal-fly{position:fixed;z-index:150;pointer-events:none}
-
-/* ===== HALDI: recurring gold shimmer on the title (every 5s while the page is open) ===== */ 
-   .scene[data-event=haldi] .ev-over h2{position:relative} .scene[data-event=haldi] .ev-over h2::after{content:attr(data-t);position:absolute;inset:0;color:transparent;-webkit-text-stroke:0;text-shadow:none;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,205,70,.95) 46%,#fff0a8 50%,rgba(255,190,50,.95) 54%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:150% 0;-webkit-background-clip:text;background-clip:text} .scene.active[data-event=haldi] .ev-over h2::after{animation:haldiSweep 8s ease-in-out 2.6s infinite} @keyframes haldiSweep{0%{background-position:150% 0}44%,100%{background-position:-50% 0}} .powder{position:absolute;z-index:6;width:var(--s);height:var(--s);border-radius:50%;pointer-events:none;background:#FFE9A8;box-shadow:0 0 6px 2px rgba(255,200,70,.85);opacity:0;animation:powderRise 2.4s ease-out forwards} @keyframes powderRise{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy)*-1)) scale(.3)}} 
 </style>
 </head>
 <body>
@@ -343,14 +316,14 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
       <img id="logoImg" alt="Logo">
       <div class="mono" id="mono">A <span>∞</span> M<small>WEDDING</small></div>
     </div>
-    <div id="hint"><span style="display:inline-block">Draw <span class="inf">∞</span> to begin</span></div> <div id="logoBlessings">   <span id="blessingLine1">With love &amp; warm regards</span>   <span id="blessingLine2">Blessings only</span> </div>
+    <div id="hint"><span style="display:inline-block">Draw <span class="inf">∞</span> to begin</span></div>
   </div>
   <div id="nameModal"><div class="card">
     <h2 class="welcome-word fx" style="--d:.3s">Welcome</h2><p class="fx l" style="--d:.5s">Please enter your name</p>
     <input class="fx r" style="--d:.7s" id="nameIn" placeholder="Your name" autocomplete="off" maxlength="40">
     <button class="btn fx" style="--d:.9s" id="enterBtn">Enter</button>
   </div></div>
-  <div id="app"></div>
+  <div id="app" class="kontext capable"></div>
   <div id="pop"><div class="card" id="popCard"></div></div>
 </div>
 <canvas id="dust"></canvas>
@@ -358,20 +331,15 @@ html[data-side=groom] #inviteGaneshay{   width:clamp(76px,22cqw,106px);   height
 <script>
 /* ================= EDIT THIS SECTION ================= */
 const CONSTELLATION_API = "https://script.google.com/macros/s/AKfycbzVGBOLdb_vjlJfURxCMwrg0lEQxKmp4sEYgd09NQxZIrC6abiqPkRKULaBExR1G7O-/exec";
-const ADMIN_TOKEN = "CHANGE_THIS_TO_A_PRIVATE_ADMIN_TOKEN"; // Configure the same token in your Apps Script before using admin actions.
-const SIDE=new URLSearchParams(location.search).get('side')?.toLowerCase()==='groom'?'groom':'bride'; document.documentElement.dataset.side=SIDE; document.documentElement.classList.add(SIDE+'-side');
-const GUEST_SOURCE="sheet";
+const ADMIN_TOKEN = "CHANGE_THIS_TO_A_PRIVATE_ADMIN_TOKEN"; // Must match the token configured in your Apps Script.
+const SIDE=new URLSearchParams(location.search).get('side')?.toLowerCase()==='groom'?'groom':'bride';
+document.documentElement.dataset.side=SIDE;document.documentElement.classList.add(SIDE+'-side');
 const SIDES={
   bride:{
     logo:"assets/logo.png", ganeshay:"assets/ganeshay.png",
     order:["puja","mehendi","sangeet","haldi","wedding"],
     main:{
-      beforeHosts:[
-        "With the blessings of",
-        "Smt. Sarmishtha & Shri Ramesh Doshi",
-        "and the loving memories of",
-        "Late Smt. Kamal & Late Shri Vasudeo Jatkar"
-      ],
+      beforeHosts:["With the blessings of","Smt. Sarmishtha & Shri Ramesh Doshi","and the loving memories of","Late Smt. Kamal & Late Shri Vasudeo Jatkar"],
       hosts:"Smt. Archana &amp; Shri Vinay Jatkar",
       lines:["cordially invite you to celebrate the wedding festivities of","their beloved daughter"],
       first:"Samidha", second:"Rahil",
@@ -382,48 +350,37 @@ const SIDES={
     logo:"assets/Groom-logo.png", ganeshay:"assets/groom-ganeshay.png",
     order:["sangeet","gpuja","wedding"],
     main:{
-      lines:[
-        "With the divine blessings of",
-        "Lord Mahavirji",
-        "and our beloved parents Smt. Manjula &",
-        "Late Shri Maheshchandra Dhami"
-      ],
+      lines:["With the divine blessings of","Lord Mahavirji","and our beloved parents Smt. Manjula &","Late Shri Maheshchandra Dhami"],
       afterHosts:"cordially invite you to celebrate the wedding of their son",
       hosts:"Smt. Sneha and Late Shri Sanjiv Dhami",
       first:"Rahil", second:"Samidha",
       sub:"(Daughter of Smt. Archana &amp; Shri Vinay Jatkar)",
-      share:"best wishes", family:"Dhami Family"
-   }
-}
+      share:"best wishes", family:"Dhami Family"}
+  }
 };
 const SD=SIDES[SIDE];
-   const CONFIG={
-  couple:"Samidha & Rahil",
+const CONFIG={
   logo:SD.logo,
   ganpati:"assets/ganpati.png",
   tree:"assets/Ganpati%20Tree.png",   // SVG fallback is drawn if this file is missing
   hibiscus:"assets/hibiscus.png",
   petal:"assets/petal.png",
-  drawTree:true,                      // false if the main BG already has a tree
-  flowerPos:[[22,58],[60,66],[45,77],[32,71],[55,48]],// five flowers shifted lower and spread wider
+  drawTree:true,
+  flowerPos:[[22,58],[60,66],[45,77],[32,71],[55,48]],
   bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",gpuja:"assets/Groom-bg-haldi.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
 };
-// Page order: Main → Puja → Mehendi → Sagai (sangeet) → Haldi → Wedding (petals) → Thank-you
-
 const EVENTS={
   puja:{always:true,bappa:true,title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   mehendi:{title:"Mehendi te Vaavi",date:"thursday, 10th december 2026",time:"5:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   sangeet:{title:"Sagai &<br>Shor Sharaba",date:"friday, 11th december 2026",time:"7:00 PM onwards",venue:"Embassy Hall, The Tunga Paradise, Andheri E, Mumbai",map:"https://maps.app.goo.gl/GceAwj1eoHQRVYf56"},
-  gpuja:{skin:"puja",title:"Mandap Muhurat &<br>Randal Puja<br>Mehendi & Prem Pithi",date:"saturday, 12th december 2026",time:"10:00 AM onwards",venue:"Orchid Hall, Lodha Eternis",map:"https://maps.app.goo.gl/JrvUhVTGP5fqonHS8"},   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
+  gpuja:{skin:"puja",title:"Mandap Muhurat &<br>Randal Puja<br>Mehendi & Prem Pithi",date:"saturday, 12th december 2026",time:"10:00 AM onwards",venue:"Orchid Hall, Lodha Eternis",map:"https://maps.app.goo.gl/JrvUhVTGP5fqonHS8"},
+  haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   wedding:{always:true,title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:"https://maps.app.goo.gl/tzmzjRDrhJN4GLGJ7"}
 };
-// First name (lowercase) → events invited to. Wedding is always shown.
-const GUESTS={
-  "samu":["puja","mehendi","sangeet","haldi","wedding"],
-  "rahul":["puja","sangeet","wedding"],
-  "anita":["mehendi","haldi","wedding"]
-};
-const DEFAULT_GUEST=[];
+/* Yellow petals on the bride Puja page. size = half of the wedding petals (24-52px) */
+const YELLOW={imgs:['assets/yellow-1.png','assets/yellow-2.png'],size:[12,26]};
+/* Mehendi bells: loop timing. pop = delay of the bounce-in, swing = when each bell joins the up/down loop */
+const MBELL=[{img:'assets/Bell-1.png',pop:0,swing:1.4},{img:'assets/Bell-2.png',pop:.12,swing:2.9},{img:'assets/Bell-3.png',pop:.24,swing:4.4}];
 /* ===================================================== */
 
 const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a);
@@ -432,10 +389,9 @@ let pts=[],drawing=false,down=null;
 const app=$('#app'),li=$('#logoImg'),frameEl=$('.frame');
 const inFrame=e=>{const r=frameEl.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom};
 
-/* ---- pixie dust (canvas is clipped to the phone frame on desktop) ---- */
+/* ---- pixie dust (canvas clipped to the phone frame) ---- */
 const cv=$('#dust'),cx=cv.getContext('2d');
 let P=[],dpr=Math.min(devicePixelRatio||1,2);
-if(!cx)console.error('Pixie-dust canvas could not get a 2D context.');
 function clipDust(){
   const f=frameEl.getBoundingClientRect(),rad=parseFloat(getComputedStyle(frameEl).borderRadius)||0;
   cv.style.clipPath=`inset(${f.top}px ${innerWidth-f.right}px ${innerHeight-f.bottom}px ${f.left}px round ${rad}px)`;
@@ -448,45 +404,24 @@ function dust(x,y,o={}){
 }
 const burst=(x,y,n=50,o={})=>dust(x,y,{...o,n,spread:o.spread||4});
 function offeringPixieDust(){
-  const flowers=[...document.querySelectorAll('#s0 .flower')];
-  const target=document.querySelector('#drop');
-
+  const flowers=[...document.querySelectorAll('#s0 .flower')],target=$('#drop');
   if(cur!==0||!flowers.length||!target)return;
-
-  const tr=target.getBoundingClientRect();
-  const tx=tr.left+tr.width/2;
-  const ty=tr.top+tr.height/2;
-
+  const tr=target.getBoundingClientRect(),tx=tr.left+tr.width/2,ty=tr.top+tr.height/2;
   flowers.forEach((f,index)=>{
-    const r=f.getBoundingClientRect();
-    const sx=r.left+r.width/2;
-    const sy=r.top+r.height/2;
-
+    const r=f.getBoundingClientRect(),sx=r.left+r.width/2,sy=r.top+r.height/2;
     for(let step=1;step<=14;step++){
-      const t=step/16;
-      const x=sx+(tx-sx)*t;
-      const y=sy+(ty-sy)*t;
-
+      const t=step/16,x=sx+(tx-sx)*t,y=sy+(ty-sy)*t;
       setTimeout(()=>{
         if(cur!==0)return;
-
-        const sparkle=document.createElement('span');
-        sparkle.className='offer-sparkle';
-        sparkle.style.left=x+'px';
-        sparkle.style.top=y+'px';
-        sparkle.style.setProperty('--dx',(tx-x)+'px');
-        sparkle.style.setProperty('--dy',(ty-y)+'px');
-        sparkle.style.animationDuration='.95s';
-        sparkle.style.width='3px';
-        sparkle.style.height='3px';
-
-        document.body.appendChild(sparkle);
-        sparkle.addEventListener('animationend',()=>sparkle.remove(),{once:true});
+        const sp=document.createElement('span');
+        sp.className='offer-sparkle';
+        sp.style.cssText=`left:${x}px;top:${y}px;--dx:${tx-x}px;--dy:${ty-y}px;animation-duration:.95s`;
+        document.body.appendChild(sp);
+        sp.addEventListener('animationend',()=>sp.remove(),{once:true});
       },step*55+index*100);
     }
   });
 }
-
 (function loop(){
   if(!cx)return;
   cx.clearRect(0,0,innerWidth,innerHeight);
@@ -502,48 +437,28 @@ function offeringPixieDust(){
   cx.globalAlpha=1;requestAnimationFrame(loop);
 })();
 
-/* ---- logo fades and floats in subtly; infinity prompt follows ---- */
+/* ---- logo fades in and floats; infinity prompt follows ---- */
 li.onload=()=>{
-  li.style.display='block';
-  li.style.opacity=0;
- li.style.transform='translateY(30px) scale(.90)';
+  li.style.display='block';li.style.opacity=0;
+  li.style.transform='translateY(30px) scale(.90)';
   li.style.transition='opacity .65s ease, transform .65s cubic-bezier(.22,.61,.36,1)';
   $('#mono').style.display='none';
-
-  requestAnimationFrame(()=>{
-    li.style.opacity=1;
-    li.style.transform='translateY(0) scale(1)';
-  });
+  requestAnimationFrame(()=>{li.style.opacity=1;li.style.transform='translateY(0) scale(1)'});
   clearTimeout(window.logoFloatTimer);
-  window.logoFloatTimer=setTimeout(()=>{
-    li.style.animation='logoFloat 5s ease-in-out infinite';
-  },650);
-
+  window.logoFloatTimer=setTimeout(()=>{li.style.animation='logoFloat 5s ease-in-out infinite'},650);
   clearTimeout(window.infinityHintTimer);
-  window.infinityHintTimer=setTimeout(()=>{
-    if(stage==='logo')$('#hint').classList.add('ready');
-  },750);
+  window.infinityHintTimer=setTimeout(()=>{if(stage==='logo')$('#hint').classList.add('ready')},750);
 };
-li.onerror=()=>{
-  console.error('Logo failed to load:',li.src);
-  li.style.display='none';
-  $('#mono').style.display='block';
-};
+li.onerror=()=>{console.error('Logo failed to load:',li.src);li.style.display='none';$('#mono').style.display='block'};
 li.src=CONFIG.logo;
-if(li.complete){
-  if(li.naturalWidth>0)li.onload();
-  else if(li.src)li.onerror();
-}
-const logoBlessings=$('#logoBlessings');
-logoBlessings.style.display='none';
+if(li.complete){if(li.naturalWidth>0)li.onload();else if(li.src)li.onerror()}
 
 /* ---- infinity gesture ---- */
 function isInfinity(){
   if(pts.length<25)return false;
   const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),w=x1-x0,h=y1-y0;
   if(w<110||h<w*.18||h>w*.95)return false;
-  const mx=(x0+x1)/2;
-  let L=0,R=0;
+  const mx=(x0+x1)/2;let L=0,R=0;
   for(let i=1;i<pts.length-1;i++){
     const a={x:pts[i].x-pts[i-1].x,y:pts[i].y-pts[i-1].y},c={x:pts[i+1].x-pts[i].x,y:pts[i+1].y-pts[i].y};
     const ang=Math.atan2(a.x*c.y-a.y*c.x,a.x*c.x+a.y*c.y);
@@ -551,31 +466,20 @@ function isInfinity(){
   }
   return Math.abs(L)>2.2&&Math.abs(R)>2.2&&L*R<0;
 }
+function enterScenes(){
+  build();
+  $('#nameModal').classList.remove('show');
+  $('#logo').classList.add('gone');
+  stage='scenes';
+  app.classList.add('on');
+  show(0);
+}
 function infinityDone(){
   drawing=false;
-  pts.forEach((p,i)=>{
-    if(i%2===0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6);
-  });
-
-  // Returning guest: skip the name form and enter directly.
-  if(guest){
-    build();
-    $('#nameModal').classList.remove('show');
-    $('#logo').classList.add('gone');
-    logoBlessings.style.display='none';
-    stage='scenes';
-    app.classList.add('on');
-    show(0);
-    $('#bappa').classList.add('in');
-    return;
-  }
-
-  // First visit: ask for the guest's name.
+  pts.forEach((p,i)=>{if(i%2===0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6)});
+  if(guest){enterScenes();return}            // returning guest: skip the name form
   stage='name';
-  setTimeout(()=>{
-    $('#nameModal').classList.add('show');
-    $('#nameIn').focus({preventScroll:true});
-  },950);
+  setTimeout(()=>{$('#nameModal').classList.add('show');$('#nameIn').focus({preventScroll:true})},950);
 }
 
 /* ---- builders ---- */
@@ -585,6 +489,9 @@ const treeSVG=`<svg class="t" viewBox="0 0 200 300" preserveAspectRatio="xMidYMa
 const mapUrl=e=>e.map||'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((e.venue&&e.venue!=='Venue to be announced')?e.venue:e.title+' Mumbai');
 const mapLink=(e,d)=>`<a class="maplink fx" style="--d:${d}s" href="${mapUrl(e)}" target="_blank" rel="noopener">Find on map ↗</a>`;
 const hostLine=(e,cls,d)=>e.hosts?`<p class="${cls} host-names" style="--d:${d}s">Hosted by ${e.hosts}</p>`:'';
+const BACK=`<button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>`;
+const NEXT=`<button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`;
+const ganHTML=cls=>`<div class="gan ${cls}"><div class="image-fallback" hidden></div><img class="bgan" src="${CONFIG.ganpati}" draggable="false" alt="Ganpati Bappa"><div class="gflower">${hibImg}</div></div>`;
 
 function evHTML(k,invited){
   if(k==='puja'&&!invited)return `<div class="tg fx" style="--d:.7s">With blessings</div><h2 class="fx l" style="--d:.9s">Ganpati Bappa Morya</h2>`;
@@ -592,11 +499,9 @@ function evHTML(k,invited){
   return `<h2 class="fx l" style="--d:1.5s" data-t="${e.title.replace(/<br>/g,' ').replace(/"/g,'&quot;')}">${e.title}</h2>${e.date?`<p class="fx r date-time" style="--d:1.1s">${e.date}</p>`:''}${e.time?`<p class="fx l date-time" style="--d:1.3s">${e.time}</p>`:''}${e.venue?`<p class="fx r venue-row" style="--d:1.5s">${e.venue}</p>`:''}${hostLine(e,'fx l',1.65)}${mapLink(e,1.8)}`;
 }
 
-/* ===== INTERACTIVE SANGEET WISH STARS ===== */
+/* ===== SANGEET WISH STARS ===== */
 let activeConstellationStar=null;
-const myConstellationStars=new Set();
-const takenConstellationStars=new Set();
-const wishRecords=[];
+const myConstellationStars=new Set(),takenConstellationStars=new Set(),wishRecords=[];
 const STAR_FORTUNES=[
  {category:"Luck",fortune:"May the life you build be full of little miracles, kind people, and beautiful surprises."},
  {category:"Dance",fortune:"May your home always have music in the air, laughter in every room, and a reason to dance."},
@@ -625,86 +530,174 @@ const STAR_FORTUNES=[
  {category:"Possibilities",fortune:"May this be the beginning of something beautifully unexpected."}
 ];
 const starShape='<svg viewBox="0 0 100 100" aria-hidden="true"><path class="star-shape" d="M50 2 C48 34 47 43 32 47 L2 50 C34 52 43 53 47 68 L50 98 C52 66 53 57 68 53 L98 50 C66 48 57 47 53 32 Z"/></svg>';
-function starId(n){return 'star-'+String(n).padStart(3,'0')}
-function randomStarPosition(existing,scene){
- const sceneRect=scene.getBoundingClientRect();  const geo=starGeo(scene);
- const title=scene.querySelector('.ev-over h2');
- const map=scene.querySelector('.ev-over .maplink');
- const cue=scene.querySelector('.next-cue');
- const pad=18;
- let x=6+Math.random()*88,y=15+Math.random()*80,tries=0;
-
- function nearElement(px,py,el,extra=pad){
-  if(!el)return false;
-  const r=el.getBoundingClientRect();
-  const sx=sceneRect.left+sceneRect.width*px/100;
-  const sy=sceneRect.top+sceneRect.height*py/100;
-  return sx>=r.left-extra&&sx<=r.right+extra&&
-         sy>=r.top-extra&&sy<=r.bottom+extra;
- }
- function blocked(px,py){
-  // Keep stars around the title, not on top of it; protect both navigation targets.
-  return py<13||starBlocked(geo,px,py);
- }
- while(tries++<500&&(
-   existing.some(p=>Math.hypot((p.x-x)*.85,p.y-y)<7)||
-   blocked(x,y)
- )){
-  x=6+Math.random()*88;
-  y=15+Math.random()*80;
- }
- return {x,y};
+const starId=n=>'star-'+String(n).padStart(3,'0');
+function textRects(el){
+  if(!el)return [];
+  const rg=document.createRange();rg.selectNodeContents(el);
+  return [...rg.getClientRects()].filter(r=>r.width>2&&r.height>2);
 }
-
-function textRects(el){  if(!el)return [];  const rg=document.createRange();rg.selectNodeContents(el);  return [...rg.getClientRects()].filter(r=>r.width>2&&r.height>2); } function starGeo(scene){  const sr=scene.getBoundingClientRect(),rects=[];  scene.querySelectorAll('.ev-over h2,.ev-over p').forEach(el=>textRects(el).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:14})));  [['.ev-over .maplink',24],['.next-cue',28],['.back-cue',36]].forEach(([sel,pad])=>{   const el=scene.querySelector(sel);   if(el){const r=el.getBoundingClientRect();rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad})}  });  return {sr,rects}; } function starBlocked(g,px,py){  const sx=g.sr.left+g.sr.width*px/100,sy=g.sr.top+g.sr.height*py/100;  return g.rects.some(o=>sx>=o.l-o.pad&&sx<=o.r+o.pad&&sy>=o.t-o.pad&&sy<=o.b+o.pad); } /* re-checks star positions once fonts have loaded (text size can change) */ function relayoutStars(scene){  const layer=scene.querySelector('.constellation-layer');if(!layer)return;  const g=starGeo(scene),stars=[...layer.querySelectorAll('.constellation-star')];  stars.forEach(el=>{   if(!starBlocked(g,parseFloat(el.style.left),parseFloat(el.style.top)))return;   const others=stars.filter(s=>s!==el).map(s=>({x:parseFloat(s.style.left),y:parseFloat(s.style.top)}));   const pos=randomStarPosition(others,scene);   el.style.left=pos.x+'%';el.style.top=pos.y+'%';   if(el._star){el._star.x=pos.x;el._star.y=pos.y}  }); } function makeConstellation(scene){
- const layer=document.createElement('div');layer.className='constellation-layer';
- layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a wish</div>';
- const used=[];
- const count=36;
- for(let i=1;i<=count;i++){
-  const pos=randomStarPosition(used,scene);used.push(pos);
-  const fortune=STAR_FORTUNES[(i-1)%STAR_FORTUNES.length];
-  const star={id:starId(i),x:pos.x,y:pos.y,category:fortune.category,fortune:fortune.fortune};
-  addConstellationStar(layer,star,scene);
- }
- const ui=document.createElement('div');ui.className='constellation-ui';
- ui.innerHTML='<div class="constellation-card"><h3>Your little fortune</h3><div class="star-category"></div><p class="star-fortune"></p><textarea maxlength="500" aria-label="Your wish" placeholder="Leave a little wish for the couple..."></textarea><div class="constellation-actions"><button type="button" class="constellation-seal">Seal your wish ✨</button><button type="button" class="constellation-cancel">Close</button></div><p class="constellation-status" aria-live="polite"></p></div>';
- [ui,ui.querySelector('.constellation-card')].forEach(el=>{el.addEventListener('pointerdown',e=>e.stopPropagation());el.addEventListener('pointerup',e=>e.stopPropagation())});
- ui.addEventListener('click',e=>{if(e.target===ui)closeConstellationWish(ui)});
- ui.querySelector('.constellation-cancel').addEventListener('click',()=>closeConstellationWish(ui));
- ui.querySelector('.constellation-seal').addEventListener('click',()=>saveConstellationWish(scene,ui));
- layer.appendChild(ui);scene.appendChild(layer);
- if(new URLSearchParams(location.search).has('admin')) addConstellationAdmin(scene,layer);
- loadConstellationStars(scene);
+/* blocked areas: the actual text lines, map link, and both navigation buttons */
+function starGeo(scene){
+  const sr=scene.getBoundingClientRect(),rects=[];
+  scene.querySelectorAll('.ev-over h2,.ev-over p').forEach(el=>textRects(el).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:14})));
+  [['.ev-over .maplink',24],['.next-cue',28],['.back-cue',36]].forEach(([sel,pad])=>{
+    const el=scene.querySelector(sel);
+    if(el){const r=el.getBoundingClientRect();rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad})}
+  });
+  return {sr,rects};
+}
+function starBlocked(g,px,py){
+  const sx=g.sr.left+g.sr.width*px/100,sy=g.sr.top+g.sr.height*py/100;
+  return g.rects.some(o=>sx>=o.l-o.pad&&sx<=o.r+o.pad&&sy>=o.t-o.pad&&sy<=o.b+o.pad);
+}
+function randomStarPosition(existing,scene){
+  const geo=starGeo(scene);
+  let x=6+Math.random()*88,y=15+Math.random()*80,tries=0;
+  while(tries++<500&&(existing.some(p=>Math.hypot((p.x-x)*.85,p.y-y)<7)||y<13||starBlocked(geo,x,y))){
+    x=6+Math.random()*88;y=15+Math.random()*80;
+  }
+  return {x,y};
+}
+function relayoutStars(scene){
+  const layer=scene.querySelector('.constellation-layer');if(!layer)return;
+  const g=starGeo(scene),stars=[...layer.querySelectorAll('.constellation-star')];
+  stars.forEach(el=>{
+    if(!starBlocked(g,parseFloat(el.style.left),parseFloat(el.style.top)))return;
+    const others=stars.filter(s=>s!==el).map(s=>({x:parseFloat(s.style.left),y:parseFloat(s.style.top)}));
+    const pos=randomStarPosition(others,scene);
+    el.style.left=pos.x+'%';el.style.top=pos.y+'%';
+    if(el._star){el._star.x=pos.x;el._star.y=pos.y}
+  });
+}
+function makeConstellation(scene){
+  const layer=document.createElement('div');layer.className='constellation-layer';
+  layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a wish</div>';
+  const used=[];
+  for(let i=1;i<=36;i++){
+    const pos=randomStarPosition(used,scene);used.push(pos);
+    const f=STAR_FORTUNES[(i-1)%STAR_FORTUNES.length];
+    addConstellationStar(layer,{id:starId(i),x:pos.x,y:pos.y,category:f.category,fortune:f.fortune},scene);
+  }
+  const ui=document.createElement('div');ui.className='constellation-ui';
+  ui.innerHTML='<div class="constellation-card"><h3>Your little fortune</h3><div class="star-category"></div><p class="star-fortune"></p><textarea maxlength="500" aria-label="Your wish" placeholder="Leave a little wish for the couple..."></textarea><div class="constellation-actions"><button type="button" class="constellation-seal">Seal your wish ✨</button><button type="button" class="constellation-cancel">Close</button></div><p class="constellation-status" aria-live="polite"></p></div>';
+  [ui,ui.querySelector('.constellation-card')].forEach(el=>{el.addEventListener('pointerdown',e=>e.stopPropagation());el.addEventListener('pointerup',e=>e.stopPropagation())});
+  ui.addEventListener('click',e=>{if(e.target===ui)closeConstellationWish(ui)});
+  ui.querySelector('.constellation-cancel').addEventListener('click',()=>closeConstellationWish(ui));
+  ui.querySelector('.constellation-seal').addEventListener('click',()=>saveConstellationWish(scene,ui));
+  layer.appendChild(ui);scene.appendChild(layer);
+  if(new URLSearchParams(location.search).has('admin'))addConstellationAdmin(scene,layer);
+  loadConstellationStars(scene);
 }
 function addConstellationStar(layer,star,scene){
- const b=document.createElement('button');b.type='button';b.className='constellation-star';b.dataset.starId=star.id;b.dataset.category=star.category;
- /* each star gets its own glimmer speed + a negative delay so they never pulse in sync */
- b.style.cssText=`left:${star.x}%;top:${star.y}%;--twinkle:${(2+Math.random()*2.2).toFixed(2)}s;animation-delay:${(-Math.random()*4).toFixed(2)}s`;
- if(Math.random()<.67)b.classList.add('is-dim');  if(Math.random()<.15)b.style.setProperty('--big',(1.15+Math.random()*.05).toFixed(3));
- b.innerHTML=starShape;b.setAttribute('aria-label',`${star.category} star. Open its fortune.`);b._star=star;
- b.addEventListener('pointerdown',e=>e.stopPropagation());b.addEventListener('pointerup',e=>e.stopPropagation());
- b.addEventListener('click',e=>{e.stopPropagation();activeConstellationStar=star;openConstellationWish(scene||layer.closest('.scene'))});
- layer.appendChild(b);
- return b;
+  const b=document.createElement('button');b.type='button';b.className='constellation-star';b.dataset.starId=star.id;b.dataset.category=star.category;
+  b.style.cssText=`left:${star.x}%;top:${star.y}%;--twinkle:${(2+Math.random()*2.2).toFixed(2)}s;animation-delay:${(-Math.random()*4).toFixed(2)}s`;
+  if(Math.random()<.67)b.classList.add('is-dim');
+  if(Math.random()<.15)b.style.setProperty('--big',(1.15+Math.random()*.05).toFixed(3));
+  b.innerHTML=starShape;b.setAttribute('aria-label',`${star.category} star. Open its fortune.`);b._star=star;
+  b.addEventListener('pointerdown',e=>e.stopPropagation());b.addEventListener('pointerup',e=>e.stopPropagation());
+  b.addEventListener('click',e=>{e.stopPropagation();activeConstellationStar=star;openConstellationWish(scene||layer.closest('.scene'))});
+  layer.appendChild(b);return b;
 }
-function openConstellationWish(scene){const ui=scene.querySelector('.constellation-ui');if(!ui||!activeConstellationStar)return;ui.querySelector('.star-category').textContent=activeConstellationStar.category;ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;ui.querySelector('textarea').value='';ui.querySelector('.constellation-status').textContent='';ui.classList.add('open');setTimeout(()=>ui.querySelector('textarea').focus({preventScroll:true}),100)}
+function openConstellationWish(scene){
+  const ui=scene.querySelector('.constellation-ui');if(!ui||!activeConstellationStar)return;
+  ui.querySelector('.star-category').textContent=activeConstellationStar.category;
+  ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;
+  ui.querySelector('textarea').value='';ui.querySelector('.constellation-status').textContent='';
+  ui.classList.add('open');setTimeout(()=>ui.querySelector('textarea').focus({preventScroll:true}),100);
+}
 function closeConstellationWish(ui){ui.classList.remove('open');activeConstellationStar=null}
-function markConstellationStar(starId,owner){document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===starId){el.classList.add('is-taken');if(owner&&owner.toLowerCase()===guest.toLowerCase()){el.classList.remove('is-dim');el.classList.add('is-gold','is-mine');myConstellationStars.add(starId)}else el.classList.remove('is-mine')}});takenConstellationStars.add(starId)}
-function loadConstellationStars(scene){
- if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
- window.receiveConstellationStars=data=>{if(data&&data.ok){(data.wishes||[]).forEach(w=>{markConstellationStar(w.starId,w.guest);wishRecords.push(w)}); (data.wishes||[]).filter(w=>!w.guest||w.guest.toLowerCase()!==guest.toLowerCase()).slice(-5).forEach(w=>document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===w.starId)el.classList.add('is-recent')}));(data.starIds||[]).forEach(id=>markConstellationStar(id,''));ensureAvailableStars(scene)}};
- const sc=document.createElement('script');sc.src=CONSTELLATION_API+'?action=stars&callback=receiveConstellationStars&_='+Date.now();sc.onerror=()=>console.warn('Could not load saved constellation stars.');document.head.appendChild(sc);
+function markConstellationStar(id,owner){
+  document.querySelectorAll('.constellation-star').forEach(el=>{
+    if(el.dataset.starId!==id)return;
+    el.classList.add('is-taken');
+    if(owner&&owner.toLowerCase()===guest.toLowerCase()){el.classList.remove('is-dim');el.classList.add('is-gold','is-mine');myConstellationStars.add(id)}
+    else el.classList.remove('is-mine');
+  });
+  takenConstellationStars.add(id);
 }
-function ensureAvailableStars(scene){const layer=scene.querySelector('.constellation-layer');if(!layer)return;let available=[...layer.querySelectorAll('.constellation-star')].filter(s=>!takenConstellationStars.has(s.dataset.starId)).length;let max=[...layer.querySelectorAll('.constellation-star')].length;while(available<8){max++;const pos=randomStarPosition([...layer.querySelectorAll('.constellation-star')].map(s=>({x:parseFloat(s.style.left),y:parseFloat(s.style.top)})),scene);const f=STAR_FORTUNES[(max-1)%STAR_FORTUNES.length];const star={id:starId(max),x:pos.x,y:pos.y,category:f.category,fortune:f.fortune};addConstellationStar(layer,star,scene);available++}}
-function saveConstellationWish(scene,ui){if(!activeConstellationStar)return;const wish=ui.querySelector('textarea').value.trim(),status=ui.querySelector('.constellation-status');if(!wish){status.textContent='Write a little wish before sealing it.';return}const star=activeConstellationStar;const payload={action:'saveWish',guest:guest||'Guest',starId:star.id,category:star.category,fortune:star.fortune,wish};if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID')){status.textContent='Preview mode: configure the wish service to save wishes.';return}status.textContent='Sending your wish to the stars…';const btn=ui.querySelector('.constellation-seal');btn.disabled=true;fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}).then(()=>{myConstellationStars.add(star.id);markConstellationStar(star.id,guest);wishRecords.push({...payload});const r=ui.querySelector('.constellation-card').getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});status.textContent='Your wish is on its way to the stars ✨';shimmer();buzz(10);ui.querySelector('textarea').value='';ensureAvailableStars(scene);setTimeout(()=>closeConstellationWish(ui),1300)}).catch(()=>{status.textContent='The wish could not be sent. Please try again.'}).finally(()=>btn.disabled=false)}
-function addConstellationAdmin(scene,layer){const open=document.createElement('button');open.type='button';open.className='constellation-admin';open.textContent='Admin wishes';const panel=document.createElement('div');panel.className='constellation-admin-panel';panel.innerHTML='<button class="admin-close" type="button">Close admin</button><h3>Guest wishes</h3><p>Deletion requires matching server-side Apps Script support and a configured admin token.</p><div class="admin-list"></div>';open.addEventListener('click',()=>{panel.classList.add('open');renderAdminWishes(panel)});panel.querySelector('.admin-close').addEventListener('click',()=>panel.classList.remove('open'));layer.append(open,panel)}
-function renderAdminWishes(panel){const list=panel.querySelector('.admin-list');list.innerHTML='';if(!wishRecords.length){list.textContent='No wishes loaded yet. Refresh the guest list from the connected sheet.';return}wishRecords.forEach(w=>{const row=document.createElement('div');row.className='admin-wish';const txt=document.createElement('div');txt.textContent=`${w.guest||'Guest'} · ${w.starId||''}: ${w.wish||''}`;row.appendChild(txt);const del=document.createElement('button');del.textContent='Delete wish';del.addEventListener('click',()=>deleteConstellationWish(w,panel));row.appendChild(del);list.appendChild(row)})}
-function deleteConstellationWish(w,panel){const token=prompt('Enter admin token to delete this wish:');if(!token)return;if(token!==ADMIN_TOKEN){alert('Incorrect admin token.');return}if(!CONSTELLATION_API){alert('Wish API is not configured.');return}fetch(CONSTELLATION_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'deleteWish',adminToken:token,starId:w.starId,guest:w.guest})}).then(()=>{wishRecords.splice(wishRecords.indexOf(w),1);takenConstellationStars.delete(w.starId);myConstellationStars.delete(w.starId);document.querySelectorAll('.constellation-star').forEach(s=>{if(s.dataset.starId===w.starId)s.classList.remove('is-taken','is-gold','is-mine')});renderAdminWishes(panel)}).catch(()=>alert('Delete request failed. Check the Apps Script deployment and logs.'))}
+function loadConstellationStars(scene){
+  if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
+  window.receiveConstellationStars=data=>{
+    if(!(data&&data.ok))return;
+    (data.wishes||[]).forEach(w=>{markConstellationStar(w.starId,w.guest);wishRecords.push(w)});
+    (data.wishes||[]).filter(w=>!w.guest||w.guest.toLowerCase()!==guest.toLowerCase()).slice(-5).forEach(w=>document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===w.starId)el.classList.add('is-recent')}));
+    (data.starIds||[]).forEach(id=>markConstellationStar(id,''));
+    ensureAvailableStars(scene);
+  };
+  const sc=document.createElement('script');
+  sc.src=CONSTELLATION_API+'?action=stars&callback=receiveConstellationStars&_='+Date.now();
+  sc.onerror=()=>console.warn('Could not load saved constellation stars.');
+  document.head.appendChild(sc);
+}
+function ensureAvailableStars(scene){
+  const layer=scene.querySelector('.constellation-layer');if(!layer)return;
+  let available=[...layer.querySelectorAll('.constellation-star')].filter(s=>!takenConstellationStars.has(s.dataset.starId)).length;
+  let max=layer.querySelectorAll('.constellation-star').length;
+  while(available<8){
+    max++;
+    const pos=randomStarPosition([...layer.querySelectorAll('.constellation-star')].map(s=>({x:parseFloat(s.style.left),y:parseFloat(s.style.top)})),scene);
+    const f=STAR_FORTUNES[(max-1)%STAR_FORTUNES.length];
+    addConstellationStar(layer,{id:starId(max),x:pos.x,y:pos.y,category:f.category,fortune:f.fortune},scene);
+    available++;
+  }
+}
+function saveConstellationWish(scene,ui){
+  if(!activeConstellationStar)return;
+  const wish=ui.querySelector('textarea').value.trim(),status=ui.querySelector('.constellation-status');
+  if(!wish){status.textContent='Write a little wish before sealing it.';return}
+  const star=activeConstellationStar;
+  const payload={action:'saveWish',guest:guest||'Guest',starId:star.id,category:star.category,fortune:star.fortune,wish};
+  if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID')){status.textContent='Preview mode: configure the wish service to save wishes.';return}
+  status.textContent='Sending your wish to the stars…';
+  const btn=ui.querySelector('.constellation-seal');btn.disabled=true;
+  fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+  .then(()=>{
+    myConstellationStars.add(star.id);markConstellationStar(star.id,guest);wishRecords.push({...payload});
+    const r=ui.querySelector('.constellation-card').getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});
+    status.textContent='Your wish is on its way to the stars ✨';
+    shimmer();buzz(10);ui.querySelector('textarea').value='';ensureAvailableStars(scene);
+    setTimeout(()=>closeConstellationWish(ui),1300);
+  })
+  .catch(()=>{status.textContent='The wish could not be sent. Please try again.'})
+  .finally(()=>btn.disabled=false);
+}
+function addConstellationAdmin(scene,layer){
+  const open=document.createElement('button');open.type='button';open.className='constellation-admin';open.textContent='Admin wishes';
+  const panel=document.createElement('div');panel.className='constellation-admin-panel';
+  panel.innerHTML='<button class="admin-close" type="button">Close admin</button><h3>Guest wishes</h3><p>Deletion requires matching server-side Apps Script support and a configured admin token.</p><div class="admin-list"></div>';
+  open.addEventListener('click',()=>{panel.classList.add('open');renderAdminWishes(panel)});
+  panel.querySelector('.admin-close').addEventListener('click',()=>panel.classList.remove('open'));
+  layer.append(open,panel);
+}
+function renderAdminWishes(panel){
+  const list=panel.querySelector('.admin-list');list.innerHTML='';
+  if(!wishRecords.length){list.textContent='No wishes loaded yet. Refresh the guest list from the connected sheet.';return}
+  wishRecords.forEach(w=>{
+    const row=document.createElement('div');row.className='admin-wish';
+    const txt=document.createElement('div');txt.textContent=`${w.guest||'Guest'} · ${w.starId||''}: ${w.wish||''}`;row.appendChild(txt);
+    const del=document.createElement('button');del.textContent='Delete wish';del.addEventListener('click',()=>deleteConstellationWish(w,panel));row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+function deleteConstellationWish(w,panel){
+  const token=prompt('Enter admin token to delete this wish:');if(!token)return;
+  if(token!==ADMIN_TOKEN){alert('Incorrect admin token.');return}
+  fetch(CONSTELLATION_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'deleteWish',adminToken:token,starId:w.starId,guest:w.guest})})
+  .then(()=>{
+    wishRecords.splice(wishRecords.indexOf(w),1);takenConstellationStars.delete(w.starId);myConstellationStars.delete(w.starId);
+    document.querySelectorAll('.constellation-star').forEach(s=>{if(s.dataset.starId===w.starId)s.classList.remove('is-taken','is-gold','is-mine')});
+    renderAdminWishes(panel);
+  })
+  .catch(()=>alert('Delete request failed. Check the Apps Script deployment and logs.'));
+}
 
+/* ===== BUILD ALL PAGES ===== */
 function build(){
-  app.innerHTML='';scenes=[];filled=false;locked=false;introPromptShown=false;
+  app.innerHTML='';app.classList.remove('animate');
+  scenes=[];filled=false;locked=false;introPromptShown=false;
   clearTimeout(introTimer);introTimer=null;
+  clearInterval(introTrailTimer);introTrailTimer=null;
   const inv=new Set(normalizeGuestEvents(guestEvents));
   const pages=['main',...SD.order.filter(k=>inv.has(k)||EVENTS[k].always)];
   PETAL=pages.length-1;FINAL=pages.length;
@@ -712,7 +705,7 @@ function build(){
   pages.forEach((k,i)=>{
     const src=CONFIG.bg[k]||'';
     const s=document.createElement('div');
-    s.className='scene';s.id='s'+i;s.dataset.key=k;s.dataset.event=(EVENTS[k]&&EVENTS[k].skin)||k;s.dataset.bappa=(EVENTS[k]&&EVENTS[k].bappa)?'1':'';
+    s.className='scene layer';s.id='s'+i;s.dataset.key=k;s.dataset.event=(EVENTS[k]&&EVENTS[k].skin)||k;
     s.innerHTML=`<div class="ph" hidden></div>`+(src?(k==='main'?`<img class="bg" src="${src}" alt="" aria-hidden="true" fetchpriority="high">`:`<img class="bg" data-src="${src}" alt="" aria-hidden="true">`):'');
     const ph=s.querySelector('.ph'),bg=s.querySelector('img.bg');
     const fail=()=>{
@@ -727,123 +720,96 @@ function build(){
       if(bg.complete&&bg.naturalWidth>0)ph.hidden=true;
     }
 
-if(k==='main'){
-  const M=SD.main;
-  const openingLines=M.lines;
-  const closingLine=SIDE==='groom'
-    ?'<div class="invite-statements invite-after-hosts"><p>'+M.afterHosts+'</p></div>'
-    :'';
-
-  s.insertAdjacentHTML('beforeend',`
-    <div class="intro fx" id="mainInvite" style="--d:.4s">
-      <img id="inviteGaneshay" src="${SD.ganeshay}" alt="Ganeshay" fetchpriority="high">
+    if(k==='main'){
+      const M=SD.main;
+      const afterHosts=SIDE==='groom'?`<div class="invite-statements invite-after-hosts"><p>${M.afterHosts}</p></div>`:'';
+      s.insertAdjacentHTML('beforeend',`
+        <div class="intro fx" id="mainInvite" style="--d:.4s">
+          <img id="inviteGaneshay" src="${SD.ganeshay}" alt="Ganeshay" fetchpriority="high">
           ${SIDE==='bride'?`<div class="invite-statements invite-opening">${(M.beforeHosts||[]).map(t=>`<p>${t}</p>`).join('')}</div><p class="invite-hosts">${M.hosts}</p>`:''}
-      <div class="invite-statements invite-opening">${openingLines.map(t=>`<p>${t}</p>`).join('')}</div>
-      ${SIDE==='groom'?`<p class="invite-hosts">${M.hosts}</p>${closingLine}`:''}
-      <h1 class="invite-name" data-t="${M.first}">${M.first}</h1>
-      <p class="invite-with">with</p>
-      <h2 class="invite-name invite-groom" data-t="${M.second}">${M.second}</h2>
-      <p class="invite-statement">${M.sub}</p>
-      <div class="invite-gap-small"></div>
-      <p class="invite-statement">${M.share}</p>
-      <p class="invite-family">${M.family}</p>
-    </div>
-    <div id="hintG">Drag and offer Bappa His favourite flower</div>
-    <div id="drop" aria-label="Flower offering space"></div>
-    <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
-}
-    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
-    
-    else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div><button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>');
-    else {
-      if(k==='mehendi'){         s.insertAdjacentHTML('beforeend',`           <div class="m-bell m-bell-1"><img src="assets/Bell-1.png" alt="" draggable="false"></div>           <div class="m-bell m-bell-2"><img src="assets/Bell-2.png" alt="" draggable="false"></div>           <div class="m-bell m-bell-3"><img src="assets/Bell-3.png" alt="" draggable="false"></div>         `);       }       if(k==='puja'&&SIDE==='bride'){
+          <div class="invite-statements invite-opening">${M.lines.map(t=>`<p>${t}</p>`).join('')}</div>
+          ${SIDE==='groom'?`<p class="invite-hosts">${M.hosts}</p>${afterHosts}`:''}
+          <h1 class="invite-name" data-t="${M.first}">${M.first}</h1>
+          <p class="invite-with">with</p>
+          <h2 class="invite-name invite-groom" data-t="${M.second}">${M.second}</h2>
+          <p class="invite-statement">${M.sub}</p>
+          <div class="invite-gap-small"></div>
+          <p class="invite-statement">${M.share}</p>
+          <p class="invite-family">${M.family}</p>
+        </div>
+        ${ganHTML('gan-main')}
+        <div id="hintG">Drag and offer Bappa His favourite flower</div>
+        <div id="drop" aria-label="Flower offering space"></div>
+        <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
+    }
+    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
+    else if(k==='wedding')s.insertAdjacentHTML('beforeend',`<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>${BACK}`);
+    else{
+      if(k==='mehendi'){
+        s.insertAdjacentHTML('beforeend',MBELL.map((b,n)=>`<div class="m-bell m-bell-${n+1}" style="--pd:${b.pop}s;--sd:${b.swing}s"><div class="m-in"><img src="${b.img}" alt="" draggable="false"></div></div>`).join(''));
+      }
+      if(k==='puja'&&SIDE==='bride'){
         s.insertAdjacentHTML('beforeend',`
           <div class="puja-tree"><img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree" draggable="false"></div>
-          <div class="w-bell w-bell-left">
-            <img src="assets/l-wedding-bells.png" alt="" draggable="false">
-          </div>
-          <div class="w-bell w-bell-r1">
-            <img src="assets/R1-wedding-bells.png" alt="" draggable="false">
-          </div>
-          <div class="w-bell w-bell-r2">
-            <img src="assets/R2-wedding-bells.png" alt="" draggable="false">
-          </div>
-        `);
+          <div class="w-bell w-bell-left"><div class="w-pop" style="--pd:0s"><img src="assets/l-wedding-bells.png" alt="" draggable="false"></div></div>
+          <div class="w-bell w-bell-r1"><div class="w-pop" style="--pd:.12s"><img src="assets/R1-wedding-bells.png" alt="" draggable="false"></div></div>
+          <div class="w-bell w-bell-r2"><div class="w-pop" style="--pd:.24s"><img src="assets/R2-wedding-bells.png" alt="" draggable="false"></div></div>
+          ${ganHTML('gan-puja')}`);
       }
-            s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+      s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
     }
-
-    app.appendChild(s);
-    scenes.push(s);
-     
+    s.insertAdjacentHTML('beforeend','<div class="dimmer"></div>');
+    app.appendChild(s);scenes.push(s);
     if(k==='sangeet'){makeConstellation(s);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>relayoutStars(s))}
   });
 
   const fin=document.createElement('div');
-  fin.className='scene';fin.id='final';
+  fin.className='scene layer';fin.id='final';
   const safeGuest=(guestDisplay||guest).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const finalBlessing1=SIDE==='groom'?'Sharing the joy':'With love & warm regards';
-  const finalBlessing2=SIDE==='groom'?'Karishma, Abhishek, Ravina, Pararth, Kiara, Chiranjiv & Devanshi.':'Blessings only';
-  fin.innerHTML=`<button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="final-greeting fx" style="--d:.3s">Dear ${safeGuest},</div><h1><span class="fx l" style="--d:.8s;display:block">We look forward</span><span class="fx r" style="--d:1.1s;display:block">to seeing you</span></h1><img class="lg fx" style="--d:1.5s" src="${CONFIG.logo}" alt="Wedding logo" onerror="this.style.display='none'"><div class="final-blessings fx" style="--d:1.8s"><span>${finalBlessing1}</span><span>${finalBlessing2}</span></div>`;
+  const b1=SIDE==='groom'?'Sharing the joy':'With love & warm regards';
+  const b2=SIDE==='groom'?'Karishma, Abhishek, Ravina, Pararth, Kiara, Chiranjiv & Devanshi.':'Blessings only';
+  fin.innerHTML=`${BACK}<div class="final-greeting fx" style="--d:.3s">Dear ${safeGuest},</div><h1><span class="fx l" style="--d:.8s;display:block">We look forward</span><span class="fx r" style="--d:1.1s;display:block">to seeing you</span></h1><img class="lg fx" style="--d:1.5s" src="${CONFIG.logo}" alt="Wedding logo" onerror="this.style.display='none'"><div class="final-blessings fx" style="--d:1.8s"><span>${b1}</span><span>${b2}</span></div><div class="dimmer"></div>`;
   app.appendChild(fin);scenes.push(fin);
   ps=scenes[PETAL];
 
-  /* Ganpati + flower: one element that lives above the scenes */
-  app.insertAdjacentHTML('beforeend',`<div id="bappa"><div class="image-fallback" hidden></div><img class="bgan" src="${CONFIG.ganpati}" draggable="false" alt="Ganpati Bappa"><div class="bappa-flower">${hibImg}</div></div>`);
-  const gan=$('#bappa .bgan'),gf=$('#bappa .image-fallback');
-  const ganFail=()=>{
-    gf.hidden=false;
-    gf.innerHTML=`Ganpati image could not be loaded<br><small>Path: ${CONFIG.ganpati}</small><br><small>Resolved URL: ${gan.src}</small>`;
-    console.error('Ganpati image failed:',{path:CONFIG.ganpati,resolvedURL:gan.src});
-  };
-  gan.addEventListener('load',()=>{if(gan.naturalWidth>0)gf.hidden=true});
-  gan.addEventListener('error',ganFail);
-  if(gan.complete&&!gan.naturalWidth)ganFail();
+  /* Ganpati image fallback messages */
+  scenes.forEach(sc=>sc.querySelectorAll('.gan').forEach(g=>{
+    const img=g.querySelector('.bgan'),fb=g.querySelector('.image-fallback');
+    const fail=()=>{fb.hidden=false;fb.innerHTML=`Ganpati image could not be loaded<br><small>Path: ${CONFIG.ganpati}</small>`;console.error('Ganpati image failed:',img.src)};
+    img.addEventListener('load',()=>{if(img.naturalWidth>0)fb.hidden=true});
+    img.addEventListener('error',fail);
+    if(img.complete&&!img.naturalWidth&&img.src)fail();
+  }));
 
   /* tree artwork: fall back to the drawn SVG if the file is missing */
-  scenes.forEach(scene=>{
-    const tree=scene.querySelector('[data-tree-image]');
-    if(!tree)return;
+  scenes.forEach(sc=>{
+    const tree=sc.querySelector('[data-tree-image]');if(!tree)return;
     const treeFail=()=>{
       const holder=tree.parentElement;
       if(!holder||holder.querySelector('svg.t'))return;
       tree.remove();
       if(CONFIG.drawTree)holder.insertAdjacentHTML('beforeend',treeSVG);
-      console.warn('Tree image unavailable; using SVG fallback:',CONFIG.tree);
     };
     tree.addEventListener('error',treeFail);
     if(tree.complete&&!tree.naturalWidth)treeFail();
   });
 
   scenes[0].querySelectorAll('.flower').forEach(wireFlower);
- 
   scenes.forEach((sc,idx)=>{
-      const cue=sc.querySelector('.next-cue');
-    const back=sc.querySelector('.back-cue');
-
-    if(cue){
-      cue.addEventListener('pointerup',e=>{
-        e.stopPropagation();
-        go(idx+1);
-      });
-    }
-    if(back){
-      back.addEventListener('pointerup',e=>{
-        e.stopPropagation();
-        go(idx-1);
-      });
-    }  });
+    const cue=sc.querySelector('.next-cue'),back=sc.querySelector('.back-cue');
+    if(cue)cue.addEventListener('pointerup',e=>{e.stopPropagation();go(idx+1)});
+    if(back)back.addEventListener('pointerup',e=>{e.stopPropagation();go(idx-1)});
+  });
 }
 
-/* ===== EXTRAS: haptics, sounds, flower flight, splash, drips, shooting stars ===== */
+/* ===== EXTRAS: haptics, sounds ===== */
 const buzz=(ms=15)=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
-let AC=null,lastTap={x:innerWidth/2,y:innerHeight*.6};
+let AC=null;
 function audio(){
   if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}
   if(AC&&AC.state==='suspended')AC.resume();
   return AC;
 }
-/* soft synthesised sounds (no audio files needed) */
 function tone(f,t0,dur,vol){
   const c=audio();if(!c)return;
   const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+t0;
@@ -853,94 +819,81 @@ function tone(f,t0,dur,vol){
 }
 const chime=()=>[[784,0,1.6,.18],[1175,.02,1.3,.1],[1568,.05,1,.06],[2093,.08,.7,.03]].forEach(a=>tone(...a));
 const shimmer=()=>{for(let i=0;i<7;i++)tone(1800+Math.random()*2400,i*.07,.5,.04)};
-/* record the last tap position; also unlocks audio on the first touch */
-addEventListener('pointerup',e=>{lastTap={x:e.clientX,y:e.clientY};audio()},true);
+addEventListener('pointerup',()=>{audio()},true);   // unlocks audio on the first touch
 
-/* shared-element flight: the dropped flower arcs up to Bappa and lands as his flower */
-function flyFlowerToBappa(f){
-  const bf=$('#bappa .bappa-flower'),r=f.getBoundingClientRect(),t=bf.getBoundingClientRect();
-  const sx=r.left+r.width/2,sy=r.top+r.height/2,ex=t.left+t.width/2,ey=t.top+t.height/2,dx=ex-sx,dy=ey-sy;
-  const c=document.createElement('div');c.className='flower-fly';c.innerHTML=hibImg;
-  c.style.cssText=`left:${sx-r.width/2}px;top:${sy-r.height/2}px;width:${r.width}px;height:${r.height}px`;
-  document.body.appendChild(c);f.style.opacity=0;
-  const a=c.animate([
-    {transform:'translate(0,0) rotate(0deg) scale(1.1)'},
-    {transform:`translate(${dx*.45}px,${dy*.45-80}px) rotate(170deg) scale(1.5)`,offset:.5},
-    {transform:`translate(${dx}px,${dy}px) rotate(45deg) scale(${t.width/r.width})`}
-  ],{duration:1000,easing:'cubic-bezier(.35,.7,.3,1)',fill:'forwards'});
-  const trail=setInterval(()=>{const b=c.getBoundingClientRect();dust(b.left+b.width/2,b.top+b.height/2,{n:3,spread:1.4})},40);
-  a.onfinish=()=>{
-    clearInterval(trail);c.remove();
-    $('#bappa').classList.add('offered');
-    burst(ex,ey,50,{spread:4});chime();buzz(15);
-    setTimeout(()=>go(1),500);
-  };
+/* haldi: gold powder specks rise along the title while the shimmer sweeps across */
+function powderBurst(scene){
+  const h=scene.querySelector('.ev-over h2');if(!h)return;
+  const sr=scene.getBoundingClientRect(),rg=document.createRange();rg.selectNodeContents(h);
+  const rcs=[...rg.getClientRects()].filter(r=>r.width>2);if(!rcs.length)return;
+  const L=Math.min(...rcs.map(r=>r.left)),R=Math.max(...rcs.map(r=>r.right)),T=Math.min(...rcs.map(r=>r.top)),B=Math.max(...rcs.map(r=>r.bottom));
+  for(let i=0;i<18;i++)setTimeout(()=>{
+    if(scenes[cur]!==scene)return;
+    const p=document.createElement('span');p.className='powder';
+    p.style.cssText=`left:${L-sr.left+(i/17)*(R-L)+rnd(-8,8)}px;top:${T-sr.top+rnd(.2,1)*(B-T)}px;--s:${rnd(2,4.5).toFixed(1)}px;--dx:${rnd(-16,16).toFixed(0)}px;--dy:${rnd(70,140).toFixed(0)}px`;
+    scene.appendChild(p);p.addEventListener('animationend',()=>p.remove());
+  },i*105);
 }
-
-/* turmeric splash wipe: grows from the tap point, then fades to reveal the page */
-function turmericSplash(){
-  const r=frameEl.getBoundingClientRect(),x=lastTap.x-r.left,y=lastTap.y-r.top;
-  const w=document.createElement('div');w.className='splash';w.style.cssText=`--x:${x}px;--y:${y}px`;
-  const fill=document.createElement('div');fill.className='splash-fill';w.appendChild(fill);
-  frameEl.appendChild(w);
-  fill.animate([{clipPath:`circle(0px at ${x}px ${y}px)`},{clipPath:`circle(${Math.hypot(r.width,r.height)}px at ${x}px ${y}px)`}],{duration:650,easing:'cubic-bezier(.3,.7,.2,1)',fill:'forwards'});
-  for(let i=0;i<60;i++){
-    const b=document.createElement('div'),sz=rnd(2,6),ang=rnd(0,6.283),d=rnd(60,320);
-    b.className='splash-blob';b.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px`;w.appendChild(b);
-    b.animate([
-      {transform:'translate(-50%,-50%) scale(.2)',opacity:1},
-      {transform:`translate(calc(-50% + ${Math.cos(ang)*d}px),calc(-50% + ${Math.sin(ang)*d}px)) scale(1)`,opacity:1,offset:.75},
-      {transform:`translate(calc(-50% + ${Math.cos(ang)*d*1.1}px),calc(-50% + ${Math.sin(ang)*d*1.1+20}px)) scale(.9)`,opacity:0}
-    ],{duration:850,easing:'ease-out',fill:'forwards'});
-  }
-  setTimeout(()=>{w.animate([{opacity:1},{opacity:0}],{duration:800,fill:'forwards'}).onfinish=()=>w.remove()},750);
-}
-
-/* haldi: gold powder specks rise along the title while the shimmer sweeps across (every 5s) */ function powderBurst(scene){   const h=scene.querySelector('.ev-over h2');if(!h)return;   const sr=scene.getBoundingClientRect(),rg=document.createRange();rg.selectNodeContents(h);   const rs=[...rg.getClientRects()].filter(r=>r.width>2);if(!rs.length)return;   const L=Math.min(...rs.map(r=>r.left)),R=Math.max(...rs.map(r=>r.right)),T=Math.min(...rs.map(r=>r.top)),B=Math.max(...rs.map(r=>r.bottom));   for(let i=0;i<18;i++)setTimeout(()=>{     if(scenes[cur]!==scene)return;     const p=document.createElement('span');p.className='powder';     p.style.cssText=`left:${L-sr.left+(i/17)*(R-L)+rnd(-8,8)}px;top:${T-sr.top+rnd(.2,1)*(B-T)}px;--s:${rnd(2,4.5).toFixed(1)}px;--dx:${rnd(-16,16).toFixed(0)}px;--dy:${rnd(70,140).toFixed(0)}px`;     scene.appendChild(p);p.addEventListener('animationend',()=>p.remove());   },i*105); } /* ambient effects per page: turmeric drips (haldi / gpuja), shooting stars (sangeet) */
+/* ambient effects: shooting stars (sangeet), gold powder (haldi) */
 let ambientTimer=null;
 function stopAmbient(){clearTimeout(ambientTimer);ambientTimer=null}
 function startAmbient(scene){
   stopAmbient();
-  const k=scene&&scene.dataset.key;
-  if(k==='mehendi'){if(typeof vineGlint==='function')vineGlint(scene);if(typeof mehendiDots==='function')mehendiDots(scene)}   const kind=k==='sangeet'?'shoot':k==='haldi'?'powder':null;
+  const k=scene&&scene.dataset.key,kind=k==='sangeet'?'shoot':k==='haldi'?'powder':null;
   if(!kind)return;
   const tick=()=>{
     if(scenes[cur]!==scene)return;
-    if(kind==='powder'){powderBurst(scene)}else if(kind==='drip'){
-      const d=document.createElement('div');d.className='drip';
-      d.style.cssText=`--x:${rnd(6,94)}%;--w:${rnd(5,9).toFixed(1)}px;--len:${rnd(60,130).toFixed(0)}px`;
-      scene.appendChild(d);d.addEventListener('animationend',()=>d.remove());
-    }else{
+    if(kind==='powder')powderBurst(scene);
+    else{
       const st=document.createElement('div');st.className='shoot';
       st.style.cssText=`left:${rnd(-5,45).toFixed(1)}%;top:${rnd(3,38).toFixed(1)}%;--len:${rnd(90,150).toFixed(0)}px`;
-      scene.appendChild(st);st.addEventListener('animationend',()=>st.remove()); {const sr=scene.getBoundingClientRect(),len=parseFloat(st.style.getPropertyValue('--len')),  x0=sr.left+parseFloat(st.style.left)/100*sr.width,y0=sr.top+parseFloat(st.style.top)/100*sr.height,  ca=Math.cos(.4363),sa=Math.sin(.4363);let t=0;  const tr=setInterval(()=>{t+=33;const p=Math.min(t/1100,1),d=len+300*p*p;   dust(x0+d*ca,y0+d*sa,{n:4,tiny:true,spread:1.4});   if(p>=1)clearInterval(tr)},33)}
+      scene.appendChild(st);st.addEventListener('animationend',()=>st.remove());
+      const sr=scene.getBoundingClientRect(),len=parseFloat(st.style.getPropertyValue('--len')),
+        x0=sr.left+parseFloat(st.style.left)/100*sr.width,y0=sr.top+parseFloat(st.style.top)/100*sr.height,
+        ca=Math.cos(.4363),sa=Math.sin(.4363);let t=0;
+      const tr=setInterval(()=>{t+=33;const p=Math.min(t/1100,1),d=len+300*p*p;dust(x0+d*ca,y0+d*sa,{n:4,tiny:true,spread:1.4});if(p>=1)clearInterval(tr)},33);
     }
-    ambientTimer=setTimeout(tick,kind==='powder'?5000:kind==='drip'?rnd(2500,5500):rnd(5000,9000));
+    ambientTimer=setTimeout(tick,kind==='powder'?5000:rnd(5000,9000));
   };
-  ambientTimer=setTimeout(tick,kind==='powder'?2600:kind==='drip'?1800:rnd(2500,5000));
+  ambientTimer=setTimeout(tick,kind==='powder'?2600:rnd(2500,5000));
 }
 
-/* ---- yellow petal shower: bride Puja page only, not clickable ---- */ 
-   const YELLOW={imgs:['assets/yellow-1.png','assets/yellow-2.png'],size:[12,26]}; // size = half of the wedding petals (24-52px) let yellowTimer=null; function makeYellow(scene){   const sz=rnd(YELLOW.size[0],YELLOW.size[1]),dur=rnd(8,12),p=document.createElement('div'),pi=document.createElement('span');   p.className='ypetal';   p.style.cssText=`left:${rnd(50,104).toFixed(1)}%;animation-duration:${dur.toFixed(2)}s;--dx:${-rnd(45,85).toFixed(1)}cqw;--sx:${rnd(-14,14).toFixed(1)}cqw;--spin:${rnd(-360,360).toFixed(0)}deg`;   pi.className='pi';   pi.style.cssText=`--s:${sz.toFixed(1)}px;--td:${rnd(2.4,5).toFixed(2)}s;--sw:${rnd(4,14).toFixed(1)}px;--r0:${rnd(-70,0).toFixed(0)}deg;--r1:${rnd(0,70).toFixed(0)}deg;--rx:${rnd(-75,75).toFixed(0)}deg;--ry:${rnd(-75,75).toFixed(0)}deg;--fl:${Math.random()<.5?-1:1};--o:${rnd(.6,1).toFixed(2)}`;   const im=new Image();   im.src=YELLOW.imgs[Math.random()<.5?0:1];im.draggable=false;im.alt='';   im.onerror=()=>{im.remove();pi.classList.add('fb')};   pi.appendChild(im);p.appendChild(pi);   p.addEventListener('animationend',e=>{if(e.target===p)p.remove()});   scene.appendChild(p); } function stopYellow(){clearTimeout(yellowTimer);yellowTimer=null} function startYellow(scene){   stopYellow();   const tick=()=>{     if(scenes[cur]!==scene)return;     if(scene.querySelectorAll('.ypetal').length<28)makeYellow(scene);     yellowTimer=setTimeout(tick,rnd(350,700));   };   yellowTimer=setTimeout(tick,500); }  /* ---- navigation ---- */
+/* ---- yellow petal shower: bride Puja page only, not clickable ---- */
+let yellowTimer=null;
+function makeYellow(scene){
+  const sz=rnd(YELLOW.size[0],YELLOW.size[1]),dur=rnd(8,12),p=document.createElement('div'),pi=document.createElement('span');
+  p.className='ypetal';
+  p.style.cssText=`left:${rnd(50,104).toFixed(1)}%;animation-duration:${dur.toFixed(2)}s;--dx:${-rnd(45,85).toFixed(1)}cqw;--sx:${rnd(-14,14).toFixed(1)}cqw;--spin:${rnd(-360,360).toFixed(0)}deg`;
+  pi.className='pi';
+  pi.style.cssText=`--s:${sz.toFixed(1)}px;--td:${rnd(2.4,5).toFixed(2)}s;--sw:${rnd(4,14).toFixed(1)}px;--r0:${rnd(-70,0).toFixed(0)}deg;--r1:${rnd(0,70).toFixed(0)}deg;--rx:${rnd(-75,75).toFixed(0)}deg;--ry:${rnd(-75,75).toFixed(0)}deg;--fl:${Math.random()<.5?-1:1};--o:${rnd(.6,1).toFixed(2)}`;
+  const im=new Image();
+  im.src=YELLOW.imgs[Math.random()<.5?0:1];im.draggable=false;im.alt='';
+  im.onerror=()=>{im.remove();pi.classList.add('fb')};
+  pi.appendChild(im);p.appendChild(pi);
+  p.addEventListener('animationend',e=>{if(e.target===p)p.remove()});
+  scene.appendChild(p);
+}
+function stopYellow(){clearTimeout(yellowTimer);yellowTimer=null}
+function startYellow(scene){
+  stopYellow();
+  const tick=()=>{
+    if(scenes[cur]!==scene)return;
+    if(scene.querySelectorAll('.ypetal').length<28)makeYellow(scene);
+    yellowTimer=setTimeout(tick,rnd(350,700));
+  };
+  yellowTimer=setTimeout(tick,500);
+}
+
+/* ---- navigation (Kontext: swap show / hide classes, CSS does the 3D move) ---- */
 function show(i){
+  const prev=scenes.findIndex(s=>s.classList.contains('show'));
+  const dir=i>=prev?'right':'left';
   cur=i;
 
   const activeBg=scenes[i]?.querySelector('img.bg[data-src]');
-  if(activeBg){
-    activeBg.src=activeBg.dataset.src;
-    activeBg.removeAttribute('data-src');
-  }
-
-  const bp=$('#bappa');
-const bi=scenes.findIndex(x=>x.dataset.bappa==='1');
-  const hasUp=bi>0;
-  bp.classList.toggle('up',hasUp&&i>=1);
-  bp.classList.toggle('fromMain',!hasUp);
-  bp.classList.toggle('gone',i>Math.max(bi,0));
-  if(i===0)bp.classList.remove('offered');
+  if(activeBg){activeBg.src=activeBg.dataset.src;activeBg.removeAttribute('data-src')}
 
   if(i===PETAL&&!filled){filled=true;for(let k=0;k<26;k++)makePetal(true)}
-
   clearTimeout(ps._hintTimer);
   if(i===PETAL){
     const hint=ps.querySelector('.petal-hint');
@@ -948,97 +901,67 @@ const bi=scenes.findIndex(x=>x.dataset.bappa==='1');
     ps._hintTimer=setTimeout(()=>{if(cur===PETAL&&!popOpen)hint.classList.add('show')},2000);
   }
 
-  scenes.forEach((s,j)=>{s.className='scene'+(j<i?' past':j==i?' active':'')+(j===PETAL&&popOpen?' dim':'')});
+  if(prev>=0)app.classList.add('animate');     // first page appears without a transition
+  if(prev!==i){
+    scenes.forEach((s,j)=>{
+      s.classList.remove('left','right');s.classList.add(dir);
+      if(j===prev){s.classList.remove('show','active');s.classList.add('hide')}
+      else s.classList.remove('hide','show','active');
+    });
+    scenes[i].classList.add('show','active');
+  }
+  scenes.forEach((s,j)=>s.classList.toggle('dim',j===PETAL&&popOpen));
 
   if(i===0){
     const hint=$('#hintG');
-
     if(introPromptShown){
       hint.classList.add('show');
-
-      if(!introTrailTimer){
-        offeringPixieDust();
-        introTrailTimer=setInterval(offeringPixieDust,2600);
-      }
+      if(!introTrailTimer){offeringPixieDust();introTrailTimer=setInterval(offeringPixieDust,2600)}
     }else if(!introTimer){
       introTimer=setTimeout(()=>{
         if(cur===0){
-          hint.classList.add('show');
-          introPromptShown=true;
-          offeringPixieDust();
-
-          if(!introTrailTimer){
-            introTrailTimer=setInterval(offeringPixieDust,2600);
-          }
+          hint.classList.add('show');introPromptShown=true;offeringPixieDust();
+          if(!introTrailTimer)introTrailTimer=setInterval(offeringPixieDust,2600);
         }
         introTimer=null;
       },5000);
     }
   }else{
-    if(introTimer){
-      clearTimeout(introTimer);
-      introTimer=null;
-    }
-
-    if(introTrailTimer){
-      clearInterval(introTrailTimer);
-      introTrailTimer=null;
-    }
+    if(introTimer){clearTimeout(introTimer);introTimer=null}
+    if(introTrailTimer){clearInterval(introTrailTimer);introTrailTimer=null}
   }
-  stopAmbient();startAmbient(scenes[i]);   stopYellow();if(SIDE==='bride'&&scenes[i].dataset.key==='puja')startYellow(scenes[i]);
+  stopAmbient();startAmbient(scenes[i]);
+  stopYellow();
+  if(SIDE==='bride'&&scenes[i].dataset.key==='puja')startYellow(scenes[i]);
 }
 
 function go(i){
   if(i<0||i>FINAL||popOpen)return;
-
-  if(i===0){
+  if(i===0){                                   // back on page 1: reset the offering
     locked=false;
-    scenes[0].querySelectorAll('.flower').forEach(f=>{
-      f.style.transform='';
-      f.style.opacity=1;
-    });
+    document.querySelectorAll('.gan').forEach(g=>g.classList.remove('offered','spin'));
+    scenes[0].querySelectorAll('.flower').forEach(f=>{f.style.transition='';f.style.transform='';f.style.opacity=1});
   }
-
-  // The only special wipe is the existing yellow turmeric overlay when moving
-  // forward into Haldi (bride) or GPUJA (groom). Sangeet uses no special wipe.
-  if(i>cur&&['haldi','gpuja'].includes(scenes[i]?.dataset.key))turmericSplash();
   show(i);
 }
 
-/* ---- name entry ---- */
+/* ---- guest lookup ---- */
 let guestEvents=[],guestDisplay='',checking=false,nameNeedsFull=false;
 const normName=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
-/* local test list: used only while GUEST_SOURCE === "local" */
-const TEST_GUESTS={
-  bride:{"priya shah":{name:"Priya Shah",display:"Priya",events:["puja","mehendi","sangeet","haldi","wedding"]},
-         "rahul mehta":{name:"Rahul Mehta",display:"Rahul",events:["puja","sangeet","wedding"]}},
-  groom:{"amit verma":{name:"Amit Verma",display:"Amit",events:["sangeet","gpuja","wedding"]}}
-};
-/* ---- guest lookup: warm-up ping + cache ---- */
 const GL_KEY='guestCache.'+SIDE;
 const glCache=(()=>{try{return JSON.parse(localStorage.getItem(GL_KEY)||'{}')}catch(e){return{}}})();
 window.__ping=()=>{};
-if(GUEST_SOURCE!=='local'){
-  const w=document.createElement('script');
-  w.src=CONSTELLATION_API+'?action=ping&callback=__ping&_='+Date.now();
-  w.onload=w.onerror=()=>w.remove();
-  document.head.appendChild(w);
-}
+{const w=document.createElement('script');w.src=CONSTELLATION_API+'?action=ping&callback=__ping&_='+Date.now();w.onload=w.onerror=()=>w.remove();document.head.appendChild(w)}
 function canonicalEventKey(value){
   const raw=String(value??'').trim().toLowerCase();
   const compact=raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');
   if(!compact)return null;
-  // A generic Puja label maps to the groom-side GPUJA event on that side.
   if(compact==='puja'&&SIDE==='groom')return 'gpuja';
-  // Exact internal keys always win, including side-specific GPUJA.
   if(Object.prototype.hasOwnProperty.call(EVENTS,compact))return compact;
   if(compact.includes('sangeet')||compact.includes('sagai'))return 'sangeet';
-  // Full event labels may contain several words (e.g. GPUJA includes Mehendi).
   if(compact.includes('gpuja'))return 'gpuja';
   if(compact.includes('prempithi'))return SIDE==='groom'?'gpuja':'haldi';
-  if(compact.includes('grahamak')||compact.includes('mahurat')||compact.includes('muhurat')||compact.includes('randal')||compact.includes('mandap')){
-    return SIDE==='groom'?'gpuja':'puja';
-  }
+  if(compact.includes('grahamak')||compact.includes('mahurat')||compact.includes('muhurat')||compact.includes('randal')||compact.includes('mandap'))return SIDE==='groom'?'gpuja':'puja';
   if(compact.includes('mehendi')||compact.includes('mehndi'))return 'mehendi';
   if(compact.includes('haldi'))return 'haldi';
   if(compact.includes('puja'))return SIDE==='groom'?'gpuja':'puja';
@@ -1049,29 +972,7 @@ function normalizeGuestEvents(events){
   if(!Array.isArray(events))return [];
   return [...new Set(events.map(canonicalEventKey).filter(Boolean))];
 }
-function findGuest(name){
-  if(GUEST_SOURCE==='local')return fetchGuest(name);
-  const key=normName(name);
-  const lookup=fetchGuest(name).then(d=>{
-    if(d&&d.ok){
-      d.events=normalizeGuestEvents(d.events);
-      glCache[key]=d;
-      try{localStorage.setItem(GL_KEY,JSON.stringify(glCache))}catch(e){}
-    }
-    return d;
-  });
-  // Fresh sheet access is authoritative. Use the cached entry only if the
-  // network request fails, so an old cache cannot hide a newly granted Sangeet.
-  return lookup.catch(error=>{
-    if(glCache[key])return glCache[key];
-    throw error;
-  });
-}
 function fetchGuest(name){
-  if(GUEST_SOURCE==='local'){
-    const g=(TEST_GUESTS[SIDE]||{})[normName(name)];
-    return Promise.resolve(g?{ok:true,...g}:{ok:false,error:'not_found'});
-  }
   return new Promise((res,rej)=>{
     const cb='cb'+Date.now(),sc=document.createElement('script');
     const done=()=>{clearTimeout(t);delete window[cb];sc.remove()};
@@ -1082,6 +983,13 @@ function fetchGuest(name){
     document.head.appendChild(sc);
   });
 }
+function findGuest(name){
+  const key=normName(name);
+  return fetchGuest(name).then(d=>{
+    if(d&&d.ok){d.events=normalizeGuestEvents(d.events);glCache[key]=d;try{localStorage.setItem(GL_KEY,JSON.stringify(glCache))}catch(e){}}
+    return d;
+  }).catch(error=>{if(glCache[key])return glCache[key];throw error});   // cache only if the network fails
+}
 function nameError(msg){
   const c=$('#nameModal .card');
   c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');
@@ -1089,69 +997,35 @@ function nameError(msg){
   if(!err){err=document.createElement('p');err.id='guestError';err.style.cssText='color:#B34D62;font-size:.85rem;margin-top:.8rem';$('#nameIn').insertAdjacentElement('afterend',err)}
   err.textContent=msg;
 }
-
 async function submitName(){
   if(checking)return;
-
   const v=$('#nameIn').value.trim().replace(/\s+/g,' ');
   const parts=v.split(' ').filter(Boolean);
-
   if(!v)return nameError('Please enter your first name.');
-  if(!nameNeedsFull&&parts.length!==1)
-    return nameError('Please enter your first name only.');
-  if(nameNeedsFull&&parts.length<2)
-    return nameError('Please enter your first and last name.');
-
+  if(!nameNeedsFull&&parts.length!==1)return nameError('Please enter your first name only.');
+  if(nameNeedsFull&&parts.length<2)return nameError('Please enter your first and last name.');
   checking=true;
   $('#enterBtn').innerHTML='Checking <span class="loading-dots">...</span>';
-
   let d;
-  try{
-    d=await findGuest(v);
-  }catch(e){
-    d={ok:false,error:'network'};
-  }
-
+  try{d=await findGuest(v)}catch(e){d={ok:false,error:'network'}}
   checking=false;
   $('#enterBtn').textContent='Enter';
-
   if(!d.ok){
     if(d.error==='duplicate'&&!nameNeedsFull){
       nameNeedsFull=true;
       $('#nameIn').placeholder='Enter first and last name';
-      return nameError(
-        'We found more than one guest with that first name. Please enter your first and last name.'
-      );
+      return nameError('We found more than one guest with that first name. Please enter your first and last name.');
     }
-
-    const m={
-      network:'Could not check the guest list. Please try again.',
-      duplicate:'This name needs a quick manual check. Please contact the family.',
-      config:'The guest list is not configured correctly. Please contact the family.'
-    };
-
-    return nameError(
-      m[d.error]||
-      'We couldn’t find your invitation. Please check the spelling.'
-    );
+    const m={network:'Could not check the guest list. Please try again.',duplicate:'This name needs a quick manual check. Please contact the family.',config:'The guest list is not configured correctly. Please contact the family.'};
+    return nameError(m[d.error]||'We couldn’t find your invitation. Please check the spelling.');
   }
-
   nameNeedsFull=false;
-  const err=$('#guestError');
-  if(err)err.remove();
-
+  const err=$('#guestError');if(err)err.remove();
   guest=d.name;
   guestDisplay=d.display||d.name.split(' ')[0];
   guestEvents=normalizeGuestEvents(d.events);
-
   $('#nameIn').blur();
-  build();
-  $('#nameModal').classList.remove('show');
-  $('#logo').classList.add('gone');
-  stage='scenes';
-  app.classList.add('on');
-  show(0);
-  $('#bappa').classList.add('in');
+  enterScenes();
 }
 $('#enterBtn').onclick=submitName;
 $('#nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')submitName()});
@@ -1174,7 +1048,14 @@ function wireFlower(f){
       tx+=dx-(r.left+r.width/2);ty+=dy-(r.top+r.height/2);
       f.style.transform=T(1);
       burst(dx,dy,90,{spread:5});
-      setTimeout(()=>{f.style.transition='none';f.style.opacity=0;$('#bappa').classList.add('offered');go(1);chime();buzz(15)},750);
+      setTimeout(()=>{
+        /* swap: dragged flower vanishes, Bappa's flower (always in front of him) spins into place */
+        f.style.transition='none';f.style.opacity=0;
+        document.querySelectorAll('.gan').forEach(g=>g.classList.add('offered'));
+        $('.gan-main').classList.add('spin');
+        burst(dx,dy-40,40,{spread:3});chime();buzz(15);
+        setTimeout(()=>go(1),1400);              // let the spin finish, then move on
+      },750);
     }else{tx=ty=0;f.style.transform=''}
   });
 }
@@ -1196,7 +1077,8 @@ function makePetal(pre){
     e.stopPropagation();
     const r=p.getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,22,{spread:2.5});
-    const pr=pi.getBoundingClientRect(),pim=pi.querySelector('img'),pc=(pim||pi).cloneNode(true),fl=parseFloat(getComputedStyle(pi).getPropertyValue('--fl'))||1;p.remove();buzz(15);openPop();flyPetalToCard(pr,pc,fl);
+    const pr=pi.getBoundingClientRect(),pim=pi.querySelector('img'),pc=(pim||pi).cloneNode(true),fl=parseFloat(getComputedStyle(pi).getPropertyValue('--fl'))||1;
+    p.remove();buzz(15);openPop();flyPetalToCard(pr,pc,fl);
   });
   ps.appendChild(p);
 }
@@ -1211,9 +1093,7 @@ function flyPetalToCard(pr,pc,fl=1){
   orn.className='pop-orn';orn.style.opacity=0;card.appendChild(orn);
   requestAnimationFrame(()=>{
     const t=orn.getBoundingClientRect(),size=orn.offsetWidth,sz=Math.max(pr.width,24),
-      sx=pr.left+pr.width/2,sy=pr.top+pr.height/2,
-      dx=t.left+t.width/2-sx,dy=t.top+t.height/2-sy;
-    /* keep the original petal artwork and its flip */
+      sx=pr.left+pr.width/2,sy=pr.top+pr.height/2,dx=t.left+t.width/2-sx,dy=t.top+t.height/2-sy;
     if(pc.classList.contains('pi'))pc.style.cssText='--s:44px;animation:none;opacity:1';
     else pc.style.cssText=`width:100%;height:100%;object-fit:contain;display:block;transform:scaleX(${fl})`;
     const c=document.createElement('div');c.className='petal-fly';
@@ -1229,9 +1109,8 @@ function flyPetalToCard(pr,pc,fl=1){
       burst(t.left+t.width/2,t.top+t.height/2,20,{spread:2});
     };
   });
-} 
+}
 function openPop(){
-  /* a falling petal always reveals the wedding details */
   const e=EVENTS.wedding,row=(cls,v)=>v?`<div class="row ${cls}">${v}</div>`:'';
   $('#popCard').innerHTML=`<h2 class="fx" style="--d:.1s">${e.title}</h2>${row('date-time fx l',e.date)}${row('date-time fx r',e.time)}${row('venue-row fx l',e.venue)}${row('host-names fx r',e.hosts&&'Hosted by '+e.hosts)}${mapLink(e,1.1)}`;
   popOpen=true;$('#pop').classList.add('show');ps.classList.add('dim');
@@ -1241,62 +1120,33 @@ function closePop(){popOpen=false;$('#pop').classList.remove('show');if(ps)ps.cl
 /* ---- last page → logo: the small logo grows and glides to the centre ---- */
 function returnToInfinity(){
   const fl=$('#final .lg'),logo=$('#logo'),box=$('#logoBox'),hint=$('#hint'),fin=$('#final');
-
   hint.classList.remove('ready');
-   logoBlessings.style.display='none';
-
   if(!fl||fl.style.display==='none'){
-    logo.classList.remove('gone');
-    app.classList.remove('on');
+    logo.classList.remove('gone');app.classList.remove('on');
     stage='logo';cur=0;drawing=false;pts=[];
-     logoBlessings.style.display='none';
     setTimeout(()=>{if(stage==='logo')hint.classList.add('ready')},2000);
     return;
   }
-
   stage='returning';
-
-  const start=fl.getBoundingClientRect();
-  const clone=fl.cloneNode(true);
+  const start=fl.getBoundingClientRect(),clone=fl.cloneNode(true);
   clone.className='logo-return';
   clone.style.cssText=`left:${start.left}px;top:${start.top}px;width:${start.width}px;height:${start.height}px;opacity:1`;
   document.body.appendChild(clone);
-
-  fl.style.visibility='hidden';
-  box.style.visibility='hidden';
-  hint.style.visibility='hidden';
-
-  fin.style.transition='opacity .6s';
-  fin.style.opacity='0';
-
+  fl.style.visibility='hidden';box.style.visibility='hidden';hint.style.visibility='hidden';
+  fin.style.transition='opacity .6s';fin.style.opacity='0';
   logo.classList.remove('gone');
-
   const target=box.getBoundingClientRect();
-
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    clone.style.left=target.left+'px';
-    clone.style.top=target.top+'px';
-    clone.style.width=target.width+'px';
-    clone.style.height=target.height+'px';
+    clone.style.left=target.left+'px';clone.style.top=target.top+'px';
+    clone.style.width=target.width+'px';clone.style.height=target.height+'px';
   }));
-
   setTimeout(()=>{
     clone.remove();
-
-    fl.style.visibility='';
-    box.style.visibility='';
-    hint.style.visibility='';
-    fin.style.opacity='';
-    fin.style.transition='';
-
-    app.classList.remove('on');
-    $('#nameModal').classList.remove('show');
-
+    fl.style.visibility='';box.style.visibility='';hint.style.visibility='';
+    fin.style.opacity='';fin.style.transition='';
+    app.classList.remove('on');$('#nameModal').classList.remove('show');
     stage='logo';cur=0;drawing=false;pts=[];
-logoBlessings.style.display='none';
-    setTimeout(()=>{
-      if(stage==='logo')hint.classList.add('ready');
-    },2000);
+    setTimeout(()=>{if(stage==='logo')hint.classList.add('ready')},2000);
   },1000);
 }
 
@@ -1323,46 +1173,28 @@ addEventListener('pointerup',e=>{
     drawing=false;burst(e.clientX,e.clientY,10,{tiny:true,spread:1.5});if(isInfinity())infinityDone();pts=[];return;
   }
   if(stage!=='scenes'||!down)return;
-  const start=down;
-  const dx=e.clientX-start.x,dy=e.clientY-start.y;
-  const moved=Math.hypot(dx,dy);
+  const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y);
   down=null;
   const blocked=e.target.closest('.flower,.petal,#nameModal,a,button,input,textarea,.constellation-star,.constellation-ui,.constellation-admin,.constellation-admin-panel');
   if(!inFrame(e)||blocked)return;
 
-  // Any ordinary tap or swipe on the main page pulses the flower-drag prompt.
-  if(cur===0&&!e.target.closest('.flower')){
+  if(cur===0&&!e.target.closest('.flower')){          // any tap on page 1 pulses the flower prompt
     const hint=$('#hintG');
-    hint.classList.remove('show');
-    void hint.offsetWidth;
-    hint.classList.add('show');
-    const label=hint.querySelector('.hint-text');
-    if(label){label.classList.remove('pulse');void label.offsetWidth;label.classList.add('pulse')}
+    hint.classList.remove('show');void hint.offsetWidth;hint.classList.add('show');
     introPromptShown=true;
     if(moved>12)return;
-  }else if(moved>12){
-    return;
-  }
+  }else if(moved>12)return;
 
-  if(e.target.closest('.flower,.petal'))return;
   if(popOpen){closePop();go(FINAL);return}
-
   const r=frameEl.getBoundingClientRect(),tapX=(e.clientX-r.left)/r.width;
-
-  if(cur===FINAL&&(tapX>=.75||e.target.closest('.lg'))){returnToInfinity();return}   /* last page: right side → logo */
-
-  if(tapX<.25){dust(e.clientX,e.clientY,{n:16,faint:true,spread:2.5});go(cur-1);return}   /* left edge: back */
-
-  if(cur===PETAL){   /* petal page: a tap pulses the prompt text */
+  if(cur===FINAL&&(tapX>=.75||e.target.closest('.lg'))){returnToInfinity();return}   // last page: right side → logo
+  if(tapX<.25){dust(e.clientX,e.clientY,{n:16,faint:true,spread:2.5});go(cur-1);return}   // left edge: back
+  if(cur===PETAL){                                    // petal page: a tap pulses the prompt
     const hint=ps.querySelector('.petal-hint');
-    if(hint.classList.contains('show')){
-      const t=hint.firstElementChild;
-      t.classList.remove('pulse');void t.offsetWidth;t.classList.add('pulse');
-    }
+    if(hint.classList.contains('show')){const t=hint.firstElementChild;t.classList.remove('pulse');void t.offsetWidth;t.classList.add('pulse')}
     return;
   }
-
-  if(cur>=1&&cur<PETAL)go(cur+1);   /* event pages: advance */
+  if(cur>=1&&cur<PETAL)go(cur+1);                     // event pages: advance
 });
 </script>
 </body>
