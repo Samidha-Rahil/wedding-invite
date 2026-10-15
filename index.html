@@ -276,16 +276,16 @@ h1.invite-name{transform:translateX(-8cqw)}
   animation:none;
 }
 
-/* Make each Puja bell bounce independently on page entry */
-.scene.active[data-key=puja] .w-bell-left .w-pop{
+/* Make all three Puja bells bounce independently on page entry */
+.scene.active[data-event=puja] .w-bell-left .w-pop{
   animation:bellPop 1.1s 0s both;
 }
 
-.scene.active[data-key=puja] .w-bell-r1 .w-pop{
+.scene.active[data-event=puja] .w-bell-r1 .w-pop{
   animation:bellPop 1.1s .2s both;
 }
 
-.scene.active[data-key=puja] .w-bell-r2 .w-pop{
+.scene.active[data-event=puja] .w-bell-r2 .w-pop{
   animation:bellPop 1.1s .4s both;
 }
 .w-bell img{display:block;height:100%;width:auto;max-width:none;object-fit:contain;-webkit-user-drag:none}
