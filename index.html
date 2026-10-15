@@ -1024,7 +1024,10 @@ function show(i){
   stopAmbient();startAmbient(scenes[i]);
   stopYellow();
   if(SIDE==='bride'&&scenes[i].dataset.key==='puja')startYellow(scenes[i]);
-  if(i===FINAL){finalReturnTimer=setTimeout(()=>{if(cur===FINAL&&!popOpen)returnToInfinity()},9000)}
+  if(i===FINAL){
+    finalReturnTimer=setTimeout(()=>{
+    if(cur===FINAL&&!popOpen)returnToInfinity();
+  },9000);
 }
 
 function go(i){
