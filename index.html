@@ -349,7 +349,84 @@ h1.invite-name{transform:translateX(-8cqw)}
 .scene[data-event=haldi] .ev-over h2{position:relative}
 .scene[data-event=haldi] .ev-over h2::after{content:attr(data-t);position:absolute;inset:0;color:transparent;-webkit-text-stroke:0;text-shadow:none;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,205,70,.95) 46%,#fff0a8 50%,rgba(255,190,50,.95) 54%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:150% 0;-webkit-background-clip:text;background-clip:text}
 .scene.active[data-event=haldi] .ev-over h2::after{animation:haldiSweep 8s ease-in-out 2.6s infinite}
-@keyframes haldiSweep{0%{background-position:150% 0}44%,100%{background-position:-50% 0}}
+
+@keyframes haldiSweep{
+  0%{background-position:150% 0}
+  44%,100%{background-position:-50% 0}
+}
+
+/* MEHENDI: slow dark-olive sweep with a henna-red colour change */
+.scene[data-event=mehendi] .ev-over h2{
+  position:relative;
+  animation:mehendiHennaTint 10s ease-in-out 2.6s infinite;
+}
+
+.scene[data-event=mehendi] .ev-over h2::after{
+  content:attr(data-t);
+  position:absolute;
+  inset:0;
+  color:transparent;
+  -webkit-text-stroke:0;
+  text-shadow:none;
+  pointer-events:none;
+  background:linear-gradient(
+    105deg,
+    transparent 34%,
+    rgba(58,66,29,.88) 44%,
+    #454b24 49%,
+    #626b36 52%,
+    rgba(58,66,29,.88) 57%,
+    transparent 67%
+  );
+  background-size:250% 100%;
+  background-repeat:no-repeat;
+  background-position:150% 0;
+  -webkit-background-clip:text;
+  background-clip:text;
+}
+
+.scene.active[data-event=mehendi] .ev-over h2::after{
+  animation:mehendiOliveSweep 10s ease-in-out 2.6s infinite;
+}
+
+@keyframes mehendiOliveSweep{
+  0%{background-position:150% 0}
+  48%{background-position:-50% 0}
+  100%{background-position:-50% 0}
+}
+
+@keyframes mehendiHennaTint{
+  0%,12%,78%,100%{color:#fff}
+  30%,52%{color:#762b32}
+  64%{color:#fff}
+}
+
+/* Floating dark-olive specks */
+.henna-speck{
+  position:absolute;
+  z-index:6;
+  width:var(--s);
+  height:var(--s);
+  border-radius:50%;
+  pointer-events:none;
+  background:#454b24;
+  box-shadow:0 0 5px 1px rgba(69,75,36,.5);
+  opacity:0;
+  animation:hennaSpeckRise 3.8s ease-out forwards;
+}
+
+@keyframes hennaSpeckRise{
+  0%{
+    opacity:0;
+    transform:translate(0,0) scale(.5);
+  }
+  18%{opacity:.9}
+  100%{
+    opacity:0;
+    transform:translate(var(--dx),calc(var(--dy)*-1)) scale(.25);
+  }
+}
+
 .powder{position:absolute;z-index:6;width:var(--s);height:var(--s);border-radius:50%;pointer-events:none;background:#FFE9A8;box-shadow:0 0 6px 2px rgba(255,200,70,.85);opacity:0;animation:powderRise 2.4s ease-out forwards}
 @keyframes powderRise{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx),calc(var(--dy)*-1)) scale(.3)}}
 
@@ -858,9 +935,7 @@ function build(){
     else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend',`<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>${BACK}`);
     else{
-            if(k==='mehendi'){
-        s.insertAdjacentHTML('beforeend',MBELL.map((b,n)=>`<div class="m-bell m-bell-${n+1}" style="--pd:${b.pop}s;--sd:${b.swing}s"><div class="m-in"><img src="${b.img}" alt="" draggable="false" onload="this.style.width=(this.naturalWidth*BELL_SCALE)+'px'"></div></div>`).join(''));
-      }
+           
       if(k==='puja'&&SIDE==='bride'){
         s.insertAdjacentHTML('beforeend',`
           <div class="puja-tree"><img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree" draggable="false"></div>
@@ -934,29 +1009,54 @@ const shimmer=()=>{for(let i=0;i<7;i++)tone(1800+Math.random()*2400,i*.07,.5,.04
 addEventListener('pointerup',()=>{audio()},true);   // unlocks audio on the first touch
 
 /* haldi: gold powder specks rise along the title while the shimmer sweeps across */
+
 function powderBurst(scene){
-  const h=scene.querySelector('.ev-over h2');if(!h)return;
-  const sr=scene.getBoundingClientRect(),rg=document.createRange();rg.selectNodeContents(h);
-  const rcs=[...rg.getClientRects()].filter(r=>r.width>2);if(!rcs.length)return;
-  const L=Math.min(...rcs.map(r=>r.left)),R=Math.max(...rcs.map(r=>r.right)),T=Math.min(...rcs.map(r=>r.top)),B=Math.max(...rcs.map(r=>r.bottom));
-  for(let i=0;i<18;i++)setTimeout(()=>{
+  const h=scene.querySelector('.ev-over h2');
+  if(!h)return;
+
+  const sr=scene.getBoundingClientRect();
+  const rg=document.createRange();
+  rg.selectNodeContents(h);
+  const rcs=[...rg.getClientRects()].filter(r=>r.width>2);
+  if(!rcs.length)return;
+
+  const L=Math.min(...rcs.map(r=>r.left));
+  const R=Math.max(...rcs.map(r=>r.right));
+  const T=Math.min(...rcs.map(r=>r.top));
+  const B=Math.max(...rcs.map(r=>r.bottom));
+
+  const isMehendi=scene.dataset.event==='mehendi';
+  const count=isMehendi?22:18;
+
+  for(let i=0;i<count;i++)setTimeout(()=>{
     if(scenes[cur]!==scene)return;
-    const p=document.createElement('span');p.className='powder';
-    p.style.cssText=`left:${L-sr.left+(i/17)*(R-L)+rnd(-8,8)}px;top:${T-sr.top+rnd(.2,1)*(B-T)}px;--s:${rnd(2,4.5).toFixed(1)}px;--dx:${rnd(-16,16).toFixed(0)}px;--dy:${rnd(70,140).toFixed(0)}px`;
-    scene.appendChild(p);p.addEventListener('animationend',()=>p.remove());
-  },i*105);
+
+    const p=document.createElement('span');
+    p.className=isMehendi?'henna-speck':'powder';
+
+    p.style.cssText=
+      `left:${L-sr.left+(i/(count-1))*(R-L)+rnd(-12,12)}px;`+
+      `top:${T-sr.top+rnd(.2,1)*(B-T)}px;`+
+      `--s:${rnd(2,4.5).toFixed(1)}px;`+
+      `--dx:${rnd(-24,24).toFixed(0)}px;`+
+      `--dy:${rnd(55,110).toFixed(0)}px`;
+
+    scene.appendChild(p);
+    p.addEventListener('animationend',()=>p.remove());
+  },i*(isMehendi?85:105));
 }
+
 /* ambient effects: shooting stars (sangeet), gold powder (haldi) */
 let ambientTimer=null;
 function stopAmbient(){clearTimeout(ambientTimer);ambientTimer=null}
 function startAmbient(scene){
   stopAmbient();
-  const k=scene&&scene.dataset.key,kind=k==='sangeet'?'shoot':k==='haldi'?'powder':null;
+const k=scene&&scene.dataset.key,kind=k==='sangeet'?'shoot':k==='haldi'?'powder':k==='mehendi'?'henna':null;
   if(!kind)return;
   const tick=()=>{
     if(scenes[cur]!==scene)return;
-    if(kind==='powder')powderBurst(scene);
-    else{
+  if(kind==='powder'||kind==='henna')powderBurst(scene);
+else{
       const st=document.createElement('div');st.className='shoot';
       st.style.cssText=`left:${rnd(-5,45).toFixed(1)}%;top:${rnd(3,38).toFixed(1)}%;--len:${rnd(90,150).toFixed(0)}px`;
       scene.appendChild(st);st.addEventListener('animationend',()=>st.remove());
@@ -965,9 +1065,9 @@ function startAmbient(scene){
         ca=Math.cos(.4363),sa=Math.sin(.4363);let t=0;
       const tr=setInterval(()=>{t+=33;const p=Math.min(t/1100,1),d=len+300*p*p;dust(x0+d*ca,y0+d*sa,{n:4,tiny:true,spread:1.4});if(p>=1)clearInterval(tr)},33);
     }
-    ambientTimer=setTimeout(tick,kind==='powder'?5000:rnd(5000,9000));
+    ambientTimer=setTimeout(tick,kind==='powder'?5000:kind==='henna'?8000:rnd(5000,9000));
   };
-  ambientTimer=setTimeout(tick,kind==='powder'?2600:rnd(2500,5000));
+  ambientTimer=setTimeout(tick,kind==='powder'||kind==='henna'?2600:rnd(2500,5000));
 }
 
 /* ---- yellow petal shower: bride Puja page only, not clickable ---- */
