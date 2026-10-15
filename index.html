@@ -272,7 +272,7 @@ h1.invite-name{transform:translateX(-8cqw)}
   100%{transform:translateY(0)}
 }
 /* Mehendi bells: natural size. --r = rest position (share of own height above the frame) */
-.m-bell{position:absolute;top:0;z-index:4;pointer-events:none;transform:translateY(var(--r))}
+.m-bell{position:absolute;top:-30px;z-index:4;pointer-events:none;transform:translateY(var(--r))}
 .m-bell img{display:block;width:auto;height:auto;max-width:none;-webkit-user-drag:none;will-change:transform}
 .m-bell-1{left:10px;right:auto;--r:-25%}
 .m-bell-2{left:10px;right:auto;--r:-30%}
@@ -282,7 +282,7 @@ h1.invite-name{transform:translateX(-8cqw)}
   /* Continuous staggered bell wave: each bell moves down, then rises.
    The 0.8s offsets create the repeating 1-2-1-3-2-1-3-2 sequence. */
 .scene.active .m-bell img{
-  animation:mBellSwing 2.4s ease-in-out var(--sd,0s) infinite;
+  animation:mBellSwing 3.2s ease-in-out var(--sd,0s) infinite;
 }
 .scene.active[data-key=haldi] .m-bell img{
   animation-name:mBellSwingFlip;
@@ -387,7 +387,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* ===== FINAL PAGE ===== */
 #final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
 .final-greeting,#final h1{font-family:var(--fd);font-weight:500;color:var(--pink);-webkit-text-stroke:.3px currentColor}
-.final-greeting{font-size:calc(clamp(1.8rem,7cqw,2.6rem) + 3px);line-height:1.2;margin-bottom:1.3rem}
+.final-greeting{font-size:calc(clamp(1.8rem,7cqw,2.6rem) + 6px);line-height:1.2;margin-bottom:1.3rem}
 #final h1{font-size:clamp(4.8rem,22cqw,6.8rem);line-height:1.05;text-wrap:balance}
 #final .lg{width:34%;margin-top:1.35rem;transition:transform .9s ease,opacity .9s ease}
 #final .final-blessings{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:.6rem;font-family:var(--f-date);font-size:clamp(10px,2.8cqw,14px);line-height:1.35;letter-spacing:.035em;text-align:center;color:var(--forest);opacity:.82;max-width:100%}
@@ -471,7 +471,7 @@ const EVENTS={
 const YELLOW={imgs:['assets/yellow-1.png','assets/yellow-2.png'],size:[12,26]};
 /* Mehendi bells: loop timing. pop = delay of the bounce-in, swing = when each bell joins the up/down loop */
 
-const BELL_SCALE=.125; // 50% smaller than the current .25 scale
+const BELL_SCALE=.0875; // 30% smaller than the current .125 scale
 const MBELL=[
   {img:'assets/Bell-1.png',pop:0,swing:0},
   {img:'assets/Bell-2.png',pop:.12,swing:.8},
@@ -858,7 +858,7 @@ function build(){
     else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend',`<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>${BACK}`);
     else{
-            if(k==='mehendi'||(k==='haldi'&&SIDE==='bride')){
+            if(k==='mehendi'){
         s.insertAdjacentHTML('beforeend',MBELL.map((b,n)=>`<div class="m-bell m-bell-${n+1}" style="--pd:${b.pop}s;--sd:${b.swing}s"><div class="m-in"><img src="${b.img}" alt="" draggable="false" onload="this.style.width=(this.naturalWidth*BELL_SCALE)+'px'"></div></div>`).join(''));
       }
       if(k==='puja'&&SIDE==='bride'){
