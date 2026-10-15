@@ -995,13 +995,22 @@ function show(i){
     },2000);
   }
 
-  /* Original vertical scene transition: preserve other scene classes. */
+/* Original vertical scene transition: preserve other scene classes. */
   scenes.forEach((s,j)=>{
     s.classList.toggle('active',j===i);
     s.classList.toggle('past',j<i);
     s.classList.toggle('dim',j===PETAL&&popOpen);
   });
-
+/* Restart the entrance bounce on all three bride Puja bells. */
+  if(SIDE==='bride' && scenes[i].dataset.key==='puja'){
+    const bellPops=scenes[i].querySelectorAll('.w-pop');
+bellPops.forEach((bell,index)=>{
+bell.style.animation='none';
+void bell.offsetWidth;
+bell.style.animation=bellPop 1.1s $DIL0s both;
+});
+}
+  
   if(i===0){
     const hint=$('#hintG');
 
