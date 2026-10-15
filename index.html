@@ -86,7 +86,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 /* all text is forest green; only the bride / groom / family names stay pink */
 .intro{position:absolute;top:2%;left:5%;width:90%;height:96%;padding-top:0;padding-bottom:6cqh;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--forest);text-shadow:0 0 6px rgba(255,255,255,.55);pointer-events:none;overflow:visible}
 .scene.active#s0 .intro{animation:flyU 1.3s .4s both}
-/* Ganeshay: small, pinned to the very top of the frame */
+/* Bride main page: nudge all text slightly higher (increase 3cqh to move more) */ .bride-side .intro{padding-bottom:calc(6cqh + 3cqh)} /* Ganeshay: small, pinned to the very top of the frame */
 #inviteGaneshay{position:absolute;top:0;left:50%;transform:translateX(-50%);display:block;width:clamp(58px,17cqw,82px);height:clamp(58px,17cqw,82px);object-fit:contain}
 .invite-gap-small{height:1.5cqh;min-height:5px;flex-shrink:0}
 .invite-hosts{
@@ -241,9 +241,9 @@ h1.invite-name{transform:translateX(-8cqw)}
 }
 
 .groom-side .scene[data-event=puja] .next-cue-label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
-.next-cue{position:absolute;right:1.1rem;bottom:1.2rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
+.next-cue{position:absolute;right:1.1rem;bottom:2.4rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
 .next-cue-label{text-shadow:0 1px 5px rgba(26,61,40,.5)}
-.pixie-orbit{position:relative;display:block;width:27px;height:27px;border:1px solid currentColor;border-radius:50%;animation:cuePulse 2.2s ease-in-out infinite}
+.back-cue{position:absolute;left:1.1rem;bottom:2.4rem;z-index:12;width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid currentColor;border-radius:50%;background:rgba(255,255,255,.12);color:var(--hl);opacity:.45;cursor:pointer;pointer-events:auto;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:opacity .3s} .back-cue:active{opacity:.8} .back-cue svg{width:14px;height:14px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round} .groom-side .scene[data-event=puja] .back-cue{color:#fff} .pixie-orbit{position:relative;display:block;width:27px;height:27px;border:1px solid currentColor;border-radius:50%;animation:cuePulse 2.2s ease-in-out infinite}
 .pixie-orbit::before,.pixie-orbit::after{content:"";position:absolute;width:3px;height:3px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
 .pixie-orbit::before{top:2px;right:1px}.pixie-orbit::after{bottom:1px;left:2px}
 @keyframes cuePulse{0%,100%{transform:scale(.94);opacity:.55;box-shadow:0 0 0 0 rgba(227,132,150,.18)}50%{transform:scale(1.04);opacity:1;box-shadow:0 0 0 5px rgba(227,132,150,0)}}
@@ -751,7 +751,7 @@ if(k==='main'){
     <div id="drop" aria-label="Flower offering space"></div>
     <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
 }
-    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
     
     else if(k==='wedding')s.insertAdjacentHTML('beforeend','<div class="petal-hint"><span class="hint-text">Catch a falling petal</span></div>');
     else {
@@ -769,7 +769,7 @@ if(k==='main'){
           </div>
         `);
       }
-      s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
+            s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div><button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span></button>`);
     }
 
     app.appendChild(s);
@@ -817,7 +817,8 @@ if(k==='main'){
   scenes[0].querySelectorAll('.flower').forEach(wireFlower);
  
   scenes.forEach((sc,idx)=>{
-    const cue=sc.querySelector('.next-cue');
+      const cue=sc.querySelector('.next-cue');
+    const back=sc.querySelector('.back-cue');
 
     if(cue){
       cue.addEventListener('pointerup',e=>{
@@ -825,9 +826,12 @@ if(k==='main'){
         go(idx+1);
       });
     }
-
-  });
-
+    if(back){
+      back.addEventListener('pointerup',e=>{
+        e.stopPropagation();
+        go(idx-1);
+      });
+    }  });
 }
 
 /* ===== EXTRAS: haptics, sounds, flower flight, splash, drips, shooting stars ===== */
