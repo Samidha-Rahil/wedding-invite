@@ -259,9 +259,35 @@ h1.invite-name{transform:translateX(-8cqw)}
   33%{transform:translateY(16px) scaleY(-1)}
   66%,100%{transform:translateY(0) scaleY(-1)}
 }/* Bride Puja wedding bells: pendulum + pop in */
-.w-bell{position:absolute;top:-40px;height:75cqh;width:max-content;z-index:4;pointer-events:none;transform-origin:top center;animation:bellPendulum 4.8s ease-in-out infinite alternate;will-change:transform}
-.w-pop{height:100%}
-.scene.active .w-pop{animation:bellPop 1.1s var(--pd,0s) both}
+.w-bell{
+  position:absolute;
+  top:-40px;
+  height:75cqh;
+  width:max-content;
+  z-index:6;
+  pointer-events:none;
+  transform-origin:top center;
+  animation:bellPendulum 4.8s ease-in-out infinite alternate;
+  will-change:transform;
+}
+
+.w-pop{
+  height:100%;
+  animation:none;
+}
+
+/* Make each Puja bell bounce independently on page entry */
+.scene.active[data-key=puja] .w-bell-left .w-pop{
+  animation:bellPop 1.1s 0s both;
+}
+
+.scene.active[data-key=puja] .w-bell-r1 .w-pop{
+  animation:bellPop 1.1s .2s both;
+}
+
+.scene.active[data-key=puja] .w-bell-r2 .w-pop{
+  animation:bellPop 1.1s .4s both;
+}
 .w-bell img{display:block;height:100%;width:auto;max-width:none;object-fit:contain;-webkit-user-drag:none}
 .w-bell-left{left:15px;height:95cqh;animation-duration:5.2s;animation-delay:-1.1s}
 .w-bell-r1{right:10px;top:70px;height:calc(75cqh - 70px);animation-duration:4.8s;animation-delay:-.4s}
