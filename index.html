@@ -102,7 +102,8 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
  .bride-side .invite-hosts{
   font-size:calc(clamp(11px,3.5cqw,17px) + 2.5px);
 }
-.invite-statements,.invite-statement{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);letter-spacing:.01em}
+.invite-statements{font:clamp(9px,3.4cqw,13px)/1.2 var(--f-venue);letter-spacing:.01em}
+.invite-statement{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);letter-spacing:.01em}
 .invite-opening{margin-bottom:1.2cqh}
 .invite-opening p{margin:0}
 .invite-with{font:clamp(12px,3.4cqw,16px)/1.2 var(--f-venue);margin:.6cqh 0;position:relative;top:-1.5cqh}
@@ -363,8 +364,15 @@ const SIDES={
   bride:{
     logo:"assets/logo.png", ganeshay:"assets/ganeshay.png",
     order:["puja","mehendi","sangeet","haldi","wedding"],
-    main:{hosts:"Smt. Archana &amp; Shri Vinay Jatkar",
-      lines:["With joy and warmth in their hearts, cordially","invite you to celebrate the wedding festivities of","their beloved daughter"],
+    main:{
+      beforeHosts:[
+        "With the blessings of",
+        "Smt. Sarmishtha & Shri Ramesh Doshi",
+        "and the loving memories of",
+        "Late Smt. Kamal & Late Shri Vasudeo Jatkar"
+      ],
+      hosts:"Smt. Archana &amp; Shri Vinay Jatkar",
+      lines:["cordially invite you to celebrate the wedding festivities of","their beloved daughter"],
       first:"Samidha", second:"Rahil",
       sub:"(Son of Smt. Sneha &amp; Late Shri Sanjiv Dhami)",
       share:"sharing the joy", family:"Prathama &amp; Ninad"}
@@ -728,7 +736,7 @@ if(k==='main'){
   s.insertAdjacentHTML('beforeend',`
     <div class="intro fx" id="mainInvite" style="--d:.4s">
       <img id="inviteGaneshay" src="${SD.ganeshay}" alt="Ganeshay" fetchpriority="high">
-      ${SIDE==='bride'?`<p class="invite-hosts">${M.hosts}</p>`:''}
+          ${SIDE==='bride'?`<div class="invite-statements invite-opening">${(M.beforeHosts||[]).map(t=>`<p>${t}</p>`).join('')}</div><p class="invite-hosts">${M.hosts}</p>`:''}
       <div class="invite-statements invite-opening">${openingLines.map(t=>`<p>${t}</p>`).join('')}</div>
       ${SIDE==='groom'?`<p class="invite-hosts">${M.hosts}</p>${closingLine}`:''}
       <h1 class="invite-name" data-t="${M.first}">${M.first}</h1>
