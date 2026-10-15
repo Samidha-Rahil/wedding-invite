@@ -978,7 +978,6 @@ function show(i){
   }
 }
 
-  const prev=scenes.findIndex(s=>s.classList.contains('show'));
   const dir=i>=prev?'right':'left';
   cur=i;
 
@@ -1032,7 +1031,8 @@ function go(i){
   if(i<0||i>FINAL||popOpen)return;
   if(i===0){                                   // back on page 1: reset the offering
     locked=false;
-    document.querySelectorAll('.gan').forEach(g=>g.classList.remove('offered','spin'));
+    document.querySelectorAll('.gan').forEach(g=>g.classList.remove('offered','spin'));     scenes[0].classList.remove('offering-scroll-out');     
+    scenes[0].classList.remove('offering-scroll-out');
     scenes[0].querySelectorAll('.flower').forEach(f=>{f.style.transition='';f.style.transform='';f.style.opacity=1});
   }
   show(i);
