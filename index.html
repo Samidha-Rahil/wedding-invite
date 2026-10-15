@@ -67,26 +67,18 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .loading-dots{display:inline-block;font-weight:700;letter-spacing:.12em;background:linear-gradient(90deg,#E38496 0%,#B2AF87 45%,#1A3D28 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:dotShimmer 1.1s linear infinite}
 @keyframes dotShimmer{from{background-position:100% 0}to{background-position:-100% 0}}
 
-/* ===== KONTEXT TRANSITION (container = #app, pages = .layer) ===== */
-#app{position:absolute;inset:0;opacity:0;transition:opacity 1.2s}
+/* ===== SIMPLE VERTICAL PAGE SCROLL ===== */
+#app{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
 #app.on{opacity:1}
-.kontext{width:100%;height:100%}
-.kontext .layer{position:absolute;width:100%;height:100%;top:0;left:0;visibility:hidden}
-.kontext .layer.show{visibility:visible}
-.kontext.capable{perspective:1000px;transform-style:preserve-3d}
-.kontext.capable .layer{transform:translateZ(-100px)}
-.kontext.capable .layer.show{transform:translateZ(0)}
-.kontext.capable.animate .layer.show.right{animation:show-right 1s forwards ease}
-.kontext.capable.animate .layer.hide.right{animation:hide-right 1s forwards ease}
-.kontext.capable.animate .layer.show.left{animation:show-left 1s forwards ease}
-.kontext.capable.animate .layer.hide.left{animation:hide-left 1s forwards ease}
-@keyframes show-right{0%{transform:translateZ(-200px)}40%{transform:translate(40%,0) scale(.8) rotateY(-20deg)}100%{transform:translateZ(0)}}
-@keyframes hide-right{0%{transform:translateZ(0);visibility:visible}40%{transform:translate(-40%,0) scale(.8) rotateY(20deg)}100%{transform:translateZ(-200px);visibility:hidden}}
-@keyframes show-left{0%{transform:translateZ(-200px)}40%{transform:translate(-40%,0) scale(.8) rotateY(20deg)}100%{transform:translateZ(0)}}
-@keyframes hide-left{0%{transform:translateZ(0);visibility:visible}40%{transform:translate(40%,0) scale(.8) rotateY(-20deg)}100%{transform:translateZ(-200px);visibility:hidden}}
+.kontext{width:100%;height:100%;perspective:none;transform:none;transform-style:flat;overflow:hidden}
+.kontext .layer{position:absolute;width:100%;height:100%;top:0;left:0;visibility:hidden;transform:translateY(100%);will-change:transform}
+.kontext .layer.show{visibility:visible;transform:translateY(0)}
+.kontext .layer.hide{visibility:visible;transform:translateY(-100%)}
+.kontext.animate .layer.show{animation:pageScrollIn .72s cubic-bezier(.22,.72,.2,1) both}
+.kontext.animate .layer.hide{animation:pageScrollOut .72s cubic-bezier(.22,.72,.2,1) both}
+@keyframes pageScrollIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pageScrollOut{from{transform:translateY(0)}to{transform:translateY(-100%)}}
 .kontext .layer .dimmer{display:block;position:absolute;inset:0;z-index:100;pointer-events:none;visibility:hidden;background:transparent}
-.kontext.capable.animate .layer .dimmer{transition:background 1s ease}
-.kontext.capable.animate .layer.hide .dimmer{visibility:visible;background:rgba(0,0,0,.7)}
 
 /* ===== SCENES ===== */
 .scene{--hl:var(--pink);background:var(--cream);overflow:hidden}
@@ -142,11 +134,13 @@ h1.invite-name{transform:translateX(-8cqw)}
 
 /* ===== GANPATI (one copy lives inside each page that shows him) ===== */
 .gan{position:absolute;z-index:4;pointer-events:none}
-.gan-main{left:17%;width:66%;top:47.5%;height:49%}
+.gan-main{left:17%;width:66%;top:47.5%;height:49%;transform:translateY(0)}
+.scene.offering-scroll-out .gan-main{animation:offeringCarryDown .68s cubic-bezier(.35,.7,.25,1) both}
+@keyframes offeringCarryDown{from{transform:translateY(0)}to{transform:translateY(82cqh)}}
 .gan-puja{left:19%;width:62%;top:9.5%;height:46%;--gd:.35s}
-.gan img.bgan{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom center;opacity:0;filter:drop-shadow(0 5px 10px rgba(26,61,40,.12))}
+.gan img.bgan{display:block;width:100%;height:100%;object-fit:contain;object-position:bottom center;opacity:0;background:transparent;filter:drop-shadow(0 5px 10px rgba(26,61,40,.12))}
 .scene.active .gan img.bgan{animation:flyU 1.5s var(--gd,.5s) cubic-bezier(.2,.8,.2,1) both,ganpatiFloat 4.5s calc(var(--gd,.5s) + 1.5s) ease-in-out infinite}
-.gan .image-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:1rem;text-align:center;font-size:.85rem;background:var(--cream)}
+.gan .image-fallback{position:absolute;inset:0;display:grid;place-items:center;padding:1rem;text-align:center;font-size:.85rem;background:transparent;color:var(--forest);text-shadow:0 0 5px var(--cream)}
 .gflower{position:absolute;z-index:3;left:50%;bottom:3%;width:61.6px;height:61.6px;transform:translateX(-50%);opacity:0;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35))}
 .gflower img,.gflower svg{width:100%;height:100%;object-fit:contain;display:block}
 .gan.offered .gflower{opacity:1;transform:translateX(-50%) rotate(45deg)}
@@ -384,7 +378,7 @@ const MBELL=[{img:'assets/Bell-1.png',pop:0,swing:1.4},{img:'assets/Bell-2.png',
 /* ===================================================== */
 
 const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a);
-let stage='logo',cur=0,guest='',popOpen=false,locked=false,filled=false,scenes=[],PETAL=0,FINAL=0,ps=null,introTimer=null,introTrailTimer=null,introPromptShown=false;
+let stage='logo',cur=0,guest='',popOpen=false,locked=false,filled=false,scenes=[],PETAL=0,FINAL=0,ps=null,introTimer=null,introTrailTimer=null,introPromptShown=false,finalReturnTimer=null;
 let pts=[],drawing=false,down=null;
 const app=$('#app'),li=$('#logoImg'),frameEl=$('.frame');
 const inFrame=e=>{const r=frameEl.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom};
@@ -886,6 +880,7 @@ function startYellow(scene){
 
 /* ---- navigation (Kontext: swap show / hide classes, CSS does the 3D move) ---- */
 function show(i){
+  clearTimeout(finalReturnTimer);finalReturnTimer=null;
   const prev=scenes.findIndex(s=>s.classList.contains('show'));
   const dir=i>=prev?'right':'left';
   cur=i;
@@ -901,7 +896,7 @@ function show(i){
     ps._hintTimer=setTimeout(()=>{if(cur===PETAL&&!popOpen)hint.classList.add('show')},2000);
   }
 
-  if(prev>=0)app.classList.add('animate');     // first page appears without a transition
+  if(prev>=0)app.classList.add('animate');     // subsequent pages use a simple vertical scroll
   if(prev!==i){
     scenes.forEach((s,j)=>{
       s.classList.remove('left','right');s.classList.add(dir);
@@ -933,6 +928,7 @@ function show(i){
   stopAmbient();startAmbient(scenes[i]);
   stopYellow();
   if(SIDE==='bride'&&scenes[i].dataset.key==='puja')startYellow(scenes[i]);
+  if(i===FINAL){finalReturnTimer=setTimeout(()=>{if(cur===FINAL&&!popOpen)returnToInfinity()},9000)}
 }
 
 function go(i){
@@ -1054,7 +1050,7 @@ function wireFlower(f){
         document.querySelectorAll('.gan').forEach(g=>g.classList.add('offered'));
         $('.gan-main').classList.add('spin');
         burst(dx,dy-40,40,{spread:3});chime();buzz(15);
-        setTimeout(()=>go(1),1400);              // let the spin finish, then move on
+        setTimeout(()=>{scenes[0].classList.add('offering-scroll-out');setTimeout(()=>go(1),620)},1400); // carry Bappa and the offered flower down as the next page scrolls in
       },750);
     }else{tx=ty=0;f.style.transform=''}
   });
