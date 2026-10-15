@@ -67,18 +67,34 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .loading-dots{display:inline-block;font-weight:700;letter-spacing:.12em;background:linear-gradient(90deg,#E38496 0%,#B2AF87 45%,#1A3D28 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:dotShimmer 1.1s linear infinite}
 @keyframes dotShimmer{from{background-position:100% 0}to{background-position:-100% 0}}
 
-/* ===== SIMPLE VERTICAL PAGE SCROLL ===== */
-#app{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
+
+/* ===== VERTICAL PAGE TRANSITIONS ===== */
+#app{position:absolute;inset:0;opacity:0;transition:opacity 1.2s}
 #app.on{opacity:1}
-.kontext{width:100%;height:100%;perspective:none;transform:none;transform-style:flat;overflow:hidden}
-.kontext .layer{position:absolute;width:100%;height:100%;top:0;left:0;visibility:hidden;transform:translateY(100%);will-change:transform}
-.kontext .layer.show{visibility:visible;transform:translateY(0)}
-.kontext .layer.hide{visibility:visible;transform:translateY(-100%)}
-.kontext.animate .layer.show{animation:pageScrollIn .72s cubic-bezier(.22,.72,.2,1) both}
-.kontext.animate .layer.hide{animation:pageScrollOut .72s cubic-bezier(.22,.72,.2,1) both}
-@keyframes pageScrollIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
-@keyframes pageScrollOut{from{transform:translateY(0)}to{transform:translateY(-100%)}}
-.kontext .layer .dimmer{display:block;position:absolute;inset:0;z-index:100;pointer-events:none;visibility:hidden;background:transparent}
+
+.scene{
+  --hl:var(--pink);
+  position:absolute;
+  inset:0;
+  background:var(--cream);
+  transform:translateY(100%);
+  transition:transform 1s cubic-bezier(.65,0,.25,1);
+  overflow:hidden;
+  will-change:transform;
+}
+.scene.active{transform:translateY(0)}
+.scene.past{transform:translateY(-100%)}
+
+.scene .dimmer{
+  display:block;
+  position:absolute;
+  inset:0;
+  z-index:100;
+  pointer-events:none;
+  visibility:hidden;
+  background:transparent;
+}
+
 
 /* ===== SCENES ===== */
 .scene{--hl:var(--pink);background:var(--cream);overflow:hidden}
@@ -699,7 +715,7 @@ function build(){
   pages.forEach((k,i)=>{
     const src=CONFIG.bg[k]||'';
     const s=document.createElement('div');
-    s.className='scene layer';s.id='s'+i;s.dataset.key=k;s.dataset.event=(EVENTS[k]&&EVENTS[k].skin)||k;
+    s.className='scene';s.id='s'+i;s.dataset.key=k;s.dataset.event=(EVENTS[k]&&EVENTS[k].skin)||k;
     s.innerHTML=`<div class="ph" hidden></div>`+(src?(k==='main'?`<img class="bg" src="${src}" alt="" aria-hidden="true" fetchpriority="high">`:`<img class="bg" data-src="${src}" alt="" aria-hidden="true">`):'');
     const ph=s.querySelector('.ph'),bg=s.querySelector('img.bg');
     const fail=()=>{
@@ -758,7 +774,7 @@ function build(){
   });
 
   const fin=document.createElement('div');
-  fin.className='scene layer';fin.id='final';
+  fin.className='scene';fin.id='final';
   const safeGuest=(guestDisplay||guest).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const b1=SIDE==='groom'?'Sharing the joy':'With love & warm regards';
   const b2=SIDE==='groom'?'Karishma, Abhishek, Ravina, Pararth, Kiara, Chiranjiv & Devanshi.':'Blessings only';
@@ -879,8 +895,89 @@ function startYellow(scene){
 }
 
 /* ---- navigation (Kontext: swap show / hide classes, CSS does the 3D move) ---- */
+
 function show(i){
-  clearTimeout(finalReturnTimer);finalReturnTimer=null;
+  clearTimeout(finalReturnTimer);
+  finalReturnTimer=null;
+  cur=i;
+
+  const activeBg=scenes[i]?.querySelector('img.bg[data-src]');
+  if(activeBg){
+    activeBg.src=activeBg.dataset.src;
+    activeBg.removeAttribute('data-src');
+  }
+
+  if(i===PETAL&&!filled){
+    filled=true;
+    for(let k=0;k<26;k++)makePetal(true);
+  }
+
+  clearTimeout(ps._hintTimer);
+  if(i===PETAL){
+    const hint=ps.querySelector('.petal-hint');
+    hint.classList.remove('show');
+    ps._hintTimer=setTimeout(()=>{
+      if(cur===PETAL&&!popOpen)hint.classList.add('show');
+    },2000);
+  }
+
+  /* Original vertical scene transition: preserve other scene classes. */
+  scenes.forEach((s,j)=>{
+    s.classList.toggle('active',j===i);
+    s.classList.toggle('past',j<i);
+    s.classList.toggle('dim',j===PETAL&&popOpen);
+  });
+
+  if(i===0){
+    const hint=$('#hintG');
+
+    if(introPromptShown){
+      hint.classList.add('show');
+      if(!introTrailTimer){
+        offeringPixieDust();
+        introTrailTimer=setInterval(offeringPixieDust,2600);
+      }
+    }else if(!introTimer){
+      introTimer=setTimeout(()=>{
+        if(cur===0){
+          hint.classList.add('show');
+          introPromptShown=true;
+          offeringPixieDust();
+
+          if(!introTrailTimer){
+            introTrailTimer=setInterval(offeringPixieDust,2600);
+          }
+        }
+        introTimer=null;
+      },5000);
+    }
+  }else{
+    if(introTimer){
+      clearTimeout(introTimer);
+      introTimer=null;
+    }
+    if(introTrailTimer){
+      clearInterval(introTrailTimer);
+      introTrailTimer=null;
+    }
+  }
+
+  stopAmbient();
+  startAmbient(scenes[i]);
+
+  stopYellow();
+  if(SIDE==='bride'&&scenes[i].dataset.key==='puja'){
+    startYellow(scenes[i]);
+  }
+
+  /* Keep the automatic return from the final page to the logo. */
+  if(i===FINAL){
+    finalReturnTimer=setTimeout(()=>{
+      if(cur===FINAL&&!popOpen)returnToInfinity();
+    },9000);
+  }
+}
+
   const prev=scenes.findIndex(s=>s.classList.contains('show'));
   const dir=i>=prev?'right':'left';
   cur=i;
