@@ -1788,12 +1788,12 @@ setInterval(()=>{
 
 /* ghost drag: translucent circle from a flower to the drop spot */
 const gd=document.createElement('div');gd.id='ghostDrag';document.body.appendChild(gd);
-let dragSeen=false,d0=0;
-addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.flower'))dragSeen=true},true);
+let holding=false,d0=0;
+addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.flower'))holding=true},true); ['pointerup','pointercancel'].forEach(v=>addEventListener(v,()=>{holding=false},true));
 (function demo(ts){
   requestAnimationFrame(demo);
   const sc=scenes[0],h=$('#hintG');
-  const on=!RM&&stage==='scenes'&&cur===0&&!dragSeen&&!locked&&!popOpen&&sc&&sc.classList.contains('active')&&h&&h.classList.contains('show');
+  const on=!RM&&stage==='scenes'&&cur===0&&!holding&&!locked&&!popOpen&&sc&&sc.classList.contains('active')&&h&&h.classList.contains('show');
   if(!on){gd.style.opacity=0;d0=0;return}
   const f=[...sc.querySelectorAll('.flower')].find(x=>+getComputedStyle(x).opacity>.5),dr=$('#drop');
   if(!f||!dr){gd.style.opacity=0;return}
