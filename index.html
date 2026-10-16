@@ -212,9 +212,10 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* Sangeet prompt: slow fade-in with a gentle, steady glow */
 .constellation-heading{
   position:absolute;
-  top:13%;
+  top:18%;
   left:8%;
   width:84%;
+  transform:translateY(-50%);
   text-align:center;
   color:#fff;
   font:600 1.05rem/1.4 var(--f-date);
@@ -222,21 +223,76 @@ h1.invite-name{transform:translateX(-8cqw)}
   text-transform:uppercase;
   pointer-events:none;
   opacity:0;
-  text-shadow:0 0 10px rgba(255,255,255,.65);
+  text-shadow:0 0 8px rgba(255,255,255,.55);
 }
 
 .scene.active .constellation-heading{
-  animation:constellationPromptFade 3.5s ease-out .5s forwards;
+  animation:
+    constellationPromptEntrance 1.4s ease-out both,
+    constellationPromptGlow 3.2s 1.4s ease-in-out infinite;
 }
 
-@keyframes constellationPromptFade{
-  0%{
+@keyframes constellationPromptEntrance{
+  from{
     opacity:0;
-    text-shadow:0 0 0 rgba(255,255,255,0);
+    transform:translateY(calc(-50% + 28px));
   }
-  100%{
-    opacity:1;
-    text-shadow:0 0 10px rgba(255,255,255,.65);
+  to{
+    opacity:.9;
+    transform:translateY(-50%);
+  }
+}
+
+@keyframes constellationPromptGlow{
+  0%,100%{
+    opacity:.9;
+    text-shadow:
+      0 0 8px rgba(255,255,255,.55),
+      0 0 18px rgba(255,255,255,.35);
+  }
+  50%{
+    opacity:.9;
+    text-shadow:
+      0 0 12px rgba(255,255,255,.75),
+      0 0 24px rgba(255,255,255,.45);
+  }
+}
+
+/* Faint silver pixie dust around the prompt */
+.constellation-heading::before,
+.constellation-heading::after{
+  content:"";
+  position:absolute;
+  top:-10px;
+  bottom:-10px;
+  width:16%;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(235,239,245,.65) .7px,transparent 1.5px),
+    radial-gradient(circle,rgba(210,220,232,.45) .7px,transparent 1.6px),
+    radial-gradient(circle,rgba(255,255,255,.5) .6px,transparent 1.4px);
+  background-size:19px 23px,29px 31px,37px 27px;
+  opacity:0;
+  animation:promptPixieDust 6s ease-in-out 1.4s infinite;
+}
+
+.constellation-heading::before{
+  left:-3%;
+}
+
+.constellation-heading::after{
+  right:-3%;
+  animation-delay:2.2s;
+}
+
+@keyframes promptPixieDust{
+  0%,100%{
+    opacity:0;
+    transform:translateY(3px);
+  }
+  35%,65%{
+    opacity:.55;
+    transform:translateY(-3px);
   }
 }
 
@@ -1532,10 +1588,9 @@ function wireFlower(f){
     const dy=d.top+d.height/2;
 
     if(Math.hypot(e.clientX-dx,e.clientY-dy)<d.width*.8&&!locked){
-      locked=true;
+          locked=true;
       burst(dx,dy,60,{spread:5});
-      flyFlowerToBappa(f);
-      f.remove();
+      flyFlowerToBappa(f,origin);
       origin=null;
     }else{
       /* Return the flower to its original place if the drop misses. */
@@ -1563,7 +1618,7 @@ function wireFlower(f){
 }
 
 /* the dragged flower itself flies onto Bappa (always in front), spins, lands at the same size */
-function flyFlowerToBappa(f){
+function flyFlowerToBappa(f,origin){
   const bp=$('#bappa'),bf=bp.querySelector('.gflower');
   const r=f.getBoundingClientRect(),t=bf.getBoundingClientRect();
   const sx=r.left+r.width/2,sy=r.top+r.height/2,ex=t.left+t.width/2,ey=t.top+t.height/2,dx=ex-sx,dy=ey-sy;
@@ -1585,10 +1640,40 @@ function flyFlowerToBappa(f){
   a.onfinish=()=>{
     clearInterval(trail);
     c.remove();
+
     bp.classList.add('offered','spin');
-    burst(ex,ey,50,{spread:4});chime();buzz(15);
-    /* Rotate the offering while the page begins moving; do not wait for a separate beat. */
-    go(1);
+    burst(ex,ey,50,{spread:4});
+    chime();
+    buzz(15);
+
+    /* Start the offering's sit-and-spin just before the page scroll. */
+    setTimeout(()=>{
+      go(1);
+
+      /* Return the used flower to its original tree position. */
+      setTimeout(()=>{
+        if(!origin||!origin.parent)return;
+
+        origin.parent.insertBefore(
+          f,
+          origin.next&&origin.next.parentNode===origin.parent
+            ?origin.next
+            :null
+        );
+
+        f.classList.remove('drag');
+        f.style.position=origin.position;
+        f.style.left=origin.left;
+        f.style.top=origin.top;
+        f.style.width=origin.width;
+        f.style.height=origin.height;
+        f.style.margin=origin.margin;
+        f.style.zIndex=origin.zIndex;
+        f.style.transform=origin.transform;
+        f.style.opacity=origin.opacity;
+        f.style.transition=origin.transition;
+      },1050);
+    },120);
   };
 }
 
