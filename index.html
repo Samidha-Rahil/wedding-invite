@@ -208,6 +208,8 @@ h1.invite-name{transform:translateX(-8cqw)}
 .constellation-layer{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none}
 
 /* Sangeet prompt: magical, word-by-word star-glitter reveal */
+
+/* Sangeet prompt: slow fade-in with a gentle, steady glow */
 .constellation-heading{
   position:absolute;
   top:13%;
@@ -215,68 +217,27 @@ h1.invite-name{transform:translateX(-8cqw)}
   width:84%;
   text-align:center;
   color:#fff;
-  font:600 1.05rem/1.6 var(--f-date);
+  font:600 1.05rem/1.4 var(--f-date);
   letter-spacing:.16em;
   text-transform:uppercase;
   pointer-events:none;
-  text-shadow:0 0 10px rgba(255,255,255,.35);
-}
-
-.constellation-heading span{
-  display:inline-block;
-  position:relative;
-  margin-right:.24em;
   opacity:0;
-  animation:
-    constellationWordIn 1.25s ease-out calc(1s + var(--word-index)*.62s) forwards,
-    constellationWordGlow 3.8s ease-in-out calc(2.25s + var(--word-index)*.62s) infinite;
+  text-shadow:0 0 10px rgba(255,255,255,.65);
 }
 
-.constellation-heading span::after{
-  content:'✦';
-  position:absolute;
-  top:-.65em;
-  right:-.18em;
-  font-size:.48em;
-  color:#fff4c9;
-  opacity:0;
-  text-shadow:0 0 5px #fff,0 0 12px #ffe5a0;
-  animation:constellationWordSparkle 2.4s ease-in-out calc(1.5s + var(--word-index)*.62s) infinite;
+.scene.active .constellation-heading{
+  animation:constellationPromptFade 3.5s ease-out .5s forwards;
 }
 
-@keyframes constellationWordIn{
+@keyframes constellationPromptFade{
   0%{
     opacity:0;
-    transform:translateY(8px);
-    filter:blur(3px);
-    text-shadow:0 0 0 transparent;
-  }
-  55%{
-    opacity:1;
-    filter:blur(0);
-    text-shadow:0 0 12px #fff,0 0 24px rgba(255,230,165,.95);
+    text-shadow:0 0 0 rgba(255,255,255,0);
   }
   100%{
     opacity:1;
-    transform:translateY(0);
-    filter:blur(0);
-    text-shadow:0 0 8px rgba(255,255,255,.55);
+    text-shadow:0 0 10px rgba(255,255,255,.65);
   }
-}
-
-@keyframes constellationWordGlow{
-  0%,100%{
-    text-shadow:0 0 5px rgba(255,255,255,.35);
-  }
-  50%{
-    text-shadow:0 0 10px rgba(255,255,255,.8),0 0 18px rgba(255,226,160,.65);
-  }
-}
-
-@keyframes constellationWordSparkle{
-  0%,65%,100%{opacity:0;transform:scale(.5) rotate(-20deg)}
-  75%{opacity:1;transform:scale(1.25) rotate(15deg)}
-  85%{opacity:.65;transform:scale(.9) rotate(0deg)}
 }
 
 .constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:21;--lo:.3;--hi:1;filter:drop-shadow(0 0 3px rgba(255,248,223,.85));animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite}
@@ -939,7 +900,7 @@ function relayoutStars(scene){
 }
 function makeConstellation(scene){
   const layer=document.createElement('div');layer.className='constellation-layer';
-  layer.innerHTML='<div class="constellation-heading"><span style="--word-index:0">Choose</span><span style="--word-index:1">a</span><span style="--word-index:2">star,</span><span style="--word-index:3">Leave</span><span style="--word-index:4">a</span><span style="--word-index:5">wish</span></div>';
+  layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a wish</div>';
   const used=[];
   for(let i=1;i<=36;i++){
     const pos=randomStarPosition(used,scene);used.push(pos);
