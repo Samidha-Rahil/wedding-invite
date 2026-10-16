@@ -491,7 +491,6 @@ html,body{touch-action:pinch-zoom}
 #hintG.show{animation:petalFadeIn 1.2s ease-out both}
 .petal-hint{text-shadow:none}.petal-hint.show{animation:petalPromptEntrance 1.4s ease-out both}
 #hintG.show .cue-pill,.petal-hint.show .cue-pill,.star-hint .cue-pill,.det-btn.show,#tapBegin.show{animation:pillPulse 2s ease-in-out infinite}
-.star-hint{position:absolute;left:50%;top:calc(max(8px,env(safe-area-inset-top)) + 3.2rem);transform:translateX(-50%);z-index:11;pointer-events:none}
 .det-btn{position:absolute;left:50%;bottom:max(5.4rem,calc(env(safe-area-inset-bottom) + 4.5rem));transform:translateX(-50%);z-index:25;opacity:0;pointer-events:none;transition:opacity .5s}
 .det-btn.show{opacity:1;pointer-events:auto}.scene.dim .det-btn{opacity:0!important;pointer-events:none}
 .replay-btn{margin-top:1.4rem;pointer-events:auto}
@@ -500,14 +499,12 @@ html,body{touch-action:pinch-zoom}
 .next-cue-label{color:inherit!important;text-shadow:none!important}
 .back-cue svg{width:18px;height:18px}
 /* progress bar + persistent tap guide */
-#prog,#tzGuide{position:absolute;z-index:60;pointer-events:none;opacity:0;transition:opacity .4s}
+#prog{position:absolute;z-index:60;pointer-events:none;opacity:0;transition:opacity .4s}
 #prog{top:max(8px,env(safe-area-inset-top));left:12px;right:12px;display:flex;gap:4px}
 #app.on~#prog{opacity:1}
-#prog i{flex:1;display:block;height:4px;border-radius:3px;overflow:hidden;background:rgba(26,61,40,.35);box-shadow:0 0 0 .5px rgba(255,255,255,.5)}
+#prog i{flex:1;display:block;height:2px;border-radius:1px;overflow:hidden;background:rgba(26,61,40,.35);box-shadow:0 0 0 .5px rgba(255,255,255,.5)}
 #prog b{display:block;height:100%;width:0;background:#fff;transition:width .5s}
 #prog .done b{width:100%}#prog .now b{width:100%;background:var(--pink);box-shadow:0 0 6px var(--pink)}
-#tzGuide{left:50%;top:calc(max(8px,env(safe-area-inset-top)) + 16px);transform:translateX(-50%);max-width:94%;padding:.35rem .9rem;border-radius:999px;background:rgba(26,61,40,.66);color:#fff;font:clamp(12px,3.4cqw,14px)/1.2 var(--f-date);letter-spacing:.04em;white-space:nowrap;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-#app.on~#tzGuide.on{opacity:1}
 /* logo screen extras */
 #tapBegin{position:absolute;left:50%;bottom:max(2.2rem,calc(env(safe-area-inset-bottom) + 1.6rem));transform:translateX(-50%);opacity:0;pointer-events:none;transition:opacity .6s;z-index:3}
 #tapBegin.show{opacity:1;pointer-events:auto}
@@ -541,6 +538,28 @@ html,body{touch-action:pinch-zoom}
   @keyframes flyR{from{opacity:0}to{opacity:1}}
   .scene{transition-duration:.01ms!important}
 }
+
+/* ===== ROUND 2 ===== */
+#ghostHand,#ghostDrag{position:fixed;left:0;top:0;width:38px;height:38px;border-radius:50%;background:rgba(227,132,150,.35);border:2px solid rgba(227,132,150,.85);box-shadow:0 0 16px rgba(227,132,150,.55);z-index:101;pointer-events:none;opacity:0}
+/* prompts = text only */
+#hint .cue-pill,#hintG .cue-pill,.petal-hint .cue-pill{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;min-height:0;gap:0;cursor:default;font:400 clamp(15px,4.2cqw,19px)/1.2 var(--f-date);letter-spacing:.1em}
+#hint .cue-pill{color:var(--pink);text-transform:uppercase;letter-spacing:.15em;text-shadow:0 0 8px rgba(255,255,255,.9),0 1px 4px rgba(26,61,40,.3)}
+#hintG .cue-pill{color:var(--forest);text-shadow:0 0 6px #fff,0 0 14px rgba(255,255,255,.9),0 0 28px rgba(255,255,255,.6)}
+.petal-hint .cue-pill{color:var(--pink);text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.95),0 0 34px rgba(227,132,150,.65)}
+/* real buttons = pink like Enter */
+#tapBegin,.cue-pill.det-btn,.cue-pill.replay-btn,#skipIntro{background:var(--pink);color:#fff;border:0;border-radius:12px;box-shadow:0 6px 18px rgba(227,132,150,.4);padding:.85rem 1.6rem;min-height:48px;gap:0;font:1.05rem var(--fb);letter-spacing:.2em;text-transform:uppercase;-webkit-backdrop-filter:none;backdrop-filter:none}
+#tapBegin,.cue-pill.det-btn{left:0;right:0;margin-left:auto;margin-right:auto;width:max-content;transform:none}
+/* next / back: low-opacity pink circle, expands to a pill with text on hover */
+.next-cue,.back-cue{gap:0!important;width:auto!important;min-width:44px;height:44px!important;padding:0!important;justify-content:center;background:rgba(227,132,150,.42)!important;color:var(--forest)!important;border:0!important;box-shadow:none;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);transition:background .3s,padding .35s,color .3s}
+.next-cue-label,.back-cue span{display:block;max-width:0;overflow:hidden;white-space:nowrap;opacity:0;margin-left:0;transition:max-width .35s,opacity .25s,margin .35s}
+.next-cue:hover,.back-cue:hover,.next-cue:focus-visible,.back-cue:focus-visible,.next-cue:active,.back-cue:active{background:rgba(227,132,150,.95)!important;color:#fff!important;padding:0 1.1rem!important}
+.next-cue:hover .next-cue-label,.back-cue:hover span,.next-cue:focus-visible .next-cue-label,.back-cue:focus-visible span,.next-cue:active .next-cue-label,.back-cue:active span{max-width:12em;opacity:1;margin-left:.5rem}
+/* thinner progress */
+#prog{gap:3px}
+/* text shadow lives on the text itself, so it fades in with it */
+.scene:not([data-event=puja]) .ev-over,.groom-side .scene[data-event=puja] .ev-over{background:none}
+.scene:not([data-event=puja]) .ev-over h2,.scene:not([data-event=puja]) .ev-over p,.scene:not([data-event=puja]) .ev-over .tg,.scene:not([data-event=puja]) .ev-over .maplink{text-shadow:0 1px 3px rgba(0,0,0,.5),0 2px 16px rgba(0,0,0,.55),0 0 36px rgba(0,0,0,.35)}
+#final .final-greeting,#final h1,#final .final-blessings{text-shadow:0 1px 6px rgba(26,61,40,.28)}
 </style>
 </head>
 <body>
@@ -551,7 +570,7 @@ html,body{touch-action:pinch-zoom}
       <img id="logoImg" alt="Logo">
       <div class="mono" id="mono">A <span>∞</span> M<small>WEDDING</small></div>
     </div>
-    <div id="hint"><span class="cue-pill"><svg class="ic tap" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><b>Draw <span class="inf">∞</span> to begin</b></span></div>
+    <div id="hint"><span class="cue-pill"><b>Draw <span class="inf">∞</span> to begin</b></span></div>
   </div>
   <div id="nameModal"><div class="card">
     <h2 class="welcome-word fx" style="--d:.3s">Welcome</h2><p class="fx l" style="--d:.5s">Please enter your name</p>
@@ -748,7 +767,7 @@ const mapUrl=e=>e.map||'https://www.google.com/maps/search/?api=1&query='+encode
 const mapLink=(e,d)=>`<a class="maplink fx" style="--d:${d}s" href="${mapUrl(e)}" target="_blank" rel="noopener">Find on map ↗</a>`;
 const hostLine=(e,cls,d)=>e.hosts?`<p class="${cls} host-names" style="--d:${d}s">Hosted by ${e.hosts}</p>`:'';
 const _s=(p,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
-const ICON={tap:_s('<path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>','tap'),drag:_s('<path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>','drag'),up:_s('<path d="M6 15l6-6 6 6"/>','up'),replay:_s('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>')};
+const ICON={tap:'',drag:'',up:_s('<path d="M6 15l6-6 6 6"/>','up'),replay:''};
 const BACK=`<button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Back</span></button>`;
 const NEXT=`<button class="next-cue" type="button" aria-label="Tap to continue">${ICON.up}<span class="next-cue-label">Tap to continue</span></button>`;
 const ganHTML=cls=>`<div id="bappa" class="gan ${cls}"><div class="image-fallback" hidden></div><img class="bgan" src="${CONFIG.ganpati}" draggable="false" alt="Ganpati Bappa"><div class="gflower">${hibImg}</div></div>`;
@@ -1002,7 +1021,7 @@ function build(){
         <div id="drop" aria-label="Flower offering space"></div>
         <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
     }
-    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="star-hint"><span class="cue-pill">${ICON.tap}<b>Tap a star</b></span></div><div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
+    else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend',`<div class="petal-hint"><span class="hint-text"><span class="cue-pill">${ICON.tap}<b>Catch a falling petal</b></span></span></div>${BACK}`);
     else{
            
@@ -1677,11 +1696,8 @@ if(window.visualViewport)visualViewport.addEventListener('resize',()=>$('#nameMo
 
 /* progress bar + tap guide */
 const prog=document.createElement('div');prog.id='prog';frameEl.appendChild(prog);
-const tz=document.createElement('div');tz.id='tzGuide';frameEl.appendChild(tz);
 function chrome(i){
   [...prog.children].forEach((s,j)=>s.className=j<i?'done':j===i?'now':'');
-  const t=i===0?'':i===FINAL?'Tap left side to go back':i===PETAL?'Catch a petal  •  Tap left: back':'Tap right: next  •  Tap left: back';
-  tz.textContent=t;tz.classList.toggle('on',!!t);
   clearTimeout(dT);if(detBtn)detBtn.classList.remove('show');
   if(i===PETAL&&detBtn)dT=setTimeout(()=>{if(cur===PETAL&&!popOpen)detBtn.classList.add('show')},7000);
 }
@@ -1691,7 +1707,7 @@ const _build=build;build=function(){
   prog.innerHTML=scenes.map(()=>'<i><b></b></i>').join('');
   const r=scenes[FINAL].querySelector('.replay-btn');
   if(r)r.addEventListener('click',e=>{e.stopPropagation();returnToInfinity()});
-  detBtn=document.createElement('button');detBtn.type='button';detBtn.className='det-btn cue-pill';detBtn.innerHTML=ICON.tap+'<b>Tap here for details</b>';
+  detBtn=document.createElement('button');detBtn.type='button';detBtn.className='det-btn cue-pill';detBtn.innerHTML=ICON.tap+'<b>View details</b>';
   detBtn.addEventListener('click',e=>{e.stopPropagation();openPop()});
   scenes[PETAL].appendChild(detBtn);
 };
@@ -1714,12 +1730,12 @@ addEventListener('wheel',e=>{
 },{passive:true});
 
 /* ghost ∞ demo + pixie trail */
-const hand=document.createElement('div');hand.id='ghostHand';hand.innerHTML=ICON.tap;document.body.appendChild(hand);
+const hand=document.createElement('div');hand.id='ghostHand';document.body.appendChild(hand);
 function pathAt(p,k=.3){
   const fr=frameEl.getBoundingClientRect(),r=$('#logoBox').getBoundingClientRect(),a=fr.width*k,t=Math.PI/2+p*2*Math.PI,s=Math.sin(t),c=Math.cos(t),d=1+s*s;
   return[r.left+r.width/2+a*c/d,r.top+r.height/2+a*s*c/d*1.1];
 }
-const place=(x,y)=>{hand.style.opacity=1;hand.style.transform=`translate(${x-11}px,${y-3}px)`};
+const place=(x,y)=>{hand.style.opacity=1;hand.style.transform=`translate(${x-19}px,${y-19}px)`};
 let g0=0;
 (function ghost(ts){
   requestAnimationFrame(ghost);
@@ -1753,13 +1769,34 @@ setInterval(()=>{
   if(Date.now()-idle>(RM?0:8000))tb.classList.add('show');
 },400);
 
+/* ghost drag: translucent circle from a flower to the drop spot */
+const gd=document.createElement('div');gd.id='ghostDrag';document.body.appendChild(gd);
+let dragSeen=false,d0=0;
+addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.flower'))dragSeen=true},true);
+(function demo(ts){
+  requestAnimationFrame(demo);
+  const sc=scenes[0],h=$('#hintG');
+  const on=!RM&&stage==='scenes'&&cur===0&&!dragSeen&&!locked&&!popOpen&&sc&&sc.classList.contains('active')&&h&&h.classList.contains('show');
+  if(!on){gd.style.opacity=0;d0=0;return}
+  const f=[...sc.querySelectorAll('.flower')].find(x=>+getComputedStyle(x).opacity>.5),dr=$('#drop');
+  if(!f||!dr){gd.style.opacity=0;return}
+  if(!d0)d0=ts;
+  const T=2000,t=(ts-d0)%3400;
+  if(t>T){gd.style.opacity=0;return}
+  const a=f.getBoundingClientRect(),b=dr.getBoundingClientRect(),p=t/T,e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+  const ax=a.left+a.width/2,ay=a.top+a.height/2,x=ax+(b.left+b.width/2-ax)*e,y=ay+(b.top+b.height/2-ay)*e;
+  gd.style.opacity=p<.1?p*10:p>.9?(1-p)*10:1;
+  gd.style.transform=`translate(${x-19}px,${y-19}px)`;
+  dust(x,y,{n:1,tiny:true,spread:.5});
+})(0);
+
 /* returning guest: skip intro + resume where they left off */
 let sv=null;try{sv=JSON.parse(ls.get(KEY)||'null')}catch(e){}
 if(sv&&sv.guest){
   guest=sv.guest;guestDisplay=sv.display||'';guestEvents=sv.events||[];
   const w=document.createElement('div');w.id='welcomeBack';
   const sp=document.createElement('span');sp.textContent='Welcome back, '+(sv.display||sv.guest);
-  const sk=document.createElement('button');sk.type='button';sk.className='cue-pill';sk.innerHTML=ICON.up+'<b>Skip intro</b>';
+  const sk=document.createElement('button');sk.type='button';sk.className='cue-pill';sk.id='skipIntro';sk.innerHTML='<b>Skip intro</b>';
   const ny=document.createElement('button');ny.type='button';ny.className='linkbtn';ny.textContent='Not you?';
   w.append(sp,sk,ny);logoEl.appendChild(w);
   ['pointerdown','pointerup'].forEach(v=>w.addEventListener(v,e=>e.stopPropagation()));
