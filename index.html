@@ -252,16 +252,16 @@ h1.invite-name{transform:translateX(-8cqw)}
 .ev-over .maplink{color:var(--white)}
 .scene[data-event=puja] .ev-over p,.scene[data-event=puja] .ev-over .maplink{color:var(--sage);text-shadow:0 1px 4px rgba(249,237,213,.55)}
 /* Groom GPUJA uses the puja skin; every visible detail stays white */
-.groom-side .scene[data-event=puja] .ev-over,.groom-side .scene[data-event=puja] .ev-over h2,.groom-side .scene[data-event=puja] .ev-over p,.groom-side .scene[data-event=puja] .ev-over .maplink{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.4)}
-.groom-side .scene[data-event=puja] .ev-over{top:19%;bottom:auto;padding:0 .8rem;text-align:center}
-.groom-side .scene[data-event=puja] .ev-over h2{font-size:clamp(4.6rem,20cqw,6.4rem);line-height:1}
-.groom-side .scene[data-event=puja] .next-cue-label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.scene[data-key=gpuja] .ev-over,.scene[data-key=gpuja] .ev-over h2,.scene[data-key=gpuja] .ev-over p,.scene[data-key=gpuja] .ev-over .maplink{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+.scene[data-key=gpuja] .ev-over{top:19%;bottom:auto;padding:0 .8rem;text-align:center}
+.scene[data-key=gpuja] .ev-over h2{font-size:clamp(4.6rem,20cqw,6.4rem);line-height:1}
+.scene[data-key=gpuja] .next-cue-label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
 .next-cue{position:absolute;right:1.1rem;bottom:2.4rem;z-index:12;border:0;background:transparent;color:var(--hl);font:.62rem var(--f-date);letter-spacing:.12em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.32rem;cursor:pointer;padding:.3rem;pointer-events:auto}
 .next-cue-label{text-shadow:0 1px 5px rgba(26,61,40,.5)}
 .back-cue{position:absolute;left:1.1rem;bottom:2.4rem;z-index:12;width:34px;height:34px;display:grid;place-items:center;padding:0;border:1px solid currentColor;border-radius:50%;background:rgba(255,255,255,.12);color:var(--hl);opacity:.45;cursor:pointer;pointer-events:auto;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:opacity .3s}
 .back-cue:active{opacity:.8}
 .back-cue svg{width:14px;height:14px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.groom-side .scene[data-event=puja] .back-cue{color:#fff}
+.scene[data-key=gpuja] .back-cue{color:#fff}
 
 /* ===== BELLS: pop in from the top with a bounce ===== */
 @keyframes bellPop{
@@ -527,8 +527,8 @@ html,body{touch-action:pinch-zoom}
 /* event details: soft shadow for legibility */
 .scene:not([data-event=puja]) .ev-over h2,.scene:not([data-event=puja]) .ev-over p,.scene:not([data-event=puja]) .ev-over .tg,.scene:not([data-event=puja]) .ev-over .maplink{text-shadow:0 1px 3px rgba(0,0,0,.45),0 2px 18px rgba(0,0,0,.45),0 0 40px rgba(0,0,0,.25)}
 .scene[data-event=puja] .ev-over h2,.scene[data-event=puja] .ev-over p,.scene[data-event=puja] .ev-over .maplink{text-shadow:0 0 6px rgba(249,237,213,.95),0 0 18px rgba(249,237,213,.85),0 0 34px rgba(249,237,213,.6)}
-.groom-side .scene[data-event=puja] .ev-over,.groom-side .scene[data-event=puja] .ev-over h2,.groom-side .scene[data-event=puja] .ev-over p,.groom-side .scene[data-event=puja] .ev-over .maplink{text-shadow:0 1px 3px rgba(0,0,0,.5),0 2px 18px rgba(0,0,0,.5)!important}
-.scene:not([data-event=puja]) .ev-over,.groom-side .scene[data-event=puja] .ev-over{background:radial-gradient(ellipse at center,rgba(0,0,0,.3),transparent 70%)}
+.scene[data-key=gpuja] .ev-over,.scene[data-key=gpuja] .ev-over h2,.scene[data-key=gpuja] .ev-over p,.scene[data-key=gpuja] .ev-over .maplink{text-shadow:0 1px 3px rgba(0,0,0,.5),0 2px 18px rgba(0,0,0,.5)!important}
+.scene:not([data-event=puja]) .ev-over,.scene[data-key=gpuja] .ev-over{background:radial-gradient(ellipse at center,rgba(0,0,0,.3),transparent 70%)}
 /* reduced motion */
 @media (prefers-reduced-motion:reduce){
   *:not(.petal):not(.petal *),*::before,*::after{animation-iteration-count:1!important}
@@ -557,9 +557,22 @@ html,body{touch-action:pinch-zoom}
 /* thinner progress */
 #prog{gap:3px}
 /* text shadow lives on the text itself, so it fades in with it */
-.scene:not([data-event=puja]) .ev-over,.groom-side .scene[data-event=puja] .ev-over{background:none}
+.scene:not([data-event=puja]) .ev-over,.scene[data-key=gpuja] .ev-over{background:none}
 .scene:not([data-event=puja]) .ev-over h2,.scene:not([data-event=puja]) .ev-over p,.scene:not([data-event=puja]) .ev-over .tg,.scene:not([data-event=puja]) .ev-over .maplink{text-shadow:0 1px 3px rgba(0,0,0,.5),0 2px 16px rgba(0,0,0,.55),0 0 36px rgba(0,0,0,.35)}
 #final .final-greeting,#final h1,#final .final-blessings{text-shadow:0 1px 6px rgba(26,61,40,.28)}
+/* ===== ROUND 3 ===== */
+.next-cue,.back-cue,.next-cue:hover,.back-cue:hover,.next-cue:active,.back-cue:active,.next-cue:focus-visible,.back-cue:focus-visible{background:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border-radius:0;height:auto!important;min-width:44px;padding:.2rem!important;color:var(--hl)!important;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
+.scene[data-key=gpuja] .next-cue,.scene[data-key=gpuja] .back-cue{color:#fff!important}
+.next-cue{flex-direction:column!important;gap:.1rem!important}
+.next-cue-label{max-width:none!important;opacity:1!important;margin:0!important;font:600 clamp(11px,3.1cqw,13px)/1.1 var(--f-date);letter-spacing:.08em;text-transform:none}
+.next-cue .ic,.back-cue svg{width:28px;height:28px;stroke-width:2.4}
+.ic.down{animation:icDown 1.2s ease-in-out infinite}
+@keyframes icDown{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+/* mobile: fill the screen (no fixed ratio). Desktop keeps the phone frame */
+@media not all and (min-width:600px) and (min-height:500px){
+  :root{--fw:100vw}
+  .frame{left:0;top:0;transform:none;width:100vw;height:100dvh}
+}
 </style>
 </head>
 <body>
@@ -591,7 +604,7 @@ document.documentElement.dataset.side=SIDE;document.documentElement.classList.ad
 const SIDES={
   bride:{
     logo:"assets/logo.png", ganeshay:"assets/ganeshay.png",
-    order:["puja","mehendi","sangeet","haldi","wedding"],
+    order:["sangeet","gpuja","wedding"],
     main:{
       beforeHosts:["With the blessings of","Smt. Sarmishtha & Shri Ramesh Doshi","and the loving memories of","Late Smt. Kamal & Late Shri Vasudeo Jatkar"],
       hosts:"Smt. Archana &amp; Shri Vinay Jatkar",
@@ -631,7 +644,9 @@ const EVENTS={
   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   wedding:{always:true,title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:"https://maps.app.goo.gl/tzmzjRDrhJN4GLGJ7"}
 };
-/* Yellow petals on the bride Puja page. size = half of the wedding petals (24-52px) */
+if(SIDE==='bride')Object.assign(EVENTS.gpuja,{time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"});
+
+  /* Yellow petals on the bride Puja page. size = half of the wedding petals (24-52px) */
 const YELLOW={imgs:['assets/yellow-1.png','assets/yellow-2.png'],size:[12,26]};
 /* Mehendi bells: loop timing. pop = delay of the bounce-in, swing = when each bell joins the up/down loop */
 
@@ -767,9 +782,9 @@ const mapUrl=e=>e.map||'https://www.google.com/maps/search/?api=1&query='+encode
 const mapLink=(e,d)=>`<a class="maplink fx" style="--d:${d}s" href="${mapUrl(e)}" target="_blank" rel="noopener">Find on map ↗</a>`;
 const hostLine=(e,cls,d)=>e.hosts?`<p class="${cls} host-names" style="--d:${d}s">Hosted by ${e.hosts}</p>`:'';
 const _s=(p,c='')=>`<svg class="ic ${c}" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
-const ICON={tap:'',drag:'',up:_s('<path d="M6 15l6-6 6 6"/>','up'),replay:''};
-const BACK=`<button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Back</span></button>`;
-const NEXT=`<button class="next-cue" type="button" aria-label="Tap to continue">${ICON.up}<span class="next-cue-label">Tap to continue</span></button>`;
+const ICON={tap:'',drag:'',up:_s('<path d="M6 15l6-6 6 6"/>','up'),down:_s('<path d="M6 9l6 6 6-6"/>','down'),replay:''};
+const BACK=`<button class="back-cue" type="button" aria-label="Go back"><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg></button>`;
+const NEXT=`<button class="next-cue" type="button" aria-label="Tap to continue"><span class="next-cue-label">Tap to continue</span>${ICON.down}</button>`;
 const ganHTML=cls=>`<div id="bappa" class="gan ${cls}"><div class="image-fallback" hidden></div><img class="bgan" src="${CONFIG.ganpati}" draggable="false" alt="Ganpati Bappa"><div class="gflower">${hibImg}</div></div>`;
 
 function evHTML(k,invited){
@@ -1344,10 +1359,10 @@ function canonicalEventKey(value){
   if(Object.prototype.hasOwnProperty.call(EVENTS,compact))return compact;
   if(compact.includes('sangeet')||compact.includes('sagai'))return 'sangeet';
   if(compact.includes('gpuja'))return 'gpuja';
-  if(compact.includes('prempithi'))return SIDE==='groom'?'gpuja':'haldi';
+  if(compact.includes('prempithi'))return 'gpuja';
   if(compact.includes('grahamak')||compact.includes('mahurat')||compact.includes('muhurat')||compact.includes('randal')||compact.includes('mandap'))return SIDE==='groom'?'gpuja':'puja';
   if(compact.includes('mehendi')||compact.includes('mehndi'))return 'mehendi';
-  if(compact.includes('haldi'))return 'haldi';
+  if(compact.includes('haldi'))return 'gpuja';
   if(compact.includes('puja'))return SIDE==='groom'?'gpuja':'puja';
   if(compact.includes('wedding')||compact.includes('mangalphera')||compact.includes('pher'))return 'wedding';
   return null;
@@ -1749,7 +1764,7 @@ let g0=0;
 function traceInf(ms,cb){
   const t0=performance.now();
   (function f(n){
-    const p=Math.min(1,(n-t0)/ms),[x,y]=pathAt(p,.34);place(x,y);dust(x,y,{n:7,spread:1.4});
+    const p=Math.min(1,(n-t0)/ms),[x,y]=pathAt(p,.34);dust(x,y,{n:7,spread:1.4});
     if(p<1)requestAnimationFrame(f);else{hand.style.opacity=0;burst(x,y,28,{spread:2.2});setTimeout(cb,500)}
   })(t0);
 }
@@ -1758,7 +1773,7 @@ function traceInf(ms,cb){
 const tb=document.createElement('button');tb.id='tapBegin';tb.type='button';tb.className='cue-pill';tb.innerHTML=ICON.tap+'<b>Tap to begin</b>';logoEl.appendChild(tb);
 ['pointerdown','pointerup'].forEach(v=>tb.addEventListener(v,e=>e.stopPropagation()));
 tb.addEventListener('click',()=>{
-  if(manual)return;manual=true;tb.classList.remove('show');hint.classList.remove('ready');buzz(15);
+  if(manual)return;manual=true;hand.style.opacity=0;tb.classList.remove('show');hint.classList.remove('ready');buzz(15);
   traceInf(1900,()=>infinityDone());
 });
 let idle=0;
