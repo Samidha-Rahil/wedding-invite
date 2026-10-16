@@ -358,7 +358,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* MEHENDI: slow dark-olive sweep with a henna-red colour change */
 .scene[data-event=mehendi] .ev-over h2{
   position:relative;
-  animation:mehendiHennaTint 10s ease-in-out 2.6s infinite;
+  animation:mehendiHennaTint 10s ease-in-out 7.8s infinite;
 }
 
 .scene[data-event=mehendi] .ev-over h2::after{
@@ -1065,9 +1065,9 @@ else{
         ca=Math.cos(.4363),sa=Math.sin(.4363);let t=0;
       const tr=setInterval(()=>{t+=33;const p=Math.min(t/1100,1),d=len+300*p*p;dust(x0+d*ca,y0+d*sa,{n:4,tiny:true,spread:1.4});if(p>=1)clearInterval(tr)},33);
     }
-    ambientTimer=setTimeout(tick,kind==='powder'?5000:kind==='henna'?8000:rnd(5000,9000));
+    ambientTimer=setTimeout(tick,kind==='powder'?5000:kind==='henna'?14000:rnd(5000,9000));
   };
-  ambientTimer=setTimeout(tick,kind==='powder'||kind==='henna'?2600:rnd(2500,5000));
+  ambientTimer=setTimeout(tick,kind==='powder'?2600:kind==='henna'?7800:rnd(2500,5000));
 }
 
 /* ---- yellow petal shower: bride Puja page only, not clickable ---- */
@@ -1327,23 +1327,102 @@ $('#nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')submitName()});
 ['pointerdown','pointerup'].forEach(ev=>$('#nameModal').addEventListener(ev,e=>e.stopPropagation()));
 
 /* ---- flower drag (page 1) ---- */
+
 function wireFlower(f){
-  let sx,sy,tx=0,ty=0;
-  const T=sc=>`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) rotate(var(--rot,0deg)) scaleX(var(--flip,1)) scale(${sc})`;
-  f.addEventListener('pointerdown',e=>{if(locked)return;e.stopPropagation();tx=ty=0;f.style.transform='';f.setPointerCapture(e.pointerId);sx=e.clientX;sy=e.clientY;f.classList.add('drag')});
-  f.addEventListener('pointermove',e=>{if(!f.classList.contains('drag'))return;tx=e.clientX-sx;ty=e.clientY-sy;f.style.transform=T(1.25);dust(e.clientX,e.clientY,{n:2,faint:true})});
+  let sx,sy,tx=0,ty=0,origin=null;
+
+  const T=sc=>
+    `translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) rotate(var(--rot,0deg)) scaleX(var(--flip,1)) scale(${sc})`;
+
+  f.addEventListener('pointerdown',e=>{
+    if(locked)return;
+    e.stopPropagation();
+
+    const r=f.getBoundingClientRect();
+    origin={
+      parent:f.parentNode,
+      next:f.nextSibling,
+      position:f.style.position,
+      left:f.style.left,
+      top:f.style.top,
+      width:f.style.width,
+      height:f.style.height,
+      margin:f.style.margin,
+      zIndex:f.style.zIndex,
+      transform:f.style.transform,
+      opacity:f.style.opacity,
+      transition:f.style.transition
+    };
+
+    sx=e.clientX;
+    sy=e.clientY;
+    tx=ty=0;
+
+    /* Lift only the dragged flower out of the scene's stacking layer. */
+    document.body.appendChild(f);
+    f.style.position='fixed';
+    f.style.left=(r.left+r.width/2)+'px';
+    f.style.top=(r.top+r.height/2)+'px';
+    f.style.width=r.width+'px';
+    f.style.height=r.height+'px';
+    f.style.margin='0';
+    f.style.zIndex='2147483647';
+    f.style.transition='none';
+    f.style.transform='';
+    f.classList.add('drag');
+
+    f.setPointerCapture(e.pointerId);
+  });
+
+  f.addEventListener('pointermove',e=>{
+    if(!f.classList.contains('drag'))return;
+    tx=e.clientX-sx;
+    ty=e.clientY-sy;
+    f.style.transform=T(1.25);
+    dust(e.clientX,e.clientY,{n:2,faint:true});
+  });
+
   f.addEventListener('pointerup',e=>{
     e.stopPropagation();
-    if(!f.classList.contains('drag'))return;
+    if(!f.classList.contains('drag')||!origin)return;
+
     f.classList.remove('drag');
-    const d=$('#drop').getBoundingClientRect(),dx=d.left+d.width/2,dy=d.top+d.height/2;
+
+    const d=$('#drop').getBoundingClientRect();
+    const dx=d.left+d.width/2;
+    const dy=d.top+d.height/2;
+
     if(Math.hypot(e.clientX-dx,e.clientY-dy)<d.width*.8&&!locked){
       locked=true;
       burst(dx,dy,60,{spread:5});
       flyFlowerToBappa(f);
-    }else{tx=ty=0;f.style.transform=''}
+      f.remove();
+      origin=null;
+    }else{
+      /* Return the flower to its original place if the drop misses. */
+      const o=origin;
+      o.parent.insertBefore(
+        f,
+        o.next&&o.next.parentNode===o.parent?o.next:null
+      );
+
+      f.style.position=o.position;
+      f.style.left=o.left;
+      f.style.top=o.top;
+      f.style.width=o.width;
+      f.style.height=o.height;
+      f.style.margin=o.margin;
+      f.style.zIndex=o.zIndex;
+      f.style.transform=o.transform;
+      f.style.opacity=o.opacity;
+      f.style.transition=o.transition;
+
+      tx=ty=0;
+      origin=null;
+    }
   });
 }
+
 /* the dragged flower itself flies onto Bappa (always in front), spins, lands at the same size */
 function flyFlowerToBappa(f){
   const bp=$('#bappa'),bf=bp.querySelector('.gflower');
