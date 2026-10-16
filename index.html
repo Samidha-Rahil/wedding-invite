@@ -225,8 +225,48 @@ h1.invite-name{transform:translateX(-8cqw)}
   text-shadow:0 0 10px rgba(255,255,255,.65);
 }
 
+
 .scene.active .constellation-heading{
   animation:constellationPromptFade 3.5s ease-out .5s forwards;
+  isolation:isolate;
+}
+
+.constellation-heading::before,
+.constellation-heading::after{
+  content:"";
+  position:absolute;
+  top:-12px;
+  bottom:-12px;
+  width:24%;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(235,239,245,.8) 0.7px,transparent 1.5px),
+    radial-gradient(circle,rgba(210,220,232,.55) 0.8px,transparent 1.7px),
+    radial-gradient(circle,rgba(255,255,255,.65) 0.6px,transparent 1.4px),
+    radial-gradient(circle,rgba(210,220,232,.4) 0.7px,transparent 1.6px);
+  background-size:19px 23px,27px 31px,34px 26px,41px 37px;
+  opacity:0;
+  animation:promptPixieDust 6s ease-in-out 2s infinite;
+}
+
+.constellation-heading::before{
+  left:-5%;
+}
+
+.constellation-heading::after{
+  right:-5%;
+  animation-delay:3s;
+}
+
+@keyframes promptPixieDust{
+  0%,100%{
+    opacity:0;
+    transform:translateY(4px);
+  }
+  35%,65%{
+    opacity:.55;
+    transform:translateY(-3px);
+  }
 }
 
 @keyframes constellationPromptFade{
