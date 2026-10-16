@@ -1786,17 +1786,15 @@ setInterval(()=>{
   if(!document.getElementById('welcomeBack')&&Date.now()-idle>(RM?0:8000))tb.classList.add('show');
 },400);
 
-/* ghost drag: translucent circle from a flower to the drop spot */
+/* ghost drag: translucent circle from a flower to the drop spot (loops until a flower is offered) */
 const gd=document.createElement('div');gd.id='ghostDrag';document.body.appendChild(gd);
-let holding=false,d0=0;
-addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('.flower'))holding=true},true); ['pointerup','pointercancel'].forEach(v=>addEventListener(v,()=>{holding=false},true));
+let d0=0;
 (function demo(ts){
   requestAnimationFrame(demo);
-  const sc=scenes[0],h=$('#hintG');
-  const on=!RM&&stage==='scenes'&&cur===0&&!holding&&!locked&&!popOpen&&sc&&sc.classList.contains('active')&&h&&h.classList.contains('show');
-  if(!on){gd.style.opacity=0;d0=0;return}
-  const f=[...sc.querySelectorAll('.flower')].find(x=>+getComputedStyle(x).opacity>.5),dr=$('#drop');
-  if(!f||!dr){gd.style.opacity=0;return}
+  const sc=scenes[0],dr=$('#drop');
+  const on=!RM&&stage==='scenes'&&cur===0&&introPromptShown&&!locked&&!popOpen&&sc&&sc.classList.contains('active')&&dr&&!document.querySelector('.flower.drag');
+  const f=on&&[...sc.querySelectorAll('.flower:not(.drag)')].find(x=>+getComputedStyle(x).opacity>.5&&x.offsetWidth>0);
+  if(!f){gd.style.opacity=0;d0=0;return}
   if(!d0)d0=ts;
   const T=2000,t=(ts-d0)%3400;
   if(t>T){gd.style.opacity=0;return}
