@@ -1301,6 +1301,8 @@ function bouncePujaBells(scene){
   });
 }
 
+let pendingFlowerReturn=null;
+
 function show(i){
   clearTimeout(finalReturnTimer);
   finalReturnTimer=null;
@@ -1308,7 +1310,15 @@ function show(i){
   if(previousScene&&previousScene!==scenes[i]){
     clearTimeout(previousScene._leavingTimer);
     previousScene.classList.add('leaving');
-    previousScene._leavingTimer=setTimeout(()=>previousScene.classList.remove('leaving'),1100);
+    previousScene._leavingTimer=setTimeout(()=>{
+      previousScene.classList.remove('leaving');
+      /* Return an offered flower only after the main page has moved away. */
+      if(previousScene===scenes[0]&&pendingFlowerReturn){
+        const restore=pendingFlowerReturn;
+        pendingFlowerReturn=null;
+        restore();
+      }
+    },1100);
   }
   if(scenes[i]){
     clearTimeout(scenes[i]._leavingTimer);
@@ -1574,23 +1584,25 @@ function wireFlower(f){
     if(Math.hypot(e.clientX-dx,e.clientY-dy)<d.width*.8&&!locked){
       locked=true;
       burst(dx,dy,60,{spread:5});
-      /* Keep the original flower in the pool: restore it after its visual copy lands. */
+      /* Keep this flower absent from the pool until the main page has scrolled away. */
       flyFlowerToBappa(f,()=>{
-        const o=origin;
-        if(!o)return;
-        o.parent.insertBefore(f,o.next&&o.next.parentNode===o.parent?o.next:null);
-        f.style.position=o.position;
-        f.style.left=o.left;
-        f.style.top=o.top;
-        f.style.width=o.width;
-        f.style.height=o.height;
-        f.style.margin=o.margin;
-        f.style.zIndex=o.zIndex;
-        f.style.transform=o.transform;
-        f.style.opacity=o.opacity;
-        f.style.transition=o.transition;
-        tx=ty=0;
-        origin=null;
+        pendingFlowerReturn=()=>{
+          const o=origin;
+          if(!o)return;
+          o.parent.insertBefore(f,o.next&&o.next.parentNode===o.parent?o.next:null);
+          f.style.position=o.position;
+          f.style.left=o.left;
+          f.style.top=o.top;
+          f.style.width=o.width;
+          f.style.height=o.height;
+          f.style.margin=o.margin;
+          f.style.zIndex=o.zIndex;
+          f.style.transform=o.transform;
+          f.style.opacity=o.opacity;
+          f.style.transition=o.transition;
+          tx=ty=0;
+          origin=null;
+        };
       });
     }else{
       /* Return the flower to its original place if the drop misses. */
