@@ -286,7 +286,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* The guest's own sealed star: kept for them, always the biggest and brightest. */
 .constellation-star.is-mine{--lo:.92;--hi:1;--big:2.4;color:#ffe08a;z-index:23;animation:mineGlow 3.2s ease-in-out infinite}
 .constellation-star.is-mine svg{filter:drop-shadow(0 0 4px #fff7d7) drop-shadow(0 0 12px #ffce68) drop-shadow(0 0 26px rgba(255,190,74,1))}
-.constellation-star.is-mine::before{content:"";position:absolute;width:64px;height:64px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,214,111,.42),rgba(255,214,111,0) 70%);pointer-events:none}
+.constellation-star.is-mine::before{content:"";position:absolute;width:34px;height:34px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,214,111,.42),rgba(255,214,111,0) 70%);pointer-events:none}
 @keyframes mineGlow{0%,100%{opacity:.92;scale:1}50%{opacity:1;scale:1.14}}
 /* Earlier sealed stars: still golden, just smaller than the newest one. */
 .constellation-star.is-old{--lo:.8;--hi:1;--big:1.5;color:#ffd66f;z-index:22;animation:mineGlow 3.6s ease-in-out infinite}
