@@ -288,6 +288,9 @@ h1.invite-name{transform:translateX(-8cqw)}
 .constellation-star.is-mine svg{filter:drop-shadow(0 0 4px #fff7d7) drop-shadow(0 0 12px #ffce68) drop-shadow(0 0 26px rgba(255,190,74,1))}
 .constellation-star.is-mine::before{content:"";position:absolute;width:64px;height:64px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,214,111,.42),rgba(255,214,111,0) 70%);pointer-events:none}
 @keyframes mineGlow{0%,100%{opacity:.92;scale:1}50%{opacity:1;scale:1.14}}
+/* Earlier sealed stars: still golden, just smaller than the newest one. */
+.constellation-star.is-old{--lo:.8;--hi:1;--big:1.5;color:#ffd66f;z-index:22;animation:mineGlow 3.6s ease-in-out infinite}
+.constellation-star.is-old svg{filter:drop-shadow(0 0 3px #fff7d7) drop-shadow(0 0 8px #ffce68)}
 .constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
 .constellation-ui.open{opacity:1;pointer-events:auto}
 .constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
@@ -927,8 +930,10 @@ const starNum=id=>parseInt(String(id).replace(/\D/g,''),10)||0;
 const starDef=n=>{const f=STAR_FORTUNES[(n-1)%STAR_FORTUNES.length];return{id:starId(n),category:f.category,fortune:f.fortune}};
 const lsSafe={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 const myStarKey=()=>'inviteMyStar:'+(typeof SIDE!=='undefined'?SIDE:'')+':'+String(guest||'guest').toLowerCase();
-let myStar=null;   // {id,x,y,wish}: the star this guest sealed a wish on
-const saveMyStar=()=>{if(myStar)lsSafe.set(myStarKey(),JSON.stringify(myStar))};
+let myStar=null;   // newest sealed star {id,x,y,wish}: the brightest one
+let oldStars=[];   // earlier sealed stars: kept, golden, smaller
+const saveMyStar=()=>{if(myStar)lsSafe.set(myStarKey(),JSON.stringify({...myStar,old:oldStars}))};
+const isOldId=id=>oldStars.some(o=>o.id===id);
 const posOf=el=>({x:parseFloat(el.style.left),y:parseFloat(el.style.top)});
 const liveStars=layer=>[...layer.querySelectorAll('.constellation-star:not(.is-leaving)')];
 
@@ -950,7 +955,7 @@ function randomStarPosition(existing,scene,geo){
 function pickStarNum(layer){
   const used=new Set([...layer.querySelectorAll('.constellation-star')].map(el=>starNum(el.dataset.starId)));
   const free=[];
-  for(let n=1;n<=STAR_POOL;n++)if(!used.has(n)&&!takenConstellationStars.has(starId(n)))free.push(n);
+  for(let n=1;n<=STAR_POOL;n++)if(!used.has(n))free.push(n);
   return free.length?free[Math.floor(Math.random()*free.length)]:0;
 }
 function relayoutStars(scene){
@@ -963,16 +968,16 @@ function relayoutStars(scene){
     const pos=randomStarPosition(stars.filter(o=>o!==el).map(posOf),scene,geo);
     el.style.left=pos.x+'%';el.style.top=pos.y+'%';
     if(el._star){el._star.x=pos.x;el._star.y=pos.y}
-    if(myStar&&el.dataset.starId===myStar.id){myStar.x=pos.x;myStar.y=pos.y;saveMyStar()}
+    if(myStar&&el.dataset.starId===myStar.id){myStar.x=pos.x;myStar.y=pos.y;saveMyStar()}     else{const o=oldStars.find(o=>o.id===el.dataset.starId);if(o){o.x=pos.x;o.y=pos.y;saveMyStar()}}
   });
 }
 function setMineEl(el){
-  el.classList.remove('is-dim','is-entering');el.classList.add('is-gold','is-mine');
+  el.classList.remove('is-dim','is-entering','is-old');el.classList.add('is-gold','is-mine');
   el.style.removeProperty('--big');
   el.setAttribute('aria-label','Your star. See the wish you sent.');
   myConstellationStars.add(el.dataset.starId);
 }
-function removeStarEl(el){
+function setOldEl(el){   el.classList.remove('is-dim','is-entering','is-mine');el.classList.add('is-gold','is-old');   el.style.removeProperty('--big');   el.setAttribute('aria-label','A star you sealed a wish on.'); } function removeStarEl(el){
   if(el.classList.contains('is-leaving'))return;
   el.classList.add('is-leaving');setTimeout(()=>el.remove(),1000);
 }
@@ -981,7 +986,7 @@ function topUpStars(scene){
   const geo=starGeo(scene);layer._geo=geo;
   let live=liveStars(layer);
   while(live.length>STAR_VISIBLE){
-    const cand=live.filter(el=>!el.classList.contains('is-mine'));if(!cand.length)break;
+    const cand=live.filter(el=>!el.classList.contains('is-mine')&&!el.classList.contains('is-old'));if(!cand.length)break;
     const el=cand[Math.floor(Math.random()*cand.length)];removeStarEl(el);live=live.filter(o=>o!==el);
   }
   while(live.length<STAR_VISIBLE){
@@ -994,7 +999,7 @@ function swapStars(layer,scene){
   const ui=layer.querySelector('.constellation-ui');
   if(ui&&ui.classList.contains('open'))return;
   const geo=starGeo(scene);layer._geo=geo;
-  const cands=liveStars(layer).filter(el=>!el.classList.contains('is-mine')&&!el.classList.contains('is-entering'));
+  const cands=liveStars(layer).filter(el=>!el.classList.contains('is-mine')&&!el.classList.contains('is-old')&&!el.classList.contains('is-entering'));
   for(let k=0;k<STAR_SWAP_COUNT&&cands.length;k++){
     const el=cands.splice(Math.floor(Math.random()*cands.length),1)[0];
     removeStarEl(el);
@@ -1008,8 +1013,8 @@ function makeConstellation(scene){
   layer.innerHTML=`<div class="constellation-heading"><span class="prompt-stars" aria-hidden="true">${promptStarSVG(.8,2.6,0)}${promptStarSVG(1.25,3.1,-1.2)}${promptStarSVG(.95,2.8,-2)}${promptStarSVG(.65,3.4,-.6)}${promptStarSVG(1.05,2.9,-1.7)}</span>Choose a star, Leave a wish</div>`;
   scene.appendChild(layer);
   /* this guest's sealed star is remembered on their device and always comes back */
-  myStar=null;
-  try{const m=JSON.parse(lsSafe.get(myStarKey())||'null');if(m&&m.id){myStar=m;takenConstellationStars.add(m.id)}}catch(e){}
+   myStar=null;oldStars=[];
+  try{const m=JSON.parse(lsSafe.get(myStarKey())||'null');if(m&&m.id){oldStars=Array.isArray(m.old)?m.old:[];delete m.old;myStar=m;takenConstellationStars.add(m.id)}}catch(e){}
   const geo=starGeo(scene);layer._geo=geo;
   const placed=[];
   if(myStar){
@@ -1017,6 +1022,11 @@ function makeConstellation(scene){
     placed.push({x:myStar.x,y:myStar.y});
     setMineEl(addConstellationStar(layer,{...starDef(starNum(myStar.id)),x:myStar.x,y:myStar.y},scene,{instant:true}));
   }
+  oldStars.forEach(o=>{
+    if(o.x==null||starBlocked(geo,o.x,o.y)){const q=randomStarPosition(placed,scene,geo);o.x=q.x;o.y=q.y;saveMyStar()}
+    placed.push({x:o.x,y:o.y});
+    setOldEl(addConstellationStar(layer,{...starDef(starNum(o.id)),x:o.x,y:o.y},scene,{instant:true}));
+  });
   while(liveStars(layer).length<STAR_VISIBLE){
     const n=pickStarNum(layer);if(!n)break;
     const pos=randomStarPosition(placed,scene,geo);placed.push(pos);
@@ -1053,13 +1063,13 @@ function addConstellationStar(layer,star,scene,opt={}){
 }
 function openConstellationWish(scene){
   const ui=scene.querySelector('.constellation-ui');if(!ui||!activeConstellationStar)return;
-  const mine=!!(myStar&&activeConstellationStar.id===myStar.id),ta=ui.querySelector('textarea');
+  const oldRec=oldStars.find(o=>o.id===activeConstellationStar.id),mine=!!(myStar&&activeConstellationStar.id===myStar.id)||!!oldRec,rec=oldRec||myStar,ta=ui.querySelector('textarea');
   ui.querySelector('h3').textContent=mine?'Your star':'Your little fortune';
   ui.querySelector('.star-category').textContent=activeConstellationStar.category;
   ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;
-  ta.value=mine?(myStar.wish||''):'';ta.readOnly=mine;
+  ta.value=mine?(rec.wish||''):'';ta.readOnly=mine;
   ui.querySelector('.constellation-seal').style.display=mine?'none':'';
-  ui.querySelector('.constellation-status').textContent=mine?'Your wish is shining brightest for the couple ✨':'';
+  ui.querySelector('.constellation-status').textContent=mine?(oldRec?'Your wish is shining for the couple ✨':'Your wish is shining brightest for the couple ✨'):'';
   ui.classList.add('open');
   if(!mine)setTimeout(()=>ta.focus({preventScroll:true}),100);
 }
@@ -1067,30 +1077,36 @@ function closeConstellationWish(ui){ui.classList.remove('open');activeConstellat
 /* make `id` this guest's one brightest star (an earlier one is retired) */
 function setMyStar(id,wish){
   const same=myStar&&myStar.id===id;
-  myStar=same?myStar:{id,x:null,y:null,wish:''};
+  if(!same){
+    if(myStar&&!isOldId(myStar.id))oldStars.push({...myStar});   // previous bright star is kept, just smaller
+    const back=oldStars.find(o=>o.id===id);
+    oldStars=oldStars.filter(o=>o.id!==id);
+    myStar=back?{...back}:{id,x:null,y:null,wish:''};
+  }
   if(wish)myStar.wish=wish;
   document.querySelectorAll('.constellation-star').forEach(el=>{
     if(el.dataset.starId===id){setMineEl(el);const q=posOf(el);myStar.x=q.x;myStar.y=q.y}
-    else if(el.classList.contains('is-mine')){el.classList.remove('is-mine','is-gold');removeStarEl(el)}
+    else if(el.classList.contains('is-mine'))setOldEl(el);
   });
   takenConstellationStars.add(id);saveMyStar();
 }
 function ensureMyStar(scene){
-  if(!myStar)return;
-  const layer=scene.querySelector('.constellation-layer');if(!layer)return;
-  if(layer.querySelector(`.constellation-star[data-star-id="${myStar.id}"]:not(.is-leaving)`))return;
+  const layer=scene.querySelector('.constellation-layer');if(!layer||!myStar)return;
   const geo=starGeo(scene);
-  if(myStar.x==null||starBlocked(geo,myStar.x,myStar.y)){const q=randomStarPosition([...layer.querySelectorAll('.constellation-star')].map(posOf),scene,geo);myStar.x=q.x;myStar.y=q.y}
-  setMineEl(addConstellationStar(layer,{...starDef(starNum(myStar.id)),x:myStar.x,y:myStar.y},scene));
+  const place=(rec,mark)=>{
+    if(layer.querySelector(`.constellation-star[data-star-id="${rec.id}"]:not(.is-leaving)`))return;
+    if(rec.x==null||starBlocked(geo,rec.x,rec.y)){const q=randomStarPosition([...layer.querySelectorAll('.constellation-star')].map(posOf),scene,geo);rec.x=q.x;rec.y=q.y}
+    mark(addConstellationStar(layer,{...starDef(starNum(rec.id)),x:rec.x,y:rec.y},scene));
+  };
+  oldStars.forEach(o=>place(o,setOldEl));
+  place(myStar,setMineEl);
   saveMyStar();
 }
 function markConstellationStar(id,owner,wish){
   const mine=owner&&guest&&owner.toLowerCase()===guest.toLowerCase();
   takenConstellationStars.add(id);
   if(mine){setMyStar(id,wish);return}
-  if(myStar&&myStar.id===id)return;
-  /* a star someone else has sealed is no longer on offer */
-  document.querySelectorAll('.constellation-star').forEach(el=>{if(el.dataset.starId===id&&!el.classList.contains('is-mine'))removeStarEl(el)});
+  /* stars sealed by other guests stay in play: every star remains claimable */
 }
 function loadConstellationStars(scene){
   if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
