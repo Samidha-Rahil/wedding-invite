@@ -32,8 +32,16 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 .fx{opacity:0}
 .fx.l{--a:flyL}.fx.r{--a:flyR}
 .scene.active:not(#s0) .fx,#nameModal.show .fx,#pop.show .fx{animation:var(--a,flyU) 1.3s cubic-bezier(.2,.8,.2,1) var(--d,.6s) both}
-/* while a page is leaving, keep its text visible so it travels with the transition */
-.scene.hide .fx{opacity:1;animation:none}
+/* Keep all text readable for the full duration of the page-leave scroll. */
+.scene.leaving .fx,
+.scene.leaving .intro{
+  opacity:1!important;
+  animation:none!important;
+  transform:none!important;
+}
+.scene.leaving .constellation-heading{opacity:.8!important;animation:none!important}
+.scene.leaving .petal-hint,
+.scene.leaving #hintG{opacity:1!important;animation:none!important}
 @keyframes flyU{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
 @keyframes flyL{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}
 @keyframes flyR{from{opacity:0;transform:translateX(90px)}to{opacity:1;transform:none}}
@@ -207,15 +215,12 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* ===== SAGAI CONSTELLATION ===== */
 .constellation-layer{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none}
 
-/* Sangeet prompt: magical, word-by-word star-glitter reveal */
-
-/* Sangeet prompt: slow fade-in with a gentle, steady glow */
+/* Sangeet prompt: lower, softly glowing white text with faint silver pixie dust. */
 .constellation-heading{
   position:absolute;
-  top:18%;
+  top:17%;
   left:8%;
   width:84%;
-  transform:translateY(-50%);
   text-align:center;
   color:#fff;
   font:600 1.05rem/1.4 var(--f-date);
@@ -223,77 +228,46 @@ h1.invite-name{transform:translateX(-8cqw)}
   text-transform:uppercase;
   pointer-events:none;
   opacity:0;
-  text-shadow:0 0 8px rgba(255,255,255,.55);
+  isolation:isolate;
+  text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.22);
 }
 
 .scene.active .constellation-heading{
-  animation:
-    constellationPromptEntrance 1.4s ease-out both,
-    constellationPromptGlow 3.2s 1.4s ease-in-out infinite;
+  animation:constellationPromptFade 1.4s ease-out .8s both,
+            constellationPromptGlow 3.2s ease-in-out 2.2s infinite;
 }
 
-@keyframes constellationPromptEntrance{
-  from{
-    opacity:0;
-    transform:translateY(calc(-50% + 28px));
-  }
-  to{
-    opacity:.9;
-    transform:translateY(-50%);
-  }
-}
-
-@keyframes constellationPromptGlow{
-  0%,100%{
-    opacity:.9;
-    text-shadow:
-      0 0 8px rgba(255,255,255,.55),
-      0 0 18px rgba(255,255,255,.35);
-  }
-  50%{
-    opacity:.9;
-    text-shadow:
-      0 0 12px rgba(255,255,255,.75),
-      0 0 24px rgba(255,255,255,.45);
-  }
-}
-
-/* Faint silver pixie dust around the prompt */
 .constellation-heading::before,
 .constellation-heading::after{
   content:"";
   position:absolute;
-  top:-10px;
-  bottom:-10px;
-  width:16%;
+  top:-12px;
+  bottom:-12px;
+  width:27%;
   pointer-events:none;
   background-image:
-    radial-gradient(circle,rgba(235,239,245,.65) .7px,transparent 1.5px),
-    radial-gradient(circle,rgba(210,220,232,.45) .7px,transparent 1.6px),
-    radial-gradient(circle,rgba(255,255,255,.5) .6px,transparent 1.4px);
-  background-size:19px 23px,29px 31px,37px 27px;
+    radial-gradient(circle,rgba(238,242,248,.72) .65px,transparent 1.45px),
+    radial-gradient(circle,rgba(207,218,232,.5) .7px,transparent 1.6px),
+    radial-gradient(circle,rgba(255,255,255,.55) .55px,transparent 1.35px),
+    radial-gradient(circle,rgba(220,228,238,.38) .65px,transparent 1.55px);
+  background-size:19px 23px,27px 31px,34px 26px,41px 37px;
   opacity:0;
-  animation:promptPixieDust 6s ease-in-out 1.4s infinite;
+  animation:promptPixieDust 6s ease-in-out 1s infinite;
 }
+.constellation-heading::before{left:-4%;}
+.constellation-heading::after{right:-4%;animation-delay:2.5s;}
 
-.constellation-heading::before{
-  left:-3%;
+@keyframes constellationPromptFade{
+  from{opacity:0;text-shadow:0 0 0 rgba(255,255,255,0)}
+  to{opacity:.8;text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.22)}
 }
-
-.constellation-heading::after{
-  right:-3%;
-  animation-delay:2.2s;
+@keyframes constellationPromptGlow{
+  0%,100%{text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.22)}
+  50%{text-shadow:0 0 11px rgba(255,255,255,.85),0 0 23px rgba(255,255,255,.52),0 0 36px rgba(255,255,255,.28)}
 }
-
 @keyframes promptPixieDust{
-  0%,100%{
-    opacity:0;
-    transform:translateY(3px);
-  }
-  35%,65%{
-    opacity:.55;
-    transform:translateY(-3px);
-  }
+  0%,100%{opacity:0;transform:translateY(3px)}
+  35%,65%{opacity:.42;transform:translateY(-3px)}
 }
 
 .constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:21;--lo:.3;--hi:1;filter:drop-shadow(0 0 3px rgba(255,248,223,.85));animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite}
@@ -1330,6 +1304,16 @@ function bouncePujaBells(scene){
 function show(i){
   clearTimeout(finalReturnTimer);
   finalReturnTimer=null;
+  const previousScene=scenes.find(s=>s.classList.contains('active'));
+  if(previousScene&&previousScene!==scenes[i]){
+    clearTimeout(previousScene._leavingTimer);
+    previousScene.classList.add('leaving');
+    previousScene._leavingTimer=setTimeout(()=>previousScene.classList.remove('leaving'),1100);
+  }
+  if(scenes[i]){
+    clearTimeout(scenes[i]._leavingTimer);
+    scenes[i].classList.remove('leaving');
+  }
   cur=i;
 
   const activeBg=scenes[i]?.querySelector('img.bg[data-src]');
@@ -1588,10 +1572,26 @@ function wireFlower(f){
     const dy=d.top+d.height/2;
 
     if(Math.hypot(e.clientX-dx,e.clientY-dy)<d.width*.8&&!locked){
-          locked=true;
+      locked=true;
       burst(dx,dy,60,{spread:5});
-      flyFlowerToBappa(f,origin);
-      origin=null;
+      /* Keep the original flower in the pool: restore it after its visual copy lands. */
+      flyFlowerToBappa(f,()=>{
+        const o=origin;
+        if(!o)return;
+        o.parent.insertBefore(f,o.next&&o.next.parentNode===o.parent?o.next:null);
+        f.style.position=o.position;
+        f.style.left=o.left;
+        f.style.top=o.top;
+        f.style.width=o.width;
+        f.style.height=o.height;
+        f.style.margin=o.margin;
+        f.style.zIndex=o.zIndex;
+        f.style.transform=o.transform;
+        f.style.opacity=o.opacity;
+        f.style.transition=o.transition;
+        tx=ty=0;
+        origin=null;
+      });
     }else{
       /* Return the flower to its original place if the drop misses. */
       const o=origin;
@@ -1618,7 +1618,7 @@ function wireFlower(f){
 }
 
 /* the dragged flower itself flies onto Bappa (always in front), spins, lands at the same size */
-function flyFlowerToBappa(f,origin){
+function flyFlowerToBappa(f,onLand){
   const bp=$('#bappa'),bf=bp.querySelector('.gflower');
   const r=f.getBoundingClientRect(),t=bf.getBoundingClientRect();
   const sx=r.left+r.width/2,sy=r.top+r.height/2,ex=t.left+t.width/2,ey=t.top+t.height/2,dx=ex-sx,dy=ey-sy;
@@ -1630,7 +1630,7 @@ function flyFlowerToBappa(f,origin){
   const a=c.animate([
     {transform:`translate(0,0) scale(${r.width/t.width})`},
     {transform:`translate(${dx}px,${dy}px) scale(1)`}
-  ],{duration:900,easing:'cubic-bezier(.35,.7,.3,1)',fill:'forwards'});
+  ],{duration:700,easing:'cubic-bezier(.35,.7,.3,1)',fill:'forwards'});
 
   const trail=setInterval(()=>{
     const b=c.getBoundingClientRect();
@@ -1640,40 +1640,11 @@ function flyFlowerToBappa(f,origin){
   a.onfinish=()=>{
     clearInterval(trail);
     c.remove();
-
+    if(onLand)onLand();
     bp.classList.add('offered','spin');
-    burst(ex,ey,50,{spread:4});
-    chime();
-    buzz(15);
-
-    /* Start the offering's sit-and-spin just before the page scroll. */
-    setTimeout(()=>{
-      go(1);
-
-      /* Return the used flower to its original tree position. */
-      setTimeout(()=>{
-        if(!origin||!origin.parent)return;
-
-        origin.parent.insertBefore(
-          f,
-          origin.next&&origin.next.parentNode===origin.parent
-            ?origin.next
-            :null
-        );
-
-        f.classList.remove('drag');
-        f.style.position=origin.position;
-        f.style.left=origin.left;
-        f.style.top=origin.top;
-        f.style.width=origin.width;
-        f.style.height=origin.height;
-        f.style.margin=origin.margin;
-        f.style.zIndex=origin.zIndex;
-        f.style.transform=origin.transform;
-        f.style.opacity=origin.opacity;
-        f.style.transition=origin.transition;
-      },1050);
-    },120);
+    burst(ex,ey,50,{spread:4});chime();buzz(15);
+    /* The shorter flight brings the offering, rotation, and page scroll together. */
+    go(1);
   };
 }
 
