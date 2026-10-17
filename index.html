@@ -215,7 +215,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* ===== SAGAI CONSTELLATION ===== */
 .constellation-layer{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none}
 
-/* Sangeet prompt: lower, softly glowing white text with faint silver pixie dust. */
+/* Sangeet prompt: clean, softly glowing white text with decorative stars above. */
 .constellation-heading{
   position:absolute;
   top:17%;
@@ -237,25 +237,21 @@ h1.invite-name{transform:translateX(-8cqw)}
             constellationPromptGlow 3.2s ease-in-out 2.2s infinite;
 }
 
-.constellation-heading::before,
-.constellation-heading::after{
-  content:"";
-  position:absolute;
-  top:-12px;
-  bottom:-12px;
-  width:27%;
-  pointer-events:none;
-  background-image:
-    radial-gradient(circle,rgba(238,242,248,.72) .65px,transparent 1.45px),
-    radial-gradient(circle,rgba(207,218,232,.5) .7px,transparent 1.6px),
-    radial-gradient(circle,rgba(255,255,255,.55) .55px,transparent 1.35px),
-    radial-gradient(circle,rgba(220,228,238,.38) .65px,transparent 1.55px);
-  background-size:19px 23px,27px 31px,34px 26px,41px 37px;
-  opacity:0;
-  animation:promptPixieDust 6s ease-in-out 1s infinite;
+/* Decorative stars sit above the prompt; no drifting glitter/dust. */
+.constellation-heading .prompt-stars{
+  display:block;
+  margin:0 auto 5px;
+  color:#fff3cf;
+  font:400 .9rem/1 var(--f-date);
+  letter-spacing:.62em;
+  padding-left:.62em;
+  text-shadow:0 0 5px rgba(255,245,211,.65),0 0 12px rgba(255,255,255,.3);
+  animation:promptStarsTwinkle 3.4s ease-in-out infinite;
 }
-.constellation-heading::before{left:-4%;}
-.constellation-heading::after{right:-4%;animation-delay:2.5s;}
+@keyframes promptStarsTwinkle{
+  0%,100%{opacity:.72;transform:translateY(0) scale(.96)}
+  50%{opacity:1;transform:translateY(-2px) scale(1.04)}
+}
 
 @keyframes constellationPromptFade{
   from{opacity:0;text-shadow:0 0 0 rgba(255,255,255,0)}
@@ -265,11 +261,6 @@ h1.invite-name{transform:translateX(-8cqw)}
   0%,100%{text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.22)}
   50%{text-shadow:0 0 11px rgba(255,255,255,.85),0 0 23px rgba(255,255,255,.52),0 0 36px rgba(255,255,255,.28)}
 }
-@keyframes promptPixieDust{
-  0%,100%{opacity:0;transform:translateY(3px)}
-  35%,65%{opacity:.42;transform:translateY(-3px)}
-}
-
 .constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:21;--lo:.3;--hi:1;filter:drop-shadow(0 0 3px rgba(255,248,223,.85));animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite}
 .constellation-star svg{display:block;width:calc(10px*var(--big,1));height:calc(10px*var(--big,1));overflow:visible;pointer-events:none}
 .constellation-star .star-shape{fill:currentColor}
@@ -930,7 +921,7 @@ function relayoutStars(scene){
 }
 function makeConstellation(scene){
   const layer=document.createElement('div');layer.className='constellation-layer';
-  layer.innerHTML='<div class="constellation-heading">Choose a star, Leave a wish</div>';
+  layer.innerHTML='<div class="constellation-heading"><span class="prompt-stars" aria-hidden="true">✦　✧　✦</span>Choose a star, Leave a wish</div>';
   const used=[];
   for(let i=1;i<=36;i++){
     const pos=randomStarPosition(used,scene);used.push(pos);
