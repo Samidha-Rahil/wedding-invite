@@ -1234,7 +1234,7 @@ function saveConstellationWish(scene,ui){
     burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});
     status.textContent='Your wish is on its way to the stars ✨'; const categoryLine=ui.querySelector('.star-category'); categoryLine.textContent=`A star of ${star.category.toLowerCase()}.`; categoryLine.hidden=false;
     shimmer();buzz(10);ui.querySelector('textarea').value='';topUpStars(scene);
-    setTimeout(()=>closeConstellationWish(ui),1300);
+    setTimeout(()=>closeConstellationWish(ui),3000);
   })
   .catch(()=>{status.textContent='The wish could not be sent. Please try again.'})
   .finally(()=>btn.disabled=false);
