@@ -244,27 +244,7 @@ h1.invite-name{transform:translateX(-8cqw)}
             constellationPromptGlow 3.2s ease-in-out 2.2s infinite;
 }
 
-/* Decorative stars above the prompt: same slim 4-point SVG star as the clickable ones, gently twinkling. */
-.constellation-heading .prompt-stars{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:16px;
-  margin:0 auto 9px;
-  height:18px;
-  color:#fff8e9;
-}
-.constellation-heading .prompt-stars svg{
-  display:block;
-  width:calc(10px*var(--big,1));
-  height:calc(10px*var(--big,1));
-  overflow:visible;
-  fill:currentColor;
-  filter:drop-shadow(0 0 3px rgba(255,248,223,.85));
-  animation:starGlimmer var(--twinkle,2.8s) ease-in-out var(--delay,0s) infinite;
-  --lo:.35;--hi:1;
-}
-.constellation-heading .prompt-stars svg:nth-child(2){margin-top:-6px}
+/* The prompt is kept clean: no decorative row of stars beside the instruction. */
 
 @keyframes constellationPromptFade{
   from{opacity:0;text-shadow:0 0 0 rgba(255,255,255,0)}
@@ -293,8 +273,8 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* Earlier sealed stars: still golden, just smaller than the newest one. */
 .constellation-star.is-old{--lo:.8;--hi:1;--big:1.5;color:#ffd66f;z-index:22;animation:mineGlow 3.6s ease-in-out infinite}
 .constellation-star.is-old svg{filter:drop-shadow(0 0 3px #fff7d7) drop-shadow(0 0 8px #ffce68)}
-.constellation-star.is-other-claimed{--lo:.58;--hi:.95;--big:1.05;color:#f5d992;z-index:22}
-.constellation-star.is-other-claimed svg{filter:drop-shadow(0 0 2px rgba(255,247,215,.8)) drop-shadow(0 0 6px rgba(255,206,104,.6))}
+.constellation-star.is-other-claimed{--lo:.28;--hi:.58;--big:.95;color:#d9c99a;z-index:22}
+.constellation-star.is-other-claimed svg{filter:drop-shadow(0 0 1px rgba(255,247,215,.42)) drop-shadow(0 0 3px rgba(255,206,104,.22))}
 .constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
 .constellation-ui.open{opacity:1;pointer-events:auto}
 .constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
@@ -920,15 +900,19 @@ function starGeo(scene){
   const sr=scene.getBoundingClientRect(),rects=[];
   scene.querySelectorAll('.ev-over h2,.ev-over p,.ev-over .tg').forEach(el=>textRects(el).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:14})));
   const heading=scene.querySelector('.constellation-heading');
-  if(heading)textRects(heading).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:68}));
+  /* Keep stars clear of the prompt itself, but allow them to fill the space above it. */
+  if(heading)textRects(heading).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:12}));
+  let mapFloor=null;
   [['.ev-over .maplink',24],['.next-cue',28],['.back-cue',36]].forEach(([sel,pad])=>{
     const el=scene.querySelector(sel);
-    if(el){const r=el.getBoundingClientRect();rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad})}
+    if(el){const r=el.getBoundingClientRect();rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad});if(sel==='.ev-over .maplink')mapFloor=r.bottom+12}
   });
-  return {sr,rects};
+  return {sr,rects,mapFloor};
 }
 function starBlocked(g,px,py){
   const sx=g.sr.left+g.sr.width*px/100,sy=g.sr.top+g.sr.height*py/100;
+  /* No constellation stars are placed below the map link. */
+  if(g.mapFloor!==null&&sy>g.mapFloor)return true;
   return g.rects.some(o=>sx>=o.l-o.pad&&sx<=o.r+o.pad&&sy>=o.t-o.pad&&sy<=o.b+o.pad);
 }
 /* 200 stars exist; each guest sees 75 at a time and the set keeps quietly changing. */
@@ -1021,7 +1005,7 @@ function swapStars(layer,scene){
 }
 function makeConstellation(scene){
   const layer=document.createElement('div');layer.className='constellation-layer';
-  layer.innerHTML=`<div class="constellation-heading"><span class="prompt-stars" aria-hidden="true">${promptStarSVG(.8,2.6,0)}${promptStarSVG(1.25,3.1,-1.2)}${promptStarSVG(.95,2.8,-2)}${promptStarSVG(.65,3.4,-.6)}${promptStarSVG(1.05,2.9,-1.7)}</span>Choose a star, Leave a wish</div>`;
+  layer.innerHTML=`<div class="constellation-heading">Choose a star, Leave a wish</div>`;
   scene.appendChild(layer);
   /* this guest's sealed star is remembered on their device and always comes back */
    myStar=null;oldStars=[];
