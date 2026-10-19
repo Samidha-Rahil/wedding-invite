@@ -154,10 +154,12 @@ h1.invite-name{transform:translateX(-8cqw)}
 .offer-sparkle{position:fixed;width:3px;height:3px;border-radius:50%;background:#fff4bf;box-shadow:0 0 5px 2px rgba(255,239,175,.8);pointer-events:none;z-index:101;animation:offerSparkle 1.25s ease-out forwards}
 @keyframes offerSparkle{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:.8}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.1)}}
 #drop{position:absolute;left:50%;bottom:calc(7% - 39px);width:78px;height:78px;margin-left:-39px;border-radius:50%;border:1.5px dashed var(--white);box-shadow:0 0 20px rgba(255,255,255,.45),inset 0 0 18px rgba(227,132,150,.38);animation:pulse 2.6s infinite;z-index:6}
-.tree-art{position:absolute;right:-31%;bottom:0;width:72.5%;height:65%;z-index:5;pointer-events:none;overflow:visible;transform-origin:80% 100%}
+.tree-art{position:absolute;right:-31%;bottom:0;width:72.5%;height:65%;z-index:5;pointer-events:none;overflow:visible}
+.tree-art-inner{position:absolute;inset:0;transform-origin:80% 100%}
 .tree-art img,.tree-art svg.t{width:100%;height:100%}
 .tree-art img{object-fit:contain;object-position:bottom right}
-.scene.active#s0 .tree-art{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) both,treeBobble 16s 1.8s ease-in-out infinite}
+.scene.active#s0 .tree-art{animation:treeEnter 1.8s cubic-bezier(.2,.75,.25,1) both}
+.scene.active#s0 .tree-art-inner,.scene.leaving#s0 .tree-art-inner{animation:treeBobble 16s 1.8s ease-in-out infinite}
 @keyframes treeEnter{from{opacity:0;transform:translateX(65%) rotate(3deg)}to{opacity:1;transform:none}}
 @keyframes treeBobble{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-9px) rotate(-2.4deg)}55%{transform:translateX(6px) rotate(1.8deg)}75%{transform:translateX(-5px) rotate(-1.2deg)}}
 .flower{position:absolute;width:44.1px;height:44.1px;transform:translate(-50%,-50%) rotate(var(--rot,0deg)) scaleX(var(--flip,1));cursor:grab;touch-action:none;z-index:7;filter:drop-shadow(0 2px 6px rgba(26,61,40,.35));transition:transform .35s,opacity .5s;pointer-events:auto}
@@ -195,7 +197,7 @@ h1.invite-name{transform:translateX(-8cqw)}
   display:block;
 }
 .gan.offered .gflower{opacity:1;transform:translateX(-50%) rotate(0deg)}
-.gan.spin .gflower{animation:flowerSpin 1.1s ease-in-out both}
+.gan.spin .gflower{animation:flowerSpin 1.1s linear both}
 @keyframes flowerSpin{
   from{transform:translateX(-50%) rotate(0deg)}
   to{transform:translateX(-50%) rotate(360deg)}
@@ -291,6 +293,8 @@ h1.invite-name{transform:translateX(-8cqw)}
 /* Earlier sealed stars: still golden, just smaller than the newest one. */
 .constellation-star.is-old{--lo:.8;--hi:1;--big:1.5;color:#ffd66f;z-index:22;animation:mineGlow 3.6s ease-in-out infinite}
 .constellation-star.is-old svg{filter:drop-shadow(0 0 3px #fff7d7) drop-shadow(0 0 8px #ffce68)}
+.constellation-star.is-other-claimed{--lo:.58;--hi:.95;--big:1.05;color:#f5d992;z-index:22}
+.constellation-star.is-other-claimed svg{filter:drop-shadow(0 0 2px rgba(255,247,215,.8)) drop-shadow(0 0 6px rgba(255,206,104,.6))}
 .constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
 .constellation-ui.open{opacity:1;pointer-events:auto}
 .constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
@@ -874,7 +878,8 @@ function evHTML(k,invited){
 
 /* ===== SANGEET WISH STARS ===== */
 let activeConstellationStar=null;
-const myConstellationStars=new Set(),takenConstellationStars=new Set(),wishRecords=[];
+const myConstellationStars=new Set(),takenConstellationStars=new Set(),wishRecords=[],otherClaimedStarIds=new Set();
+const OTHER_CLAIMED_VISIBLE=9;
 const STAR_FORTUNES=[
  {category:"Luck",fortune:"May the life you build be full of little miracles, kind people, and beautiful surprises."},
  {category:"Dance",fortune:"May your home always have music in the air, laughter in every room, and a reason to dance."},
@@ -913,7 +918,9 @@ function textRects(el){
 /* blocked areas: the actual text lines, map link, and both navigation buttons */
 function starGeo(scene){
   const sr=scene.getBoundingClientRect(),rects=[];
-  scene.querySelectorAll('.ev-over h2,.ev-over p,.ev-over .tg,.constellation-heading').forEach(el=>textRects(el).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:14})));
+  scene.querySelectorAll('.ev-over h2,.ev-over p,.ev-over .tg').forEach(el=>textRects(el).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:14})));
+  const heading=scene.querySelector('.constellation-heading');
+  if(heading)textRects(heading).forEach(r=>rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad:68}));
   [['.ev-over .maplink',24],['.next-cue',28],['.back-cue',36]].forEach(([sel,pad])=>{
     const el=scene.querySelector(sel);
     if(el){const r=el.getBoundingClientRect();rects.push({l:r.left,r:r.right,t:r.top,b:r.bottom,pad})}
@@ -940,16 +947,19 @@ const liveStars=layer=>[...layer.querySelectorAll('.constellation-star:not(.is-l
 function randomStarPosition(existing,scene,geo){
   geo=geo||starGeo(scene);
   const W=geo.sr.width,H=geo.sr.height;
-  let min=44;
+  let min=52;
+  /* Seed the first stars into the open top and lower-middle bands so those areas do not stay empty. */
+  const zone=existing.length<10?'top':existing.length<20?'bottom':'all';
+  const sample=()=>{const x=4+Math.random()*92;let y;if(zone==='top')y=3+Math.random()*11;else if(zone==='bottom')y=82+Math.random()*12;else y=3+Math.random()*94;return{x,y}};
   for(let round=0;round<4;round++,min*=.85){
     for(let t=0;t<260;t++){
-      const x=5+Math.random()*90,y=6+Math.random()*90;
+      const {x,y}=sample();
       if(starBlocked(geo,x,y))continue;
-      if(existing.some(p=>Math.hypot((p.x-x)*W/100,(p.y-y)*H/100)<min))continue;
+      if(existing.some(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.hypot((p.x-x)*W/100,(p.y-y)*H/100)<min))continue;
       return {x,y};
     }
   }
-  for(let t=0;t<200;t++){const x=5+Math.random()*90,y=6+Math.random()*90;if(!starBlocked(geo,x,y))return {x,y}}
+  for(let t=0;t<400;t++){const x=4+Math.random()*92,y=3+Math.random()*94;if(!starBlocked(geo,x,y))return {x,y}}
   return {x:50,y:50};
 }
 function pickStarNum(layer){
@@ -972,12 +982,13 @@ function relayoutStars(scene){
   });
 }
 function setMineEl(el){
-  el.classList.remove('is-dim','is-entering','is-old');el.classList.add('is-gold','is-mine');
+  el.classList.remove('is-dim','is-entering','is-old','is-other-claimed');el.classList.add('is-gold','is-mine');
   el.style.removeProperty('--big');
   el.setAttribute('aria-label','Your star. See the wish you sent.');
   myConstellationStars.add(el.dataset.starId);
 }
-function setOldEl(el){   el.classList.remove('is-dim','is-entering','is-mine');el.classList.add('is-gold','is-old');   el.style.removeProperty('--big');   el.setAttribute('aria-label','A star you sealed a wish on.'); } function removeStarEl(el){
+function setOldEl(el){el.classList.remove('is-dim','is-entering','is-mine','is-other-claimed');el.classList.add('is-gold','is-old');el.style.removeProperty('--big');el.setAttribute('aria-label','A star you sealed a wish on.');}
+function removeStarEl(el){
   if(el.classList.contains('is-leaving'))return;
   el.classList.add('is-leaving');setTimeout(()=>el.remove(),1000);
 }
@@ -999,7 +1010,7 @@ function swapStars(layer,scene){
   const ui=layer.querySelector('.constellation-ui');
   if(ui&&ui.classList.contains('open'))return;
   const geo=starGeo(scene);layer._geo=geo;
-  const cands=liveStars(layer).filter(el=>!el.classList.contains('is-mine')&&!el.classList.contains('is-old')&&!el.classList.contains('is-entering'));
+  const cands=liveStars(layer).filter(el=>!el.classList.contains('is-mine')&&!el.classList.contains('is-old')&&!el.classList.contains('is-other-claimed')&&!el.classList.contains('is-entering'));
   for(let k=0;k<STAR_SWAP_COUNT&&cands.length;k++){
     const el=cands.splice(Math.floor(Math.random()*cands.length),1)[0];
     removeStarEl(el);
@@ -1102,11 +1113,34 @@ function ensureMyStar(scene){
   place(myStar,setMineEl);
   saveMyStar();
 }
+function refreshOtherClaimedStars(scene){
+  const layer=scene&&scene.querySelector('.constellation-layer');if(!layer)return;
+  const ownIds=new Set([myStar&&myStar.id,...oldStars.map(o=>o.id)].filter(Boolean));
+  const ids=[...otherClaimedStarIds].filter(id=>!ownIds.has(id)).slice(0,OTHER_CLAIMED_VISIBLE);
+  const wanted=new Set(ids);
+  layer.querySelectorAll('.constellation-star.is-other-claimed').forEach(el=>{
+    if(!wanted.has(el.dataset.starId))el.classList.remove('is-other-claimed');
+  });
+  const geo=starGeo(scene);
+  ids.forEach(id=>{
+    let el=layer.querySelector(`.constellation-star[data-star-id="${id}"]:not(.is-leaving)`);
+    if(!el){
+      const candidates=liveStars(layer).filter(o=>!o.classList.contains('is-mine')&&!o.classList.contains('is-old')&&!o.classList.contains('is-other-claimed'));
+      if(liveStars(layer).length>=STAR_VISIBLE&&candidates.length)removeStarEl(candidates[Math.floor(Math.random()*candidates.length)]);
+      const pos=randomStarPosition([...layer.querySelectorAll('.constellation-star')].map(posOf),scene,geo);
+      el=addConstellationStar(layer,{...starDef(starNum(id)),x:pos.x,y:pos.y},scene,{instant:true});
+    }
+    el.classList.add('is-other-claimed');
+    el.setAttribute('aria-label',`${el.dataset.category} star. A wish has been left here; you can still open it.`);
+  });
+  topUpStars(scene);
+}
 function markConstellationStar(id,owner,wish){
   const mine=owner&&guest&&owner.toLowerCase()===guest.toLowerCase();
   takenConstellationStars.add(id);
   if(mine){setMyStar(id,wish);return}
-  /* stars sealed by other guests stay in play: every star remains claimable */
+  if(id&&!(myStar&&myStar.id===id)&&!isOldId(id))otherClaimedStarIds.add(id);
+  /* Other guests' claims are highlighted, but stars remain selectable. */
 }
 function loadConstellationStars(scene){
   if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
@@ -1114,7 +1148,7 @@ function loadConstellationStars(scene){
     if(!(data&&data.ok))return;
     (data.wishes||[]).forEach(w=>{wishRecords.push(w);markConstellationStar(w.starId,w.guest,w.wish)});
     (data.starIds||[]).forEach(id=>markConstellationStar(id,''));
-    ensureMyStar(scene);topUpStars(scene);
+    ensureMyStar(scene);refreshOtherClaimedStars(scene);topUpStars(scene);
   };
   const sc=document.createElement('script');
   sc.src=CONSTELLATION_API+'?action=stars&callback=receiveConstellationStars&_='+Date.now();
@@ -1132,7 +1166,7 @@ function saveConstellationWish(scene,ui){
   const btn=ui.querySelector('.constellation-seal');btn.disabled=true;
   fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
   .then(()=>{
-    wishRecords.push({...payload});markConstellationStar(star.id,guest||'Guest',wish);
+    wishRecords.push({...payload});markConstellationStar(star.id,guest||'Guest',wish);refreshOtherClaimedStars(scene);
     const r=ui.querySelector('.constellation-card').getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});
     status.textContent='Your wish is on its way to the stars ✨';
@@ -1165,7 +1199,7 @@ function deleteConstellationWish(w,panel){
   if(token!==ADMIN_TOKEN){alert('Incorrect admin token.');return}
   fetch(CONSTELLATION_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'deleteWish',adminToken:token,starId:w.starId,guest:w.guest})})
   .then(()=>{
-    wishRecords.splice(wishRecords.indexOf(w),1);takenConstellationStars.delete(w.starId);myConstellationStars.delete(w.starId);if(myStar&&myStar.id===w.starId){myStar=null;lsSafe.del(myStarKey())}
+    wishRecords.splice(wishRecords.indexOf(w),1);otherClaimedStarIds.delete(w.starId);takenConstellationStars.delete(w.starId);myConstellationStars.delete(w.starId);if(myStar&&myStar.id===w.starId){myStar=null;lsSafe.del(myStarKey())}
     document.querySelectorAll('.constellation-star').forEach(s=>{if(s.dataset.starId===w.starId)s.classList.remove('is-taken','is-gold','is-mine')});
     renderAdminWishes(panel);
   })
@@ -1220,7 +1254,7 @@ function build(){
         
         <div id="hintG"><span class="cue-pill">${ICON.drag}<b>Drag a flower to Bappa</b></span></div>
         <div id="drop" aria-label="Flower offering space"></div>
-        <div class="tree-art">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div>`);
+        <div class="tree-art"><div class="tree-art-inner">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div></div>`);
     }
     else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend',`<div class="petal-hint"><span class="hint-text"><span class="cue-pill">${ICON.tap}<b>Catch a falling petal</b></span></span></div>${BACK}`);
@@ -1245,7 +1279,7 @@ function build(){
   const safeGuest=(guestDisplay||guest).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const b1=SIDE==='groom'?'Sharing the joy':'With love & warm regards';
   const b2=SIDE==='groom'?'Karishma, Abhishek, Ravina, Pararth, Kiara, Chiranjiv & Devanshi.':'Blessings only';
-  fin.innerHTML=`${BACK}<div class="final-greeting fx" style="--d:.3s">Dear ${safeGuest},</div><h1><span class="fx l" style="--d:.8s;display:block">We look forward</span><span class="fx r" style="--d:1.1s;display:block">to seeing you</span></h1><img class="lg fx" style="--d:1.5s" src="${CONFIG.logo}" alt="Wedding logo" onerror="this.style.display='none'"><div class="final-blessings fx" style="--d:1.8s"><span>${b1}</span><span>${b2}</span></div><button class="replay-btn cue-pill fx" style="--d:2.2s" type="button">${ICON.replay}<b>Replay ∞</b></button><div class="dimmer"></div>`;
+  fin.innerHTML=`${BACK}<div class="final-greeting fx" style="--d:.3s">Dear ${safeGuest},</div><h1><span class="fx l" style="--d:.8s;display:block">We look forward</span><span class="fx r" style="--d:1.1s;display:block">to seeing you</span></h1><img class="lg fx" style="--d:1.5s" src="${CONFIG.logo}" alt="Wedding logo" onerror="this.style.display='none'"><div class="final-blessings fx" style="--d:1.8s"><span>${b1}</span><span>${b2}</span></div><div class="dimmer"></div>`;
   app.appendChild(fin);scenes.push(fin);
   ps=scenes[PETAL];   app.insertAdjacentHTML('beforeend',ganHTML(''));   // one shared Ganpati + hibiscus above all pages
 
@@ -1774,9 +1808,8 @@ function flyFlowerToBappa(f,onLand){
     if(onLand)onLand();
     bp.classList.add('offered','spin');
     burst(ex,ey,50,{spread:4});chime();buzz(15);
-    /* Start the spin, then begin scrolling once it is 75% round; the last quarter finishes as the page moves. */
-    /* 270deg (75%) of an ease-in-out 1.1s spin is reached ~65% of the way through the time. */
-    setTimeout(()=>{if(cur===0)go(1)},Math.round(1100*.655));
+    /* Begin the page transition at the halfway point (180 degrees); the remaining half-turn continues during the scroll. */
+    setTimeout(()=>{if(cur===0){lastGo=0;go(1)}},550);
   };
 }
 
@@ -1943,8 +1976,6 @@ const _show=show;show=function(i){_show(i);chrome(i);if(i>0)ls.set(PKEY,i)};
 const _build=build;build=function(){
   _build();
   prog.innerHTML=scenes.map(()=>'<i><b></b></i>').join('');
-  const r=scenes[FINAL].querySelector('.replay-btn');
-  if(r)r.addEventListener('click',e=>{e.stopPropagation();returnToInfinity()});
   detBtn=document.createElement('button');detBtn.type='button';detBtn.className='det-btn cue-pill';detBtn.innerHTML=ICON.tap+'<b>View details</b>';
   detBtn.addEventListener('click',e=>{e.stopPropagation();openPop()});
   scenes[PETAL].appendChild(detBtn);
