@@ -284,16 +284,28 @@ h1.invite-name{transform:translateX(-8cqw)}
 }
 .constellation-ui{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:1.2rem;background:rgba(12,28,23,.56);opacity:0;pointer-events:none;transition:opacity .25s}
 .constellation-ui.open{opacity:1;pointer-events:auto}
-.constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text}
-.constellation-card h3{font:700 1.45rem/1.25 var(--f-names);color:var(--pink);margin-bottom:.45rem}
-.constellation-card .star-category{font:700 1rem/1.4 var(--f-date);letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:.8rem}
-.constellation-card .star-fortune{font:700 1.2rem/1.5 var(--f-venue);margin-bottom:1rem}
-.constellation-card textarea{display:block;width:100%;min-height:90px;resize:vertical;border:1px solid var(--olive);border-radius:12px;background:#fff;color:var(--forest);padding:.8rem;font:1rem/1.4 var(--f-venue);outline:none}
+.constellation-card{width:min(100%,350px);max-height:82%;overflow:auto;padding:1.5rem 1.25rem;border:1px solid #d8c28a;border-radius:20px;background:#fffaf0;color:var(--forest);text-align:center;box-shadow:0 15px 50px rgba(0,0,0,.3);user-select:text;-webkit-user-select:text;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.constellation-card h3{width:100%;font:700 1.45rem/1.25 var(--f-names);color:var(--pink);margin-bottom:.45rem;text-align:center}
+.constellation-card .star-category{width:100%;font:700 1rem/1.4 var(--f-date);letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:.8rem;text-align:center}
+.constellation-card .star-fortune{width:100%;font:700 1.2rem/1.5 var(--f-venue);margin-bottom:1rem;text-align:center}
+.constellation-card textarea{display:block;width:100%;min-height:90px;resize:vertical;border:1px solid var(--olive);border-radius:12px;background:#fff;color:var(--forest);padding:.8rem;font:1rem/1.4 var(--f-venue);outline:none;text-align:center}
 .constellation-card textarea:focus{border-color:var(--pink)}
-.constellation-actions{display:flex;gap:.6rem;margin-top:.8rem}
+.constellation-card [hidden]{display:none!important}
+.constellation-actions{display:flex;width:100%;justify-content:center;gap:.6rem;margin-top:.8rem}
 .constellation-actions button{flex:1;padding:.75rem .45rem;border:0;border-radius:10px;font:.68rem var(--f-date);letter-spacing:.04em;cursor:pointer}
 .constellation-seal{background:var(--pink);color:#fff}.constellation-cancel{background:#e9e4d8;color:var(--forest)}
-.constellation-status{min-height:1.3em;margin-top:.75rem;font:.8rem/1.4 var(--f-venue);color:var(--sage)}
+.constellation-status{width:100%;min-height:1.3em;margin-top:.75rem;font:.8rem/1.4 var(--f-venue);color:var(--sage);text-align:center}
+/* Once claimed, the card shrinks to fit the fortune and its magical reveal. */
+.constellation-card.claimed{width:min(100%,300px);max-height:70%;padding:1.25rem 1.1rem;overflow:hidden;gap:0}
+.constellation-card.claimed h3{margin-bottom:.55rem}
+.constellation-card.claimed .star-fortune{margin-bottom:.25rem}
+.constellation-card.claimed .star-category{margin:.55rem 0 0;font:italic 1rem/1.45 var(--f-venue);letter-spacing:.025em;text-transform:none;color:#9b7540;animation:fortuneStarReveal 1.15s cubic-bezier(.2,.8,.2,1) both}
+.constellation-card.claimed .star-category::before,.constellation-card.claimed .star-category::after{content:" ✧ ";display:inline-block;color:#d5ac5b;text-shadow:0 0 8px rgba(255,218,133,.9);animation:fortuneSparkle 1.4s ease-in-out infinite alternate}
+.constellation-card.claimed .star-fortune{animation:fortuneTextReveal .8s ease-out both}
+.constellation-card.claimed textarea,.constellation-card.claimed .constellation-actions,.constellation-card.claimed .constellation-status{display:none!important}
+@keyframes fortuneStarReveal{0%{opacity:0;transform:translateY(8px) scale(.94);filter:blur(5px);text-shadow:0 0 0 rgba(255,218,133,0)}55%{opacity:1;filter:blur(0);text-shadow:0 0 14px rgba(255,218,133,.95)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);text-shadow:0 0 5px rgba(255,218,133,.45)}}
+@keyframes fortuneTextReveal{from{opacity:.35;filter:blur(3px);transform:translateY(4px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes fortuneSparkle{from{opacity:.45;transform:scale(.85)}to{opacity:1;transform:scale(1.15)}}
 .constellation-admin{position:absolute;right:.7rem;top:.7rem;z-index:32;padding:.4rem .55rem;border:1px solid rgba(255,255,255,.6);border-radius:8px;background:rgba(12,28,23,.75);color:#fff;font:.55rem var(--f-date);letter-spacing:.04em;pointer-events:auto}
 .constellation-admin-panel{position:absolute;inset:0;z-index:35;padding:1rem;background:rgba(10,24,19,.94);color:#fff;overflow:auto;pointer-events:auto;display:none}
 .constellation-admin-panel.open{display:block}
@@ -1126,23 +1138,27 @@ function openConstellationWish(scene){
   const oldRec=oldStars.find(o=>o.id===activeConstellationStar.id);
   const mine=!!(myStar&&activeConstellationStar.id===myStar.id)||!!oldRec;
   const rec=oldRec||myStar;
+  const card=ui.querySelector('.constellation-card');
   const ta=ui.querySelector('textarea');
+  const actions=ui.querySelector('.constellation-actions');
+  const status=ui.querySelector('.constellation-status');
   const categoryLine=ui.querySelector('.star-category');
 
+  card.classList.toggle('claimed',mine);
   ui.querySelector('h3').textContent=mine?'Your star':'Your little fortune';
   ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;
 
   categoryLine.textContent=mine
-    ?`A star of ${activeConstellationStar.category.toLowerCase()}.`
+    ?`A star of ${activeConstellationStar.category.toLowerCase()} is yours.`
     :'';
   categoryLine.hidden=!mine;
 
-  ta.value=mine?(rec.wish||''):'';
-  ta.readOnly=mine;
-  ui.querySelector('.constellation-seal').style.display=mine?'none':'';
-  ui.querySelector('.constellation-status').textContent=mine
-    ?(oldRec?'Your wish is shining for the couple ✨':'Your wish is shining brightest for the couple ✨')
-    :'';
+  ta.value='';
+  ta.readOnly=false;
+  ta.hidden=mine;
+  actions.hidden=mine;
+  status.textContent='';
+  status.hidden=mine;
 
   ui.classList.add('open');
   if(!mine)setTimeout(()=>ta.focus({preventScroll:true}),100);
@@ -1232,9 +1248,17 @@ function saveConstellationWish(scene,ui){
     wishRecords.push({...payload});markConstellationStar(star.id,guest||'Guest',wish);refreshOtherClaimedStars(scene);
     const r=ui.querySelector('.constellation-card').getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});
-    status.textContent='Your wish is on its way to the stars ✨'; const categoryLine=ui.querySelector('.star-category'); categoryLine.textContent=`A star of ${star.category.toLowerCase()} is yours.`; categoryLine.hidden=false;
+    const card=ui.querySelector('.constellation-card');
+    const categoryLine=ui.querySelector('.star-category');
+    card.classList.add('claimed');
+    categoryLine.textContent=`A star of ${star.category.toLowerCase()} is yours.`;
+    categoryLine.hidden=false;
+    ui.querySelector('textarea').hidden=true;
+    ui.querySelector('.constellation-actions').hidden=true;
+    status.hidden=true;
     shimmer();buzz(10);ui.querySelector('textarea').value='';topUpStars(scene);
-      // Keep the popup open so the guest can read their claimed fortune.
+    // Show the magical claimed message for two seconds, then close the popup.
+    setTimeout(()=>closeConstellationWish(ui),2000);
   })
   .catch(()=>{status.textContent='The wish could not be sent. Please try again.'})
   .finally(()=>btn.disabled=false);
