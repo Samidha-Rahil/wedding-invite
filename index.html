@@ -1066,7 +1066,7 @@ function makeConstellation(scene){
     addConstellationStar(layer,{...starDef(n),x:pos.x,y:pos.y},scene,{instant:true});
   }
   const ui=document.createElement('div');ui.className='constellation-ui';
-  ui.innerHTML='<div class="constellation-card"><h3>Your little fortune</h3><p class="star-fortune"></p><p class="star-category" hidden></p><textarea maxlength="500" aria-label="Your wish" placeholder="Leave a little wish for the couple..."></textarea><div class="constellation-actions"><button type="button" class="constellation-seal">Seal your wish ✨</button><button type="button" class="constellation-cancel">Close</button></div><p class="constellation-status" aria-live="polite"></p></div>';
+  ui.innerHTML='<div class="constellation-card"><h3>Your little fortune</h3><p class="star-fortune"></p><p class="star-category" hidden></p><textarea maxlength="500" aria-label="Your wish (optional)" placeholder="Whisper a wish for yourself…"></textarea><div class="constellation-actions"><button type="button" class="constellation-seal">Keep this fortune ✨</button><button type="button" class="constellation-cancel">Close</button></div><p class="constellation-status" aria-live="polite"></p></div>';
   [ui,ui.querySelector('.constellation-card')].forEach(el=>{el.addEventListener('pointerdown',e=>e.stopPropagation());el.addEventListener('pointerup',e=>e.stopPropagation())});
   ui.addEventListener('click',e=>{if(e.target===ui)closeConstellationWish(ui)});
   ui.querySelector('.constellation-cancel').addEventListener('click',()=>closeConstellationWish(ui));
@@ -1221,7 +1221,7 @@ function loadConstellationStars(scene){
 function saveConstellationWish(scene,ui){
   if(!activeConstellationStar)return;
   const wish=ui.querySelector('textarea').value.trim(),status=ui.querySelector('.constellation-status');
-  if(!wish){status.textContent='Write a little wish before sealing it.';return}
+  // A wish is optional; the guest can claim the fortune without typing.
   const star=activeConstellationStar;
   const payload={action:'saveWish',guest:guest||'Guest',starId:star.id,category:star.category,fortune:star.fortune,wish};
   if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID')){status.textContent='Preview mode: configure the wish service to save wishes.';return}
@@ -1232,9 +1232,9 @@ function saveConstellationWish(scene,ui){
     wishRecords.push({...payload});markConstellationStar(star.id,guest||'Guest',wish);refreshOtherClaimedStars(scene);
     const r=ui.querySelector('.constellation-card').getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});
-    status.textContent='Your wish is on its way to the stars ✨'; const categoryLine=ui.querySelector('.star-category'); categoryLine.textContent=`A star of ${star.category.toLowerCase()}.`; categoryLine.hidden=false;
+    status.textContent='Your wish is on its way to the stars ✨'; const categoryLine=ui.querySelector('.star-category'); categoryLine.textContent=`A star of ${star.category.toLowerCase()} is yours.`; categoryLine.hidden=false;
     shimmer();buzz(10);ui.querySelector('textarea').value='';topUpStars(scene);
-    setTimeout(()=>closeConstellationWish(ui),3000);
+      // Keep the popup open so the guest can read their claimed fortune.
   })
   .catch(()=>{status.textContent='The wish could not be sent. Please try again.'})
   .finally(()=>btn.disabled=false);
