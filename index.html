@@ -262,8 +262,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 .constellation-star.is-leaving{pointer-events:none}
 .scene:not(.active) .constellation-star{animation-play-state:paused}
 @keyframes starGlimmer{0%,100%{opacity:var(--lo);scale:.7}50%{opacity:var(--hi);scale:1.2}}
-.constellation-star::after{content:attr(data-category);position:absolute;left:50%;bottom:calc(100% - 2px);transform:translateX(-50%);padding:.3rem .55rem;border-radius:20px;background:rgba(20,38,32,.9);color:#fff;font:.58rem var(--f-date);letter-spacing:.08em;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s}
-.constellation-star:hover::after,.constellation-star:focus-visible::after{opacity:1}
+.constellation-star::after{content:none}
 .constellation-star:focus-visible{outline:1px solid #fff;border-radius:50%}
 /* The guest's own sealed star: kept for them, always the biggest and brightest. */
 .constellation-star.is-mine{--lo:.92;--hi:1;--star-size:10px;color:#ffe08a;z-index:23;animation:mineGlow 3.2s ease-in-out infinite}
@@ -303,6 +302,16 @@ h1.invite-name{transform:translateX(-8cqw)}
 .admin-wish button{margin:.4rem .3rem 0 0;padding:.35rem .5rem;border:0;border-radius:6px;background:#d7b45a;color:#17271e;font-size:.7rem}
 .admin-close{position:sticky;top:0;float:right;padding:.45rem .65rem;border:0;border-radius:8px}
 
+  .constellation-card .star-category{
+  margin:.9rem 0 0;
+  font:italic .8rem/1.4 var(--f-venue);
+  letter-spacing:.02em;
+  text-transform:none;
+  color:var(--sage);
+}
+.constellation-card .star-category[hidden]{
+  display:none;
+} 
 /* ===== EVENT PAGES ===== */
 .ev-over{position:absolute;left:0;right:0;bottom:10%;top:auto;padding:0 .8rem 2.2rem;text-align:center;z-index:3;pointer-events:none;text-shadow:0 1px 5px rgba(26,61,40,.3)}
 .ev-over .tg{font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--white)}
@@ -1057,7 +1066,7 @@ function makeConstellation(scene){
     addConstellationStar(layer,{...starDef(n),x:pos.x,y:pos.y},scene,{instant:true});
   }
   const ui=document.createElement('div');ui.className='constellation-ui';
-  ui.innerHTML='<div class="constellation-card"><h3>Your little fortune</h3><div class="star-category"></div><p class="star-fortune"></p><textarea maxlength="500" aria-label="Your wish" placeholder="Leave a little wish for the couple..."></textarea><div class="constellation-actions"><button type="button" class="constellation-seal">Seal your wish ✨</button><button type="button" class="constellation-cancel">Close</button></div><p class="constellation-status" aria-live="polite"></p></div>';
+  ui.innerHTML='<div class="constellation-card"><h3>Your little fortune</h3><p class="star-fortune"></p><p class="star-category" hidden></p><textarea maxlength="500" aria-label="Your wish" placeholder="Leave a little wish for the couple..."></textarea><div class="constellation-actions"><button type="button" class="constellation-seal">Seal your wish ✨</button><button type="button" class="constellation-cancel">Close</button></div><p class="constellation-status" aria-live="polite"></p></div>';
   [ui,ui.querySelector('.constellation-card')].forEach(el=>{el.addEventListener('pointerdown',e=>e.stopPropagation());el.addEventListener('pointerup',e=>e.stopPropagation())});
   ui.addEventListener('click',e=>{if(e.target===ui)closeConstellationWish(ui)});
   ui.querySelector('.constellation-cancel').addEventListener('click',()=>closeConstellationWish(ui));
@@ -1091,7 +1100,7 @@ function addConstellationStar(layer,star,scene,opt={}){
   if(Math.random()<.67)b.classList.add('is-dim');
 
   b.innerHTML=starShape;
-  b.setAttribute('aria-label',`${star.category} star. Open its fortune.`);
+  b.setAttribute('aria-label','Open a star. Claim the fortune.');
   b._star=star;
 
   b.addEventListener('pointerdown',e=>e.stopPropagation());
@@ -1111,14 +1120,30 @@ function addConstellationStar(layer,star,scene,opt={}){
   return b;
 }
 function openConstellationWish(scene){
-  const ui=scene.querySelector('.constellation-ui');if(!ui||!activeConstellationStar)return;
-  const oldRec=oldStars.find(o=>o.id===activeConstellationStar.id),mine=!!(myStar&&activeConstellationStar.id===myStar.id)||!!oldRec,rec=oldRec||myStar,ta=ui.querySelector('textarea');
+  const ui=scene.querySelector('.constellation-ui');
+  if(!ui||!activeConstellationStar)return;
+
+  const oldRec=oldStars.find(o=>o.id===activeConstellationStar.id);
+  const mine=!!(myStar&&activeConstellationStar.id===myStar.id)||!!oldRec;
+  const rec=oldRec||myStar;
+  const ta=ui.querySelector('textarea');
+  const categoryLine=ui.querySelector('.star-category');
+
   ui.querySelector('h3').textContent=mine?'Your star':'Your little fortune';
-  ui.querySelector('.star-category').textContent=activeConstellationStar.category;
   ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;
-  ta.value=mine?(rec.wish||''):'';ta.readOnly=mine;
+
+  categoryLine.textContent=mine
+    ?`A star of ${activeConstellationStar.category.toLowerCase()}.`
+    :'';
+  categoryLine.hidden=!mine;
+
+  ta.value=mine?(rec.wish||''):'';
+  ta.readOnly=mine;
   ui.querySelector('.constellation-seal').style.display=mine?'none':'';
-  ui.querySelector('.constellation-status').textContent=mine?(oldRec?'Your wish is shining for the couple ✨':'Your wish is shining brightest for the couple ✨'):'';
+  ui.querySelector('.constellation-status').textContent=mine
+    ?(oldRec?'Your wish is shining for the couple ✨':'Your wish is shining brightest for the couple ✨')
+    :'';
+
   ui.classList.add('open');
   if(!mine)setTimeout(()=>ta.focus({preventScroll:true}),100);
 }
@@ -1207,7 +1232,7 @@ function saveConstellationWish(scene,ui){
     wishRecords.push({...payload});markConstellationStar(star.id,guest||'Guest',wish);refreshOtherClaimedStars(scene);
     const r=ui.querySelector('.constellation-card').getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});
-    status.textContent='Your wish is on its way to the stars ✨';
+    status.textContent='Your wish is on its way to the stars ✨'; const categoryLine=ui.querySelector('.star-category'); categoryLine.textContent=`A star of ${star.category.toLowerCase()}.`; categoryLine.hidden=false;
     shimmer();buzz(10);ui.querySelector('textarea').value='';topUpStars(scene);
     setTimeout(()=>closeConstellationWish(ui),1300);
   })
