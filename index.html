@@ -1149,8 +1149,8 @@ function openConstellationWish(scene){
   ui.querySelector('.star-fortune').textContent=activeConstellationStar.fortune;
 
   categoryLine.textContent=mine
-    ?`A star of ${activeConstellationStar.category.toLowerCase()} is yours.`
-    :'';
+  ?`✦ A star of ${activeConstellationStar.category.toLowerCase()} is yours.`
+  :'';
   categoryLine.hidden=!mine;
 
   ta.value='';
@@ -1251,7 +1251,7 @@ function saveConstellationWish(scene,ui){
     const card=ui.querySelector('.constellation-card');
     const categoryLine=ui.querySelector('.star-category');
     card.classList.add('claimed');
-    categoryLine.textContent=`A star of ${star.category.toLowerCase()} is yours.`;
+    categoryLine.textContent=`✦ A star of ${star.category.toLowerCase()} is yours.`;
     categoryLine.hidden=false;
     ui.querySelector('textarea').hidden=true;
     ui.querySelector('.constellation-actions').hidden=true;
