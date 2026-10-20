@@ -1413,7 +1413,12 @@ function tone(f,t0,dur,vol){
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.05);
 }
-const chime=()=>[[784,0,1.6,.18],[1175,.02,1.3,.1],[1568,.05,1,.06],[2093,.08,.7,.03]].forEach(a=>tone(...a));
+const chime=()=>[
+  [659.25,0,2.2,.10],
+  [987.77,.10,2.0,.065],
+  [1318.51,.22,1.7,.035],
+  [1760,.36,1.3,.015]
+].forEach(a=>tone(...a));
 const shimmer=()=>{for(let i=0;i<7;i++)tone(1800+Math.random()*2400,i*.07,.5,.04)};
 addEventListener('pointerup',()=>{audio()},true);   // unlocks audio on the first touch
 
