@@ -1219,168 +1219,48 @@ function markConstellationStar(id,owner,wish){
   if(id&&!(myStar&&myStar.id===id)&&!isOldId(id))otherClaimedStarIds.add(id);
   /* Other guests' claims are highlighted, but stars remain selectable. */
 }
-
-function loadConstellationStars(scene) {
-  if (!CONSTELLATION_API ||
-      CONSTELLATION_API.includes("YOUR_DEPLOYMENT_ID")) return;
-
-  window.receiveConstellationStars = data => {
-    if (!(data && data.ok)) return;
-
-    // Keep one admin record per star ID.
-    (data.wishes || []).forEach(w => {
-      const record = {
-        ...w,
-        guest: w.guest || "Guest",
-        starId: w.starId || "",
-        category: w.category || "",
-        fortune: w.fortune || "",
-        wish: w.wish || ""
-      };
-
-      if (!record.starId) return;
-
-      const existingIndex = wishRecords.findIndex(
-        item => item.starId === record.starId
-      );
-
-      if (existingIndex === -1) {
-        wishRecords.push(record);
-      } else {
-        wishRecords[existingIndex] = record;
-      }
-
-      markConstellationStar(
-        record.starId,
-        record.guest,
-        record.wish
-      );
-    });
-
-    // Supports older API responses that return IDs separately.
-    (data.starIds || []).forEach(id => {
-      markConstellationStar(id, "");
-    });
-
-    ensureMyStar(scene);
-    refreshOtherClaimedStars(scene);
-    topUpStars(scene);
-
-    // Refresh the admin panel if it is already open.
-    const panel = scene.querySelector(".constellation-admin-panel");
-    if (panel && panel.classList.contains("open")) {
-      renderAdminWishes(panel);
-    }
+function loadConstellationStars(scene){
+  if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID'))return;
+  window.receiveConstellationStars=data=>{
+    if(!(data&&data.ok))return;
+    (data.wishes||[]).forEach(w=>{wishRecords.push(w);markConstellationStar(w.starId,w.guest,w.wish)});
+    (data.starIds||[]).forEach(id=>markConstellationStar(id,''));
+    ensureMyStar(scene);refreshOtherClaimedStars(scene);topUpStars(scene);
   };
-
-  const sc = document.createElement("script");
-  sc.src = CONSTELLATION_API +
-    "?action=stars&callback=receiveConstellationStars&_=" +
-    Date.now();
-
-  sc.onerror = () => {
-    console.warn("Could not load saved constellation stars.");
-  };
-
+  const sc=document.createElement('script');
+  sc.src=CONSTELLATION_API+'?action=stars&callback=receiveConstellationStars&_='+Date.now();
+  sc.onerror=()=>console.warn('Could not load saved constellation stars.');
   document.head.appendChild(sc);
 }
-
-
-function saveConstellationWish(scene, ui) {
-  if (!activeConstellationStar) return;
-
-  const star = activeConstellationStar;
-  const wish = ui.querySelector("textarea").value.trim();
-  const status = ui.querySelector(".constellation-status");
-  const btn = ui.querySelector(".constellation-seal");
-
-  if (!CONSTELLATION_API ||
-      CONSTELLATION_API.includes("YOUR_DEPLOYMENT_ID")) {
-    status.textContent =
-      "Preview mode: configure the wish service to save claims.";
-    return;
-  }
-
-  const payload = {
-    action: "saveWish",
-    guest: guest || "Guest",
-    starId: star.id,
-    category: star.category,
-    fortune: star.fortune,
-    wish: wish
-  };
-
-  status.textContent = "Saving your star…";
-  btn.disabled = true;
-
-  fetch(CONSTELLATION_API, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify(payload)
+function saveConstellationWish(scene,ui){
+  if(!activeConstellationStar)return;
+  const wish=ui.querySelector('textarea').value.trim(),status=ui.querySelector('.constellation-status');
+  // A wish is optional; the guest can claim the fortune without typing.
+  const star=activeConstellationStar;
+  const payload={action:'saveWish',guest:guest||'Guest',starId:star.id,category:star.category,fortune:star.fortune,wish};
+  if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID')){status.textContent='Preview mode: configure the wish service to save wishes.';return}
+  status.textContent='Sending your wish to the stars…';
+  const btn=ui.querySelector('.constellation-seal');btn.disabled=true;
+  fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+  .then(()=>{
+    wishRecords.push({...payload});markConstellationStar(star.id,guest||'Guest',wish);refreshOtherClaimedStars(scene);
+    const r=ui.querySelector('.constellation-card').getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2,55,{spread:4});
+    const card=ui.querySelector('.constellation-card');
+    const categoryLine=ui.querySelector('.star-category');
+    card.classList.add('claimed');
+   categoryLine.innerHTML=`<span style="font-style:normal">✦</span> A star of ${star.category.toLowerCase()} is yours.<span style="font-style:normal">✦</span>`;
+    categoryLine.hidden=false;
+    ui.querySelector('textarea').hidden=true;
+    ui.querySelector('.constellation-actions').hidden=true;
+    status.hidden=true;
+    shimmer();buzz(10);ui.querySelector('textarea').value='';topUpStars(scene);
+    // Show the magical claimed message for two seconds, then close the popup.
+    setTimeout(()=>closeConstellationWish(ui),2000);
   })
-  .then(() => {
-    const record = {
-      ...payload,
-      timestamp: new Date().toISOString()
-    };
-
-    const existingIndex = wishRecords.findIndex(
-      item => item.starId === star.id
-    );
-
-    if (existingIndex === -1) {
-      wishRecords.push(record);
-    } else {
-      wishRecords[existingIndex] = {
-        ...wishRecords[existingIndex],
-        ...record
-      };
-    }
-
-    markConstellationStar(star.id, guest || "Guest", wish);
-    refreshOtherClaimedStars(scene);
-
-    const card = ui.querySelector(".constellation-card");
-    const rect = card.getBoundingClientRect();
-    burst(
-      rect.left + rect.width / 2,
-      rect.top + rect.height / 2,
-      55,
-      { spread: 4 }
-    );
-
-    status.textContent = wish
-      ? "Your wish is on its way to the stars ✨"
-      : "Your star is claimed ✨";
-
-    const categoryLine = ui.querySelector(".star-category");
-    categoryLine.textContent =
-      `A star of ${star.category.toLowerCase()} is yours.`;
-    categoryLine.hidden = false;
-
-    shimmer();
-    buzz(10);
-    ui.querySelector("textarea").value = "";
-
-    topUpStars(scene);
-
-    const panel = scene.querySelector(".constellation-admin-panel");
-    if (panel && panel.classList.contains("open")) {
-      renderAdminWishes(panel);
-    }
-  })
-  .catch(() => {
-    status.textContent =
-      "The request could not be sent. Please try again.";
-  })
-  .finally(() => {
-    btn.disabled = false;
-  });
+  .catch(()=>{status.textContent='The wish could not be sent. Please try again.'})
+  .finally(()=>btn.disabled=false);
 }
-
 function addConstellationAdmin(scene,layer){
   const open=document.createElement('button');open.type='button';open.className='constellation-admin';open.textContent='Admin wishes';
   const panel=document.createElement('div');panel.className='constellation-admin-panel';
@@ -1389,48 +1269,13 @@ function addConstellationAdmin(scene,layer){
   panel.querySelector('.admin-close').addEventListener('click',()=>panel.classList.remove('open'));
   layer.append(open,panel);
 }
-
-function renderAdminWishes(panel) {
-  const list = panel.querySelector(".admin-list");
-  list.innerHTML = "";
-
-  const records = [...wishRecords].sort((a, b) =>
-    String(a.guest || "").localeCompare(String(b.guest || ""))
-  );
-
-  if (!records.length) {
-    list.textContent =
-      "No claims loaded yet. Check the connected Wishes sheet.";
-    return;
-  }
-
-  const heading = document.createElement("p");
-  heading.textContent = `Total recorded claims: ${records.length}`;
-  list.appendChild(heading);
-
-  records.forEach(w => {
-    const row = document.createElement("div");
-    row.className = "admin-wish";
-
-    const details = document.createElement("div");
-    details.textContent = [
-      `Guest: ${w.guest || "Guest"}`,
-      `Star: ${w.starId || "Unknown"}`,
-      w.category ? `Category: ${w.category}` : "",
-      w.fortune ? `Fortune: ${w.fortune}` : "",
-      w.wish ? `Wish: ${w.wish}` : "No written wish — claim only."
-    ].filter(Boolean).join(" · ");
-
-    row.appendChild(details);
-
-    const del = document.createElement("button");
-    del.type = "button";
-    del.textContent = "Delete wish";
-    del.addEventListener("click", () => {
-      deleteConstellationWish(w, panel);
-    });
-
-    row.appendChild(del);
+function renderAdminWishes(panel){
+  const list=panel.querySelector('.admin-list');list.innerHTML='';
+  if(!wishRecords.length){list.textContent='No wishes loaded yet. Refresh the guest list from the connected sheet.';return}
+  wishRecords.forEach(w=>{
+    const row=document.createElement('div');row.className='admin-wish';
+    const txt=document.createElement('div');txt.textContent=`${w.guest||'Guest'} · ${w.starId||''}: ${w.wish||''}`;row.appendChild(txt);
+    const del=document.createElement('button');del.textContent='Delete wish';del.addEventListener('click',()=>deleteConstellationWish(w,panel));row.appendChild(del);
     list.appendChild(row);
   });
 }
