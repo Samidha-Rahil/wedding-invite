@@ -698,7 +698,9 @@ const ROUTE_SIDE=
 const INVITE_TOKEN=ROUTE_SIDE?ROUTE_PARTS.join('='):'';
 const SIDE=ROUTE_SIDE||'bride';
 let ACCESS_GRANTED=false, ACCESS_PENDING=!!INVITE_TOKEN, infinityCompleted=false;
-document.documentElement.dataset.side=SIDE;document.documentElement.classList.add(SIDE+'-side');
+
+  document.documentElement.dataset.side=SIDE;
+  document.documentElement.classList.add(SIDE+'-side');
 const SIDES={
   bride:{
     logo:"assets/logo.png", ganeshay:"assets/ganeshay.png",
