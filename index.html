@@ -687,7 +687,10 @@ html,body{touch-action:pinch-zoom}
 /* ================= EDIT THIS SECTION ================= */
 const CONSTELLATION_API = "https://script.google.com/macros/s/AKfycbzVGBOLdb_vjlJfURxCMwrg0lEQxKmp4sEYgd09NQxZIrC6abiqPkRKULaBExR1G7O-/exec";
 const ADMIN_TOKEN = "CHANGE_THIS_TO_A_PRIVATE_ADMIN_TOKEN"; // Must match the token configured in your Apps Script.
-const SIDE=new URLSearchParams(location.search).get('side')?.toLowerCase()==='groom'?'groom':'bride';
+const URL_PARAMS=new URLSearchParams(location.search);
+const INVITE_TOKEN=String(URL_PARAMS.get('invite')||'');
+const SIDE=URL_PARAMS.get('side')?.toLowerCase()==='groom'?'groom':'bride';
+let ACCESS_GRANTED=false, ACCESS_PENDING=!!INVITE_TOKEN, infinityCompleted=false;
 document.documentElement.dataset.side=SIDE;document.documentElement.classList.add(SIDE+'-side');
 const SIDES={
   bride:{
@@ -843,10 +846,10 @@ function isInfinity(){
 let openLogged=false,entering=false;
 function logOpen(){
   if(openLogged||!guest)return;openLogged=true;
-  try{fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'logOpen',guest,side:SIDE,device:/iPhone|iPad/.test(navigator.userAgent)?'iPhone/iPad':/Android/.test(navigator.userAgent)?'Android':'Desktop',screen:innerWidth+'x'+innerHeight})}).catch(()=>{})}catch(e){}
+  try{fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'logOpen',guest,side:SIDE,inviteToken:INVITE_TOKEN,device:/iPhone|iPad/.test(navigator.userAgent)?'iPhone/iPad':/Android/.test(navigator.userAgent)?'Android':'Desktop',screen:innerWidth+'x'+innerHeight})}).catch(()=>{})}catch(e){}
 }
 async function enterScenes(){
-  if(entering)return;entering=true;
+  if(!ACCESS_GRANTED||entering)return;entering=true;
   await Promise.race([CRITICAL,new Promise(r=>setTimeout(r,4000))]);   // wait for fonts + key images (max 4s)
   build();
   $('#nameModal').classList.remove('show');
@@ -858,12 +861,21 @@ async function enterScenes(){
   logOpen();
   entering=false;
 }
-function infinityDone(){
-  drawing=false;
-  pts.forEach((p,i)=>{if(i%2===0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6)});
+function proceedAfterInfinity(){
+  if(!ACCESS_GRANTED)return;
   if(guest){enterScenes();return}            // returning guest: skip the name form
   stage='name';
-  setTimeout(()=>{$('#nameModal').classList.add('show');$('#nameIn').focus({preventScroll:true})},950);
+  setTimeout(()=>{
+    if(!ACCESS_GRANTED)return;
+    $('#nameModal').classList.add('show');
+    $('#nameIn').focus({preventScroll:true});
+  },950);
+}
+function infinityDone(){
+  drawing=false;infinityCompleted=true;
+  pts.forEach((p,i)=>{if(i%2===0)setTimeout(()=>dust(p.x,p.y,{n:3,spread:2}),i*6)});
+  // Public or invalid-token visitors remain on the infinity screen without a name popup.
+  proceedAfterInfinity();
 }
 
 /* ---- builders ---- */
@@ -1228,7 +1240,7 @@ function loadConstellationStars(scene){
     ensureMyStar(scene);refreshOtherClaimedStars(scene);topUpStars(scene);
   };
   const sc=document.createElement('script');
-  sc.src=CONSTELLATION_API+'?action=stars&callback=receiveConstellationStars&_='+Date.now();
+  sc.src=CONSTELLATION_API+'?action=stars&side='+SIDE+'&token='+encodeURIComponent(INVITE_TOKEN)+'&callback=receiveConstellationStars&_='+Date.now();
   sc.onerror=()=>console.warn('Could not load saved constellation stars.');
   document.head.appendChild(sc);
 }
@@ -1237,7 +1249,7 @@ function saveConstellationWish(scene,ui){
   const wish=ui.querySelector('textarea').value.trim(),status=ui.querySelector('.constellation-status');
   // A wish is optional; the guest can claim the fortune without typing.
   const star=activeConstellationStar;
-  const payload={action:'saveWish',guest:guest||'Guest',starId:star.id,category:star.category,fortune:star.fortune,wish};
+  const payload={action:'saveWish',guest:guest||'Guest',side:SIDE,inviteToken:INVITE_TOKEN,starId:star.id,category:star.category,fortune:star.fortune,wish};
   if(!CONSTELLATION_API||CONSTELLATION_API.includes('YOUR_DEPLOYMENT_ID')){status.textContent='Preview mode: configure the wish service to save wishes.';return}
   status.textContent='Sending your wish to the stars…';
   const btn=ui.querySelector('.constellation-seal');btn.disabled=true;
@@ -1706,7 +1718,7 @@ function fetchGuest(name){
     const t=setTimeout(()=>{done();rej(new Error('timeout'))},8000);
     window[cb]=d=>{done();res(d)};
     sc.onerror=()=>{done();rej(new Error('network'))};
-    sc.src=CONSTELLATION_API+'?action=guest&side='+SIDE+'&name='+encodeURIComponent(name)+'&callback='+cb+'&_ts='+Date.now();
+    sc.src=CONSTELLATION_API+'?action=guest&side='+SIDE+'&token='+encodeURIComponent(INVITE_TOKEN)+'&name='+encodeURIComponent(name)+'&callback='+cb+'&_ts='+Date.now();
     document.head.appendChild(sc);
   });
 }
@@ -1715,7 +1727,7 @@ function findGuest(name){
   return fetchGuest(name).then(d=>{
     if(d&&d.ok){d.events=normalizeGuestEvents(d.events);glCache[key]=d;try{localStorage.setItem(GL_KEY,JSON.stringify(glCache))}catch(e){}}
     return d;
-  }).catch(error=>{if(glCache[key])return glCache[key];throw error});   // cache only if the network fails
+  }); // Never use cached names when the server cannot validate access.
 }
 function nameError(msg){
   const c=$('#nameModal .card');
@@ -1725,7 +1737,7 @@ function nameError(msg){
   err.textContent=msg;
 }
 async function submitName(){
-  if(checking)return;
+  if(!ACCESS_GRANTED||checking)return;
   const v=$('#nameIn').value.trim().replace(/\s+/g,' ');
   const parts=v.split(' ').filter(Boolean);
   if(!v)return nameError('Please enter your first name.');
@@ -2147,22 +2159,47 @@ let d0=0;
   dust(x,y,{n:1,tiny:true,spread:.5});
 })(0);
 
-/* returning guest: skip intro + resume where they left off */
-let sv=null;try{sv=JSON.parse(ls.get(KEY)||'null')}catch(e){}
-if(sv&&sv.guest){
-  guest=sv.guest;guestDisplay=sv.display||'';guestEvents=sv.events||[];
+/* returning guest: only restore after server-side token validation and name re-check */
+async function resumeReturningGuest(){
+  if(!ACCESS_GRANTED)return;
+  let sv=null;try{sv=JSON.parse(ls.get(KEY)||'null')}catch(e){}
+  if(!sv||!sv.guest)return;
+  let checked;
+  try{checked=await findGuest(sv.guest)}catch(e){return}
+  if(!ACCESS_GRANTED||!checked||!checked.ok)return;
+  guest=checked.name;guestDisplay=checked.display||checked.name;guestEvents=normalizeGuestEvents(checked.events);
   const w=document.createElement('div');w.id='welcomeBack';
-  const sp=document.createElement('span');sp.textContent='Welcome back, '+(sv.display||sv.guest);
+  const sp=document.createElement('span');sp.textContent='Welcome back, '+guestDisplay;
   const sk=document.createElement('button');sk.type='button';sk.className='cue-pill';sk.id='skipIntro';sk.innerHTML='<b>Skip intro</b>';
   const ny=document.createElement('button');ny.type='button';ny.className='linkbtn';ny.textContent='Not you?';
   w.append(sp,sk,ny);logoEl.appendChild(w);
   ['pointerdown','pointerup'].forEach(v=>w.addEventListener(v,e=>e.stopPropagation()));
   sk.addEventListener('click',async()=>{
+    if(!ACCESS_GRANTED)return;
     manual=true;
     try{await enterScenes();const pg=scenes.findIndex(s=>s.dataset.key==='sangeet');go(pg>0?pg:1)}catch(e){}
   });
   ny.addEventListener('click',()=>{guest='';guestDisplay='';guestEvents=[];ls.del(KEY);ls.del(PKEY);w.remove()});
 }
+function authorizeInvite(){
+  if(!INVITE_TOKEN||!CONSTELLATION_API)return;
+  const cb='inviteAuth'+Date.now(),sc=document.createElement('script');
+  let finished=false;
+  const finish=()=>{if(finished)return;finished=true;clearTimeout(timer);delete window[cb];sc.remove();ACCESS_PENDING=false};
+  const timer=setTimeout(finish,8000);
+  window[cb]=async d=>{
+    finish();
+    if(!(d&&d.ok&&String(d.side||'').toLowerCase()===SIDE))return;
+    ACCESS_GRANTED=true;
+    await resumeReturningGuest();
+    if(infinityCompleted)proceedAfterInfinity();
+  };
+  sc.onerror=finish;
+  sc.src=CONSTELLATION_API+'?action=authorize&side='+SIDE+'&token='+encodeURIComponent(INVITE_TOKEN)+'&callback='+cb+'&_='+Date.now();
+  document.head.appendChild(sc);
+}
+// No token means public preview mode: infinity gesture only, no name form or event pages.
+if(INVITE_TOKEN)authorizeInvite();
 })();
 </script>
 </body>
