@@ -1275,7 +1275,7 @@ function saveConstellationWish(scene,ui){
     ui.querySelector('textarea').hidden=true;
     ui.querySelector('.constellation-actions').hidden=true;
     status.hidden=true;
-    shimmer();buzz(10);ui.querySelector('textarea').value='';topUpStars(scene);
+    harpGlissando();buzz(10);ui.querySelector('textarea').value='';topUpStars(scene);
     // Show the magical claimed message for two seconds, then close the popup.
     setTimeout(()=>closeConstellationWish(ui),2000);
   })
@@ -1427,10 +1427,10 @@ function audio(){
   if(AC&&AC.state==='suspended')AC.resume();
   return AC;
 }
-function tone(f,t0,dur,vol){
+function tone(f,t0,dur,vol,type='sine'){
   const c=audio();if(!c)return;
   const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+t0;
-  o.type='sine';o.frequency.value=f;
+  o.type=type;o.frequency.value=f;
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.05);
 }
@@ -1441,6 +1441,9 @@ const chime=()=>[
   [1760,.36,1.3,.015]
 ].forEach(a=>tone(...a));
 const shimmer=()=>{for(let i=0;i<7;i++)tone(1800+Math.random()*2400,i*.07,.5,.04)};
+
+const HARP_SCALE=[523.25,587.33,659.25,783.99,880,1046.5,1174.66,1318.51];
+const harpGlissando=()=>HARP_SCALE.forEach((f,i)=>tone(f,i*.06,2,.09,'triangle'));
 addEventListener('pointerup',()=>{audio()},true);   // unlocks audio on the first touch
 
 /* haldi: gold powder specks rise along the title while the shimmer sweeps across */
