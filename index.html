@@ -687,9 +687,16 @@ html,body{touch-action:pinch-zoom}
 /* ================= EDIT THIS SECTION ================= */
 const CONSTELLATION_API = "https://script.google.com/macros/s/AKfycbzVGBOLdb_vjlJfURxCMwrg0lEQxKmp4sEYgd09NQxZIrC6abiqPkRKULaBExR1G7O-/exec";
 const ADMIN_TOKEN = "CHANGE_THIS_TO_A_PRIVATE_ADMIN_TOKEN"; // Must match the token configured in your Apps Script.
-const URL_PARAMS=new URLSearchParams(location.search);
-const INVITE_TOKEN=String(URL_PARAMS.get('invite')||'');
-const SIDE=URL_PARAMS.get('side')?.toLowerCase()==='groom'?'groom':'bride';
+const INVITE_ROUTE=decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+const ROUTE_PARTS=INVITE_ROUTE.split('=');
+const ROUTE_NAME=(ROUTE_PARTS.shift()||'').trim().toLowerCase();
+
+const ROUTE_SIDE=
+  ROUTE_NAME==='samidha'?'bride':
+  ROUTE_NAME==='rahil'?'groom':'';
+
+const INVITE_TOKEN=ROUTE_SIDE?ROUTE_PARTS.join('='):'';
+const SIDE=ROUTE_SIDE||'bride';
 let ACCESS_GRANTED=false, ACCESS_PENDING=!!INVITE_TOKEN, infinityCompleted=false;
 document.documentElement.dataset.side=SIDE;document.documentElement.classList.add(SIDE+'-side');
 const SIDES={
