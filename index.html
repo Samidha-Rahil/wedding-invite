@@ -694,8 +694,7 @@ html[data-side=groom]{--g-top:40%;--g-h:49%}          /* Ganpati box: top edge +
 html[data-side=groom] #inviteGaneshay{top:40px}      /* Ganeshay 40px lower, closer to the text */
 .groom-side #bappa{top:var(--g-top);height:var(--g-h)}
 /* offering ring overlaps the bottom of Ganpati by 20% (15.6px of 78px) and can never fall out of the frame */
-.groom-side #drop{bottom:auto;top:min(calc(var(--g-top) + var(--g-h) - 15.6px),calc(100% - 94px))}
-.groom-side #hintG{bottom:10px}                      /* "Drag a flower" prompt sits below the ring */
+
 
 /* ===== RSVP v2 ===== */
 #rsvpModal [hidden]{display:none!important}
@@ -714,6 +713,20 @@ html[data-side=groom] #inviteGaneshay{top:40px}      /* Ganeshay 40px lower, clo
 .rsvp-date{display:flex;flex-direction:column;padding:.7rem .9rem;border:1px solid var(--olive);border-radius:12px;background:var(--cream);font-family:var(--f-venue)}
 .rsvp-date b{font-weight:400;font-size:1.1rem;color:var(--forest)}
 .rsvp-date small{font-size:.9rem;color:var(--sage);text-transform:capitalize}
+
+  /* ===== GROOM: ring sits exactly on the flower position ===== */
+.groom-side #drop{bottom:auto;top:calc(var(--g-top) + var(--g-h)*.97 - 61px);border:0;box-shadow:none;animation:none}  /* invisible drop target */
+.groom-side #bappa::after{content:"";position:absolute;left:50%;bottom:calc(3% - 17px);width:78px;height:78px;margin-left:-39px;border-radius:50%;border:1.5px dashed var(--white);box-shadow:0 0 20px rgba(255,255,255,.45),inset 0 0 18px rgba(227,132,150,.38);animation:pulse 2.6s infinite;z-index:2;pointer-events:none;transition:opacity .3s}
+.groom-side #bappa.offered::after{opacity:0;animation:none}
+.groom-side #hintG{bottom:48px}                      /* prompt now sits just under the ring */
+
+/* ===== RSVP cues ===== */
+.rsvp-btn{position:relative}
+.rsvp-btn.done{display:inline-flex;flex-direction:column;align-items:center;gap:.3rem;padding:.7rem 1.6rem;letter-spacing:.14em;color:var(--forest);background:rgba(255,252,244,.9)}
+.rsvp-btn small{display:block;font:.8rem var(--f-venue);letter-spacing:.03em;text-transform:none;color:var(--sage)}
+.rsvp-btn.nudge::after{content:"";position:absolute;inset:-5px;border:2px solid var(--pink);border-radius:16px;pointer-events:none;animation:rsvpRing 1.1s ease-out 2}
+@keyframes rsvpRing{from{opacity:.9;transform:scale(.96)}to{opacity:0;transform:scale(1.12)}}
+  
 </style>
 </head>
 <body>
@@ -722,7 +735,7 @@ html[data-side=groom] #inviteGaneshay{top:40px}      /* Ganeshay 40px lower, clo
   <div id="logo">
     <div id="logoBox">
       <img id="logoImg" alt="Logo">
-      <div class="mono" id="mono">A <span>∞</span> M<small>WEDDING</small></div>
+      <div class="mono" id="mono">R <span>∞</span> S<small>WEDDING</small></div>
     </div>
     <div id="hint"><span class="cue-pill"><b>Draw <span class="inf">∞</span> to begin</b></span></div>
   </div>
@@ -838,8 +851,12 @@ const MBELL=[
 const loadImg=u=>new Promise(r=>{const i=new Image();i.onload=i.onerror=()=>r();i.src=u;if(i.decode)i.decode().then(r,r)});
 const FONTS_READY=Promise.all(["1em MiltonOne","1em CinzelInvite","1em BodoniVenue"].map(f=>document.fonts.load(f).catch(()=>{})));
 const CRITICAL=Promise.all([FONTS_READY,...[CONFIG.bg.main,CONFIG.ganpati,CONFIG.tree,CONFIG.hibiscus,SD.ganeshay,CONFIG.logo].map(loadImg)]);
-CRITICAL.then(()=>Promise.all([...SD.order.map(k=>CONFIG.bg[k]),CONFIG.petal,...YELLOW.imgs,...MBELL.map(b=>b.img),'assets/l-wedding-bells.png','assets/R1-wedding-bells.png','assets/R2-wedding-bells.png'].filter(Boolean).map(loadImg)));
-
+CRITICAL.then(()=>Promise.all([
+  ...SD.order.map(k=>CONFIG.bg[k]),
+  CONFIG.petal,
+  ...(SD.order.includes('puja')?[...YELLOW.imgs,'assets/l-wedding-bells.png','assets/R1-wedding-bells.png','assets/R2-wedding-bells.png']:[])
+].filter(Boolean).map(loadImg)));
+  
 const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.random()*(b-a);
 let stage='logo',cur=0,guest='',popOpen=false,locked=false,filled=false,scenes=[],PETAL=0,FINAL=0,ps=null,introTimer=null,introTrailTimer=null,introPromptShown=false,finalReturnTimer=null;
 let pts=[],drawing=false,down=null;
@@ -2305,7 +2322,7 @@ function loadLocal(){saved=null;try{const v=JSON.parse(lsSafe.get(rkey())||'null
 function saveLocal(){if(saved)lsSafe.set(rkey(),JSON.stringify(saved))}
 function refreshBtn(){
   const b=$('#rsvpBtn');if(!b)return;
-  b.textContent=saved?'RSVP Confirmed ✓':'RSVP';
+  b.innerHTML=saved?'RSVP Confirmed ✓<small>Tap to view or update</small>':'RSVP';
   b.classList.toggle('done',!!saved);
 }
 function syncPlus(){const y=plusBox.querySelector('input[name=plus]:checked');plusName.hidden=!(y&&y.value==='Yes')}
@@ -2336,7 +2353,7 @@ function render(editable){
 function setMode(m){
   mode=m;
   form.hidden=m==='thanks';thanks.hidden=m!=='thanks';
-  intro.textContent=m==='view'?'Your RSVP':'Select the events you will be attending';
+  intro.textContent=m==='view'?'You’re all set ✓ Tap “Update” if your plans change.':'Select the events you will be attending';
   submit.hidden=closeB.hidden=m==='thanks';
   submit.textContent=m==='view'?'Update':'Submit';
   submit.disabled=false;
@@ -2349,6 +2366,12 @@ function openRsvp(){
 }
 function closeRsvp(){clearTimeout(thanksTimer);rsvpOpen=false;modal.classList.remove('show')}
 
+  function nudgeBtn(){
+  const b=$('#rsvpBtn');if(!b)return;
+  b.classList.remove('nudge');void b.offsetWidth;b.classList.add('nudge');
+  setTimeout(()=>b.classList.remove('nudge'),2600);
+}
+  
 function showThanks(){
   tDates.innerHTML='';
   const evs=invitedKeys().filter(k=>saved.events.includes(k));
@@ -2366,7 +2389,7 @@ function showThanks(){
     }
   }else tMsg.textContent='Thank you for letting us know. You will be missed.';
   setMode('thanks');chime();buzz(15);
-  clearTimeout(thanksTimer);thanksTimer=setTimeout(closeRsvp,3000);   // 3 seconds, then closes
+  clearTimeout(thanksTimer);thanksTimer=setTimeout(()=>{closeRsvp();nudgeBtn()},3000);   // 3 seconds, then closes
 }
 
 function sendRsvp(){
