@@ -683,6 +683,37 @@ html,body{touch-action:pinch-zoom}
   transform:translate(-50%,-50%) scale(var(--s,1))!important;
   transform-origin:center center;
 }
+/* ===== NO TEXT SHADOWS ===== */
+*,*::before,*::after{text-shadow:none!important}
+.next-cue,.back-cue{filter:none!important}
+
+/* ===== GROOM-ONLY LAYOUT ===== */
+html[data-side=groom]{--g-top:40%;--g-h:49%}          /* Ganpati box: top edge + height */
+.groom-side .intro{padding-bottom:calc(6cqh + 60px)} /* text block 30px higher */
+.groom-side .invite-name{font-size:62.4px}           /* names 20% smaller (78px -> 62.4px) */
+html[data-side=groom] #inviteGaneshay{top:40px}      /* Ganeshay 40px lower, closer to the text */
+.groom-side #bappa{top:var(--g-top);height:var(--g-h)}
+/* offering ring overlaps the bottom of Ganpati by 20% (15.6px of 78px) and can never fall out of the frame */
+.groom-side #drop{bottom:auto;top:min(calc(var(--g-top) + var(--g-h) - 15.6px),calc(100% - 94px))}
+.groom-side #hintG{bottom:10px}                      /* "Drag a flower" prompt sits below the ring */
+
+/* ===== RSVP v2 ===== */
+#rsvpModal [hidden]{display:none!important}
+.rsvp-btn.done{background:transparent;color:var(--pink);border:1.5px solid var(--pink);box-shadow:none}
+.rsvp-opt.locked{cursor:default}
+.rsvp-q{margin:1rem 0 .5rem!important;font:1.05rem var(--f-venue);color:var(--forest);text-align:left}
+.rsvp-yn{display:flex;gap:.6rem}
+.rsvp-pill{flex:1;position:relative;cursor:pointer}
+#rsvpModal .rsvp-pill input{position:absolute;opacity:0;width:0;height:0;padding:0;border:0}
+.rsvp-pill span{display:block;text-align:center;padding:.7rem;border:1px solid var(--olive);border-radius:12px;background:var(--cream);font:1.05rem var(--f-venue);color:var(--forest)}
+.rsvp-pill input:checked+span{background:var(--pink);border-color:var(--pink);color:#fff}
+#rsvpPlusName{margin-top:.7rem}
+#rsvpPlusName:disabled{opacity:1;color:var(--forest);-webkit-text-fill-color:var(--forest)}
+.rsvp-thanks-msg{font:1.2rem/1.4 var(--f-venue);color:var(--forest);margin:.6rem 0 1rem!important}
+.rsvp-dates{display:flex;flex-direction:column;gap:.7rem;margin:.4rem 0 .8rem}
+.rsvp-date{display:flex;flex-direction:column;padding:.7rem .9rem;border:1px solid var(--olive);border-radius:12px;background:var(--cream);font-family:var(--f-venue)}
+.rsvp-date b{font-weight:400;font-size:1.1rem;color:var(--forest)}
+.rsvp-date small{font-size:.9rem;color:var(--sage);text-transform:capitalize}
 </style>
 </head>
 <body>
@@ -701,9 +732,31 @@ html,body{touch-action:pinch-zoom}
     <button class="btn fx" style="--d:.9s" id="enterBtn">Enter</button>
   </div></div>
   <div id="app" class="kontext capable"></div>
-  <div id="pop"><div class="card" id="popCard"></div></div> <div id="rsvpModal"><div class="card" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">   <h2 id="rsvpTitle" class="welcome-word">RSVP</h2>   <p>Select the events you will be attending</p>   <div class="rsvp-list" id="rsvpList"></div>   <p class="rsvp-status" id="rsvpStatus" aria-live="polite"></p>   <button class="btn" id="rsvpSubmit" type="button">Submit</button>   <button class="rsvp-cancel" id="rsvpClose" type="button">Close</button> </div></div>
+  <div id="pop"><div class="card" id="popCard"></div></div> 
+ <div id="rsvpModal"><div class="card" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+  <h2 id="rsvpTitle" class="welcome-word">RSVP</h2>
+  <div id="rsvpForm">
+    <p id="rsvpIntro">Select the events you will be attending</p>
+    <div class="rsvp-list" id="rsvpList"></div>
+    <div id="rsvpPlus" hidden>
+      <p class="rsvp-q">Will you be bringing a guest?</p>
+      <div class="rsvp-yn">
+        <label class="rsvp-pill"><input type="radio" name="plus" value="Yes"><span>Yes</span></label>
+        <label class="rsvp-pill"><input type="radio" name="plus" value="No"><span>No</span></label>
+      </div>
+      <input id="rsvpPlusName" type="text" placeholder="Guest’s name" maxlength="60" autocomplete="off" autocapitalize="words" hidden>
+    </div>
+  </div>
+  <div id="rsvpThanks" hidden>
+    <p class="rsvp-thanks-msg" id="rsvpThanksMsg"></p>
+    <div class="rsvp-dates" id="rsvpDates"></div>
+  </div>
+  <p class="rsvp-status" id="rsvpStatus" aria-live="polite"></p>
+  <button class="btn" id="rsvpSubmit" type="button">Submit</button>
+  <button class="rsvp-cancel" id="rsvpClose" type="button">Close</button>
+</div></div>
 </div>
-<canvas id="dust"></canvas> <script> /* Scale the 390x844 canvas to fit any screen (runs before the main script) */ (function(){   var W=390,H=844,root=document.documentElement;   function fit(){     var a=document.activeElement;     if(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName))return;   // keyboard open: don't resize while typing     var w=innerWidth,h=innerHeight,desk=w>=600&&h>=500;     var s=desk?Math.min(Math.min(h*.92,860)/H,w/W)       // desktop: framed phone, as before               :Math.min(w/W,h/H);                         // phones: fit the whole canvas     root.style.setProperty('--s',s.toFixed(4));   }   fit();   addEventListener('resize',fit);   addEventListener('orientationchange',fit);   addEventListener('focusout',function(){setTimeout(fit,300)}); })(); </script>
+<canvas id="dust"></canvas> <script> /* Scale the 390x844 canvas to fit any screen (runs before the main script) */ (function(){   var W=390,H=844,root=document.documentElement;   function fit(){     var a=document.activeElement;     if(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName))return;   // keyboard open: don't resize while typing     var w=innerWidth,h=innerHeight,desk=w>=600&&h>=500;    var s=desk?Math.min(1,(h-48)/H,w/W):Math.min(w/W,h/H);                                                                                                                                               root.style.setProperty('--s',s.toFixed(4));   }   fit();   addEventListener('resize',fit);   addEventListener('orientationchange',fit);   addEventListener('focusout',function(){setTimeout(fit,300)}); })(); </script>
 
 <script>
 /* ================= EDIT THIS SECTION ================= */
@@ -1719,7 +1772,7 @@ function go(i){
   show(i);
 }
 /* ---- guest lookup ---- */
-let guestEvents=[],guestDisplay='',checking=false,nameNeedsFull=false;
+let guestEvents=[],guestDisplay='',checking=false,nameNeedsFull=false,guestPlusOne=false;
 const normName=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
 const GL_KEY='guestCache.'+SIDE;
 const glCache=(()=>{try{return JSON.parse(localStorage.getItem(GL_KEY)||'{}')}catch(e){return{}}})();
@@ -1759,7 +1812,7 @@ function fetchGuest(name){
 function findGuest(name){
   const key=normName(name);
   return fetchGuest(name).then(d=>{
-    if(d&&d.ok){d.events=normalizeGuestEvents(d.events);glCache[key]=d;try{localStorage.setItem(GL_KEY,JSON.stringify(glCache))}catch(e){}}
+    if(d&&d.ok){d.events=normalizeGuestEvents(d.events);guestPlusOne=!!d.plusOne;glCache[key]=d;try{localStorage.setItem(GL_KEY,JSON.stringify(glCache))}catch(e){}}
     return d;
   }); // Never use cached names when the server cannot validate access.
 }
@@ -2237,61 +2290,138 @@ if(INVITE_TOKEN)authorizeInvite();
 })();
 </script>
 <script>
-/* ===== RSVP (groom side only) ===== */
+/* ===== RSVP v2 (groom side only) ===== */
 (()=>{
 if(SIDE!=='groom')return;
-let rsvpOpen=false,busy=false;
-const modal=$('#rsvpModal'),list=$('#rsvpList'),status=$('#rsvpStatus'),submit=$('#rsvpSubmit');
-const RKEY='inviteRsvp:'+SIDE+':';
+let rsvpOpen=false,busy=false,mode='edit',thanksTimer=null,saved=null;
+const modal=$('#rsvpModal'),form=$('#rsvpForm'),thanks=$('#rsvpThanks'),list=$('#rsvpList'),
+  status=$('#rsvpStatus'),submit=$('#rsvpSubmit'),closeB=$('#rsvpClose'),intro=$('#rsvpIntro'),
+  plusBox=$('#rsvpPlus'),plusName=$('#rsvpPlusName'),tMsg=$('#rsvpThanksMsg'),tDates=$('#rsvpDates');
+const rkey=()=>'inviteRsvp2:'+SIDE+':'+String(guest||'').toLowerCase();   // remembered per guest name
 const plain=s=>String(s).replace(/<br\s*\/?>/gi,' ');
 const invitedKeys=()=>{const inv=new Set(normalizeGuestEvents(guestEvents));return SD.order.filter(k=>inv.has(k)||EVENTS[k].always)};
 
-function openRsvp(){
-  clearTimeout(finalReturnTimer);finalReturnTimer=null;      // stop the auto-return to the logo
-  let saved=null;try{saved=JSON.parse(lsSafe.get(RKEY+String(guest).toLowerCase())||'null')}catch(e){}
+function loadLocal(){saved=null;try{const v=JSON.parse(lsSafe.get(rkey())||'null');if(v&&Array.isArray(v.events))saved=v}catch(e){}}
+function saveLocal(){if(saved)lsSafe.set(rkey(),JSON.stringify(saved))}
+function refreshBtn(){
+  const b=$('#rsvpBtn');if(!b)return;
+  b.textContent=saved?'RSVP Confirmed ✓':'RSVP';
+  b.classList.toggle('done',!!saved);
+}
+function syncPlus(){const y=plusBox.querySelector('input[name=plus]:checked');plusName.hidden=!(y&&y.value==='Yes')}
+
+function render(editable){
   list.innerHTML='';
+  const chosen=saved?saved.events:[];
   invitedKeys().forEach(k=>{
     const e=EVENTS[k];
-    const lab=document.createElement('label');lab.className='rsvp-opt';
+    const lab=document.createElement('label');lab.className='rsvp-opt'+(editable?'':' locked');
     const inp=document.createElement('input');inp.type='checkbox';inp.value=k;
-    if(saved&&saved.includes(k))inp.checked=true;
+    inp.checked=chosen.includes(k);inp.disabled=!editable;
     const box=document.createElement('span');box.className='rsvp-box';
     const txt=document.createElement('span');txt.className='rsvp-txt';
     const b=document.createElement('b');b.textContent=plain(e.title);
     const sm=document.createElement('small');sm.textContent=e.date||'';
     txt.append(b,sm);lab.append(inp,box,txt);list.appendChild(lab);
   });
+  plusBox.hidden=!guestPlusOne;
+  if(guestPlusOne){
+    const val=saved?saved.plus:'';
+    plusBox.querySelectorAll('input[name=plus]').forEach(r=>{r.checked=r.value===val;r.disabled=!editable});
+    plusName.value=saved?(saved.plusName||''):'';
+    plusName.disabled=!editable;
+    syncPlus();
+  }
+}
+function setMode(m){
+  mode=m;
+  form.hidden=m==='thanks';thanks.hidden=m!=='thanks';
+  intro.textContent=m==='view'?'Your RSVP':'Select the events you will be attending';
+  submit.hidden=closeB.hidden=m==='thanks';
+  submit.textContent=m==='view'?'Update':'Submit';
+  submit.disabled=false;
+}
+function openRsvp(){
+  clearTimeout(finalReturnTimer);finalReturnTimer=null;clearTimeout(thanksTimer);
   status.textContent='';
-  submit.disabled=false;submit.textContent=saved?'Update':'Submit';
+  render(!saved);setMode(saved?'view':'edit');     // already RSVP'd -> read-only until "Update"
   rsvpOpen=true;modal.classList.add('show');
 }
-function closeRsvp(){rsvpOpen=false;modal.classList.remove('show')}
+function closeRsvp(){clearTimeout(thanksTimer);rsvpOpen=false;modal.classList.remove('show')}
+
+function showThanks(){
+  tDates.innerHTML='';
+  const evs=invitedKeys().filter(k=>saved.events.includes(k));
+  if(evs.length){
+    tMsg.textContent='Thank you! We can’t wait to celebrate with you.';
+    evs.forEach(k=>{
+      const e=EVENTS[k],d=document.createElement('div');d.className='rsvp-date';
+      const b=document.createElement('b');b.textContent=plain(e.title);
+      const s=document.createElement('small');s.textContent=e.date||'';
+      d.append(b,s);tDates.appendChild(d);
+    });
+    if(saved.plus==='Yes'&&saved.plusName){
+      const d=document.createElement('div');d.className='rsvp-date';
+      const b=document.createElement('b');b.textContent='With '+saved.plusName;d.appendChild(b);tDates.appendChild(d);
+    }
+  }else tMsg.textContent='Thank you for letting us know. You will be missed.';
+  setMode('thanks');chime();buzz(15);
+  clearTimeout(thanksTimer);thanksTimer=setTimeout(closeRsvp,3000);   // 3 seconds, then closes
+}
 
 function sendRsvp(){
-  if(busy)return;
-  const picked=[...list.querySelectorAll('input:checked')].map(i=>i.value);
-  const payload={action:'saveRsvp',guest:guest||'Guest',side:SIDE,inviteToken:INVITE_TOKEN,events:picked,invited:invitedKeys()};
+  if(busy||mode!=='edit')return;
+  const events=[...list.querySelectorAll('input:checked')].map(i=>i.value);
+  let plus='',name='';
+  if(guestPlusOne){
+    const r=plusBox.querySelector('input[name=plus]:checked');plus=r?r.value:'';
+    name=plusName.value.trim().replace(/\s+/g,' ');
+    if(events.length){
+      if(!plus){status.textContent='Please let us know if you will be bringing a guest.';return}
+      if(plus==='Yes'&&!name){status.textContent='Please enter your guest’s name.';return}
+    }else{plus='No'}
+    if(plus!=='Yes')name='';
+  }
+  const payload={action:'saveRsvp',guest:guest||'Guest',side:SIDE,inviteToken:INVITE_TOKEN,events,invited:invitedKeys(),plusOne:plus,plusOneName:name};
   busy=true;submit.disabled=true;status.textContent='Sending…';
   fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-  .then(()=>{
-    lsSafe.set(RKEY+String(guest).toLowerCase(),JSON.stringify(picked));
-    status.textContent=picked.length?'Thank you! We can’t wait to celebrate with you.':'Thank you for letting us know. You will be missed.';
-    submit.textContent='Update';chime();buzz(15);
-    setTimeout(closeRsvp,2200);
-  })
+  .then(()=>{saved={events,plus,plusName:name};saveLocal();refreshBtn();status.textContent='';showThanks()})
   .catch(()=>{status.textContent='Could not send your RSVP. Please try again.'})
   .finally(()=>{busy=false;submit.disabled=false});
 }
 
+/* pull the saved RSVP from the sheet, so it is remembered on any device */
+function syncFromServer(){
+  if(!guest||!CONSTELLATION_API)return;
+  const cb='rsvpCb'+Date.now(),sc=document.createElement('script');
+  const done=()=>{delete window[cb];sc.remove()};
+  window[cb]=d=>{
+    done();
+    if(!(d&&d.ok&&d.found))return;
+    saved={events:Array.isArray(d.events)?d.events:[],plus:d.plusOne||'',plusName:d.plusOneName||''};
+    saveLocal();refreshBtn();
+    if(rsvpOpen&&mode==='view')render(false);
+  };
+  sc.onerror=done;
+  sc.src=CONSTELLATION_API+'?action=rsvp&side='+SIDE+'&token='+encodeURIComponent(INVITE_TOKEN)+'&name='+encodeURIComponent(guest)+'&callback='+cb+'&_='+Date.now();
+  document.head.appendChild(sc);
+}
+
 app.addEventListener('click',e=>{if(e.target.closest('#rsvpBtn'))openRsvp()});
-submit.addEventListener('click',sendRsvp);
-$('#rsvpClose').addEventListener('click',closeRsvp);
+submit.addEventListener('click',()=>{
+  if(mode==='view'){render(true);setMode('edit');status.textContent=''}   // "Update" unlocks editing
+  else sendRsvp();
+});
+closeB.addEventListener('click',closeRsvp);
 modal.addEventListener('click',e=>{if(e.target===modal)closeRsvp()});
+plusBox.addEventListener('change',syncPlus);
 ['pointerdown','pointerup'].forEach(v=>modal.addEventListener(v,e=>e.stopPropagation()));
 
-/* while the RSVP card is open: no page navigation, no auto-return to the logo */
+/* no navigation / auto-return while open; no auto-return from the last page on groom at all */
 const _go=go;go=function(i){if(rsvpOpen)return;return _go(i)};
 const _ret=returnToInfinity;returnToInfinity=function(){if(rsvpOpen)return;return _ret.apply(this,arguments)};
+const _sh=show;show=function(i){_sh(i);if(i===FINAL){clearTimeout(finalReturnTimer);finalReturnTimer=null;syncFromServer()}};
+const _bd=build;build=function(){_bd();loadLocal();refreshBtn()};
 })();
 </script>
 </body>
