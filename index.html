@@ -49,7 +49,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 @keyframes ganpatiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
 /* ===== LOGO SCREEN ===== */
-#logo{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat;transition:opacity 1.2s}
+#logo{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cream) url('assets/bg-logo.webp') center/cover no-repeat;transition:opacity 1.2s}
 #logo.gone{opacity:0;pointer-events:none}
 #logoBox{width:66%;aspect-ratio:1;display:grid;place-items:center}
 #logoBox img{width:100%;height:100%;object-fit:contain}
@@ -548,7 +548,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 .petal-fly{position:fixed;z-index:150;pointer-events:none}
 
 /* ===== FINAL PAGE ===== */
-#final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;background:var(--cream) url('assets/bg-logo.jpg') center/cover no-repeat}
+#final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;background:var(--cream) url('assets/bg-logo.webp') center/cover no-repeat}
 .final-greeting,#final h1{font-family:var(--fd);font-weight:500;color:var(--pink);-webkit-text-stroke:.3px currentColor}
 .final-greeting{font-size:calc(clamp(1.8rem,7cqw,2.6rem) + 6px);line-height:1.2;margin-bottom:1.3rem}
 #final h1{font-size:clamp(4.8rem,22cqw,6.8rem);line-height:1.05;text-wrap:balance}
@@ -558,7 +558,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 
 /* Option C: blurred, tinted copy of the main background */
 html,body{background:#1d2b22!important}
-body::before{content:"";position:fixed;inset:-40px;z-index:-1;background:url('assets/bg-logo.jpg') center/cover;filter:blur(28px) brightness(.8)}
+body::before{content:"";position:fixed;inset:-40px;z-index:-1;background:url('assets/bg-logo.webp') center/cover;filter:blur(28px) brightness(.8)}
 
 /* ===== UX PASS: prompts, nav, fonts, a11y ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -778,7 +778,7 @@ let ACCESS_GRANTED=false, ACCESS_PENDING=!!INVITE_TOKEN, infinityCompleted=false
   document.documentElement.classList.add(SIDE+'-side');
 const SIDES={
   bride:{
-    logo:"assets/logo.png", ganeshay:"assets/ganeshay.png",
+    logo:"assets/logo.webp", ganeshay:"assets/ganeshay.png",
     order:["sangeet","gpuja","wedding"],
     main:{
       beforeHosts:["With the blessings of","Smt. Sarmishtha & Shri Ramesh Doshi","and the loving memories of","Late Smt. Kamal & Late Shri Vasudeo Jatkar"],
@@ -789,7 +789,7 @@ const SIDES={
       share:"sharing the joy", family:"Prathama &amp; Ninad"}
   },
   groom:{
-    logo:"assets/Groom-logo.png", ganeshay:"assets/groom-ganeshay.png",
+    logo:"assets/Groom-logo.webp", ganeshay:"assets/groom-ganeshay.png",
     order:["sangeet","gpuja","wedding"],
     main:{
       lines:["With the divine blessings of","Lord Mahavirji","and our beloved parents Smt. Manjula &","Late Shri Maheshchandra Dhami"],
@@ -803,13 +803,13 @@ const SIDES={
 const SD=SIDES[SIDE];
 const CONFIG={
   logo:SD.logo,
-  ganpati:"assets/ganpati.png",
-  tree:"assets/Ganpati%20Tree.png",   // SVG fallback is drawn if this file is missing
-  hibiscus:"assets/hibiscus.png",
+  ganpati:"assets/ganpati.webp",
+  tree:"assets/Ganpati%20Tree.webp",   // SVG fallback is drawn if this file is missing
+  hibiscus:"assets/hibiscus.webp",
   petal:"assets/petal.png",
   drawTree:true,
   flowerPos:[[22,58],[60,66],[45,77],[32,71],[55,48]],
-  bg:{main:"assets/bg-main.jpg",puja:"assets/bg-puja.jpg",gpuja:"assets/Groom-bg-haldi.jpg",mehendi:"assets/bg-mehendi.jpg",sangeet:"assets/bg-sangeet.jpg",haldi:"assets/bg-haldi.jpg",wedding:"assets/bg-wedding.jpg"}
+  bg:{main:"assets/bg-main.webp",puja:"assets/bg-puja.webp",gpuja:"assets/Groom-bg-haldi.webp",mehendi:"assets/bg-mehendi.webp",sangeet:"assets/bg-sangeet.webp",haldi:"assets/bg-haldi.webp",wedding:"assets/bg-wedding.webp"}
 };
 const EVENTS={
   puja:{always:true,bappa:true,title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
