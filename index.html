@@ -4,6 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>You're Invited</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Join us in celebrating the wedding of Samidha & Rahil. December 2026, Mumbai.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Samidha & Rahil">
+<meta property="og:title" content="Samidha & Rahil: You’re Invited">
+<meta property="og:description" content="Join us in celebrating our wedding. December 2026, Mumbai.">
+<meta property="og:url" content="https://samidha-rahil.github.io/wedding-invite/">
+<meta property="og:image" content="https://samidha-rahil.github.io/wedding-invite/assets/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/font/milton-one.one.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/CinzelRegular-3jEM.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/font/Bodoni-Book.woff2" as="font" type="font/woff2" crossorigin>
@@ -24,7 +35,7 @@ html,body{height:100%;background:var(--cream);color:var(--forest);font-family:va
 @media (min-width:600px) and (min-height:500px){
   html,body{background:linear-gradient(160deg,#e9dfc8,#cfd6c2)}
   :root{--fw:calc(min(92dvh,860px)*1180/2412)}
-  .frame{border-radius:38px;box-shadow:0 0 0 10px #1c1c1c,0 30px 80px rgba(26,61,40,.35)}
+  .frame{border-radius:38px;box-shadow:0 0 0 10px #1c1c1c,0  80px rgba(26,61,40,.35)}
 }
 #dust{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:100}
 
@@ -236,7 +247,7 @@ h1.invite-name{transform:translateX(-8cqw)}
   pointer-events:none;
   opacity:0;
   isolation:isolate;
-  text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.22);
+  text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0  rgba(255,255,255,.22);
 }
 
 .scene.active .constellation-heading{
@@ -248,10 +259,10 @@ h1.invite-name{transform:translateX(-8cqw)}
 
 @keyframes constellationPromptFade{
   from{opacity:0;text-shadow:0 0 0 rgba(255,255,255,0)}
-  to{opacity:.8;text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.22)}
+  to{opacity:.8;text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0  rgba(255,255,255,.22)}
 }
 @keyframes constellationPromptGlow{
-  0%,100%{text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0 30px rgba(255,255,255,.22)}
+  0%,100%{text-shadow:0 0 8px rgba(255,255,255,.7),0 0 18px rgba(255,255,255,.42),0 0  rgba(255,255,255,.22)}
   50%{text-shadow:0 0 11px rgba(255,255,255,.85),0 0 23px rgba(255,255,255,.52),0 0 36px rgba(255,255,255,.28)}
 }
 .constellation-star{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#fff8e9;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:21;--lo:.3;--hi:1;animation:starGlimmer var(--twinkle,2.8s) ease-in-out infinite}
@@ -358,7 +369,7 @@ h1.invite-name{transform:translateX(-8cqw)}
   100%{transform:translateY(0)}
 }
 /* Mehendi bells: natural size. --r = rest position (share of own height above the frame) */
-.m-bell{position:absolute;top:-30px;z-index:4;pointer-events:none;transform:translateY(var(--r))}
+.m-bell{position:absolute;top:-;z-index:4;pointer-events:none;transform:translateY(var(--r))}
 .m-bell img{display:block;width:auto;height:auto;max-width:none;-webkit-user-drag:none;will-change:transform}
 .m-bell-1{left:10px;right:auto;--r:-25%}
 .m-bell-2{left:10px;right:auto;--r:-30%}
@@ -525,7 +536,7 @@ h1.invite-name{transform:translateX(-8cqw)}
 @keyframes hintPulse{0%,50%,100%{transform:scale(1)}25%,75%{transform:scale(1.05)}}
 @keyframes petalFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:.9;transform:none}}
 @keyframes petalPromptEntrance{from{opacity:0;transform:translateY(calc(-50% + 28px))}to{opacity:1;transform:translateY(-50%)}}
-@keyframes petalSoftGlow{0%,100%{opacity:1;text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.9),0 0 30px rgba(227,132,150,.55)}50%{opacity:1;text-shadow:0 0 12px #fff,0 0 24px #E38496,0 0 40px rgba(227,132,150,.75)}}
+@keyframes petalSoftGlow{0%,100%{opacity:1;text-shadow:0 0 8px rgba(255,255,255,.98),0 0 18px rgba(227,132,150,.9),0 0  rgba(227,132,150,.55)}50%{opacity:1;text-shadow:0 0 12px #fff,0 0 24px #E38496,0 0 40px rgba(227,132,150,.75)}}
 .petal{position:absolute;top:-90px;display:grid;place-items:center;animation:fall linear forwards;z-index:5;cursor:pointer;will-change:transform}
 .pi{display:block;width:var(--s);height:var(--s);pointer-events:none;animation:tumble var(--td) ease-in-out infinite alternate;opacity:var(--o,1)}
 .pi img{width:100%;height:100%;object-fit:contain;display:block;-webkit-user-drag:none}
@@ -689,9 +700,9 @@ html,body{touch-action:pinch-zoom}
 
 /* ===== GROOM-ONLY LAYOUT ===== */
 html[data-side=groom]{--g-top:40%;--g-h:49%}          /* Ganpati box: top edge + height */
-.groom-side .intro{padding-bottom:calc(6cqh + 60px)} /* text block 30px higher */
+.groom-side .intro{padding-bottom:calc(6cqh + 60px)} /* text block  higher */
 .groom-side .invite-name{font-size:62.4px}           /* names 20% smaller (78px -> 62.4px) */
-html[data-side=groom] #inviteGaneshay{top:30px}      /* Ganeshay 30px lower, closer to the text */
+html[data-side=groom] #inviteGaneshay{top:20px}      /* Ganeshay 30px lower, closer to the text */
 .groom-side #bappa{top:var(--g-top);height:var(--g-h)}
 /* offering ring overlaps the bottom of Ganpati by 20% (15.6px of 78px) and can never fall out of the frame */
 
