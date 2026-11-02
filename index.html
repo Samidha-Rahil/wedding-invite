@@ -691,7 +691,7 @@ html,body{touch-action:pinch-zoom}
 html[data-side=groom]{--g-top:40%;--g-h:49%}          /* Ganpati box: top edge + height */
 .groom-side .intro{padding-bottom:calc(6cqh + 60px)} /* text block 30px higher */
 .groom-side .invite-name{font-size:62.4px}           /* names 20% smaller (78px -> 62.4px) */
-html[data-side=groom] #inviteGaneshay{top:40px}      /* Ganeshay 40px lower, closer to the text */
+html[data-side=groom] #inviteGaneshay{top:30px}      /* Ganeshay 30px lower, closer to the text */
 .groom-side #bappa{top:var(--g-top);height:var(--g-h)}
 /* offering ring overlaps the bottom of Ganpati by 20% (15.6px of 78px) and can never fall out of the frame */
 
@@ -727,10 +727,10 @@ html[data-side=groom] #inviteGaneshay{top:40px}      /* Ganeshay 40px lower, clo
 .rsvp-btn.nudge::after{content:"";position:absolute;inset:-5px;border:2px solid var(--pink);border-radius:16px;pointer-events:none;animation:rsvpRing 1.1s ease-out 2}
 @keyframes rsvpRing{from{opacity:.9;transform:scale(.96)}to{opacity:0;transform:scale(1.12)}}
   /* ===== TREE / HIBISCUS / GANESHAY TWEAKS ===== */
-.tree-art img{transform:translateY(25px)}                        /* tree only; flowers unchanged */
+.tree-art img{transform:translateY(30px)}                        /* tree only; flowers unchanged */
 .flower{width:35.3px;height:35.3px}                              /* tree hibiscus -20% (44.1 -> 35.3) */
 .gflower{width:35.3px;height:35.3px;bottom:calc(3% + 4.4px)}     /* spinning hibiscus -20%, same centre */
-html[data-side=groom] #inviteGaneshay{width:110px;height:110px;top:34px}
+html[data-side=groom] #inviteGaneshay{width:90px;height:90px;top:34px}
 /* RSVP summary (read-only) */
 .rsvp-yes{border-color:var(--pink);background:#fff}
 .rsvp-yes b::before{content:"✓ ";color:var(--pink)}
