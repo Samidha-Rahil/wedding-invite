@@ -950,7 +950,7 @@ function logOpen(){
   try{fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'logOpen',guest,side:SIDE,inviteToken:INVITE_TOKEN,device:/iPhone|iPad/.test(navigator.userAgent)?'iPhone/iPad':/Android/.test(navigator.userAgent)?'Android':'Desktop',screen:innerWidth+'x'+innerHeight})}).catch(()=>{})}catch(e){}
 }
 async function enterScenes(){
-  if(!ACCESS_GRANTED||entering)return;entering=true;
+  if(!ACCESS_GRANTED||entering)return;entering=true;   if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();   // close any open keyboard
   await Promise.race([CRITICAL,new Promise(r=>setTimeout(r,4000))]);   // wait for fonts + key images (max 4s)
   build();
   $('#nameModal').classList.remove('show');
@@ -962,12 +962,13 @@ async function enterScenes(){
   logOpen();
   entering=false;
 }
+let RESUMING=false;
 function proceedAfterInfinity(){
-  if(!ACCESS_GRANTED)return;
+  if(!ACCESS_GRANTED||RESUMING)return;      // still checking whether this is a returning guest
   if(guest){enterScenes();return}            // returning guest: skip the name form
   stage='name';
   setTimeout(()=>{
-    if(!ACCESS_GRANTED)return;
+    if(!ACCESS_GRANTED||guest||stage!=='name')return;   // never pop the form up for a known guest
     $('#nameModal').classList.add('show');
     $('#nameIn').focus({preventScroll:true});
   },950);
@@ -2294,8 +2295,9 @@ function authorizeInvite(){
   window[cb]=async d=>{
     finish();
     if(!(d&&d.ok&&String(d.side||'').toLowerCase()===SIDE))return;
-    ACCESS_GRANTED=true;
-    await resumeReturningGuest();
+       ACCESS_GRANTED=true;
+    RESUMING=true;
+    try{await resumeReturningGuest()}finally{RESUMING=false}
     if(infinityCompleted)proceedAfterInfinity();
   };
   sc.onerror=finish;
@@ -2310,7 +2312,7 @@ if(INVITE_TOKEN)authorizeInvite();
 /* ===== RSVP v2 (groom side only) ===== */
 (()=>{
 if(SIDE!=='groom')return;
-let rsvpOpen=false,busy=false,mode='edit',thanksTimer=null,saved=null;
+let rsvpOpen=false,busy=false,mode='edit',thanksTimer=null,saved=null,lastSave=0;
 const modal=$('#rsvpModal'),form=$('#rsvpForm'),thanks=$('#rsvpThanks'),list=$('#rsvpList'),
   status=$('#rsvpStatus'),submit=$('#rsvpSubmit'),closeB=$('#rsvpClose'),intro=$('#rsvpIntro'),
   plusBox=$('#rsvpPlus'),plusName=$('#rsvpPlusName'),tMsg=$('#rsvpThanksMsg'),tDates=$('#rsvpDates');
@@ -2363,6 +2365,7 @@ function openRsvp(){
   status.textContent='';
   render(!saved);setMode(saved?'view':'edit');     // already RSVP'd -> read-only until "Update"
   rsvpOpen=true;modal.classList.add('show');
+  syncFromServer();
 }
 function closeRsvp(){clearTimeout(thanksTimer);rsvpOpen=false;modal.classList.remove('show')}
 
@@ -2408,7 +2411,7 @@ function sendRsvp(){
   const payload={action:'saveRsvp',guest:guest||'Guest',side:SIDE,inviteToken:INVITE_TOKEN,events,invited:invitedKeys(),plusOne:plus,plusOneName:name};
   busy=true;submit.disabled=true;status.textContent='Sending…';
   fetch(CONSTELLATION_API,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-  .then(()=>{saved={events,plus,plusName:name};saveLocal();refreshBtn();status.textContent='';showThanks()})
+  .then(()=>{lastSave=Date.now();saved={events,plus,plusName:name};saveLocal();refreshBtn();status.textContent='';showThanks()})
   .catch(()=>{status.textContent='Could not send your RSVP. Please try again.'})
   .finally(()=>{busy=false;submit.disabled=false});
 }
@@ -2416,17 +2419,26 @@ function sendRsvp(){
 /* pull the saved RSVP from the sheet, so it is remembered on any device */
 function syncFromServer(){
   if(!guest||!CONSTELLATION_API)return;
-  const cb='rsvpCb'+Date.now(),sc=document.createElement('script');
+  const asked=Date.now();
+  const cb='rsvpCb'+asked,sc=document.createElement('script');
   const done=()=>{delete window[cb];sc.remove()};
   window[cb]=d=>{
     done();
-    if(!(d&&d.ok&&d.found))return;
+    if(!(d&&d.ok))return;                 // network/server problem: keep what we have
+    if(asked<lastSave)return;             // they just submitted; this reply is out of date
+    if(!d.found){                         // row deleted from the sheet: back to the basic RSVP
+      if(saved){
+        saved=null;lsSafe.del(rkey());refreshBtn();
+        if(rsvpOpen&&mode!=='thanks'){render(true);setMode('edit');status.textContent=''}
+      }
+      return;
+    }
     saved={events:Array.isArray(d.events)?d.events:[],plus:d.plusOne||'',plusName:d.plusOneName||''};
     saveLocal();refreshBtn();
     if(rsvpOpen&&mode==='view')render(false);
   };
   sc.onerror=done;
-  sc.src=CONSTELLATION_API+'?action=rsvp&side='+SIDE+'&token='+encodeURIComponent(INVITE_TOKEN)+'&name='+encodeURIComponent(guest)+'&callback='+cb+'&_='+Date.now();
+  sc.src=CONSTELLATION_API+'?action=rsvp&side='+SIDE+'&token='+encodeURIComponent(INVITE_TOKEN)+'&name='+encodeURIComponent(guest)+'&callback='+cb+'&_='+asked;
   document.head.appendChild(sc);
 }
 
