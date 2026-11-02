@@ -773,7 +773,24 @@ html[data-side=groom] #inviteGaneshay{width:110px;height:110px;top:34px}
   <button class="rsvp-cancel" id="rsvpClose" type="button">Close</button>
 </div></div>
 </div>
-<canvas id="dust"></canvas> <script> /* Scale the 390x844 canvas to fit any screen (runs before the main script) */ (function(){   var W=390,H=844,root=document.documentElement;   function fit(){     var a=document.activeElement;     if(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName))return;   // keyboard open: don't resize while typing     var w=innerWidth,h=innerHeight,desk=w>=600&&h>=500;    var s=desk?Math.min(1,(h-48)/H,w/W):Math.min(w/W,h/H);                                                                                                                                               root.style.setProperty('--s',s.toFixed(4));   }   fit();   addEventListener('resize',fit);   addEventListener('orientationchange',fit);   addEventListener('focusout',function(){setTimeout(fit,300)}); })(); </script>
+<canvas id="dust"></canvas> 
+<script>
+(function(){
+  var W=390,H=844,root=document.documentElement;
+  function fit(){
+    var a=document.activeElement;
+    if(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName))return;
+    var w=window.innerWidth,h=window.innerHeight;
+    var desk=w>=600&&h>=500;
+    var s=desk?Math.min((h-40)/H,w/W):Math.min(w/W,h/H);
+    root.style.setProperty('--s',s.toFixed(4));
+  }
+  fit();
+  addEventListener('resize',fit);
+  addEventListener('orientationchange',fit);
+  addEventListener('focusout',function(){setTimeout(fit,300)});
+})();
+</script>
 
 <script>
 /* ================= EDIT THIS SECTION ================= */
