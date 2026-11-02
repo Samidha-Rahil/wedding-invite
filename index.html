@@ -1448,7 +1448,30 @@ function deleteConstellationWish(w,panel){
   })
   .catch(()=>alert('Delete request failed. Check the Apps Script deployment and logs.'));
 }
-
+/* ===== HIBISCUS PLACEMENT: random, but only inside these zones =====
+   x / y are % of the tree box (0,0 = top-left corner of the tree area).
+   n = how many flowers go in that zone. */
+const FLOWER_ZONES=[
+  {n:3,x:[16,40],y:[40,58]},   // top-left of the tree
+  {n:2,x:[38,62],y:[52,70]}    // centre of the tree
+];
+const FLOWER_BOX=[283,549];    // tree box in px on the 390x844 canvas
+const FLOWER_GAP=52;           // minimum distance between flower centres (px)
+function treeFlowerPos(){
+  const out=[];
+  FLOWER_ZONES.forEach(z=>{
+    for(let i=0;i<z.n;i++){
+      let best=null,gap=FLOWER_GAP;
+      for(let t=0;t<200&&!best;t++){
+        if(t&&t%50===0)gap*=.85;
+        const x=rnd(z.x[0],z.x[1]),y=rnd(z.y[0],z.y[1]);
+        if(out.every(p=>Math.hypot((p[0]-x)*FLOWER_BOX[0]/100,(p[1]-y)*FLOWER_BOX[1]/100)>=gap))best=[+x.toFixed(1),+y.toFixed(1)];
+      }
+      out.push(best||[z.x[0],z.y[0]]);
+    }
+  });
+  return out;
+}
 /* ===== BUILD ALL PAGES ===== */
 function build(){
   app.innerHTML='';app.classList.remove('animate');
@@ -1497,7 +1520,7 @@ function build(){
         
         <div id="hintG"><span class="cue-pill">${ICON.drag}<b>Drag a flower to Bappa</b></span></div>
         <div id="drop" aria-label="Flower offering space"></div>
-        <div class="tree-art"><div class="tree-art-inner">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${CONFIG.flowerPos.map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div></div>`);
+        <div class="tree-art"><div class="tree-art-inner">${CONFIG.tree?`<img data-tree-image src="${CONFIG.tree}" alt="Wedding invitation tree">`:(CONFIG.drawTree?treeSVG:'')}${treeFlowerPos().map(([l,t])=>`<div class="flower" style="left:${l}%;top:${t}%;--rot:${Math.round(Math.random()*360)}deg;--flip:${Math.random()<.5?-1:1}">${hibImg}</div>`).join('')}</div></div>`);
     }
     else if(k==='sangeet')s.insertAdjacentHTML('beforeend',`<div class="ev-over">${evHTML(k,inv.has(k))}</div>${BACK}${NEXT}`);
     else if(k==='wedding')s.insertAdjacentHTML('beforeend',`<div class="petal-hint"><span class="hint-text"><span class="cue-pill">${ICON.tap}<b>Catch a falling petal</b></span></span></div>${BACK}`);
