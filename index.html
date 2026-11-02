@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>You're Invited</title>
-<link rel="preload" href="assets/font/milton-one.one.otf" as="font" type="font/otf" crossorigin>
-<link rel="preload" href="assets/font/CinzelRegular-3jEM.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="preload" href="assets/font/Bodoni%20SvtyTwo%20ITC%20TT%20Book.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="assets/font/milton-one.one.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/font/CinzelRegular-3jEM.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/font/Bodoni-Book.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* ===== FONTS ===== */
-@font-face{font-family:'MiltonOne';src:url('assets/font/milton-one.one.otf') format('opentype');font-display:block}
-@font-face{font-family:'CinzelInvite';src:url('assets/font/CinzelRegular-3jEM.ttf') format('truetype');font-display:block}
-@font-face{font-family:'BodoniVenue';src:url('assets/font/Bodoni%20SvtyTwo%20ITC%20TT%20Book.ttf') format('truetype');font-display:block}
+@font-face{font-family:'MiltonOne';src:url('assets/font/milton-one.one.woff2') format('woff2');font-display:block}
+@font-face{font-family:'CinzelInvite';src:url('assets/font/CinzelRegular-3jEM.woff2') format('woff2');font-display:block}
+@font-face{font-family:'BodoniVenue';src:url('assets/font/Bodoni-Book.woff2') format('woff2');font-display:block}
 :root{--fw:min(100vw,calc(100dvh*1080/2412*1.07));font-size:calc(var(--fw)/26.9);--pink:#E38496;--forest:#1A3D28;--white:#fff;--sage:#617764;--olive:#B2AF87;--cream:#F9EDD5;
 --f-names:'MiltonOne',serif;--f-date:'CinzelInvite',serif;--f-venue:'BodoniVenue',serif;--fd:'MiltonOne',serif;--fb:'CinzelInvite',serif}
 
@@ -726,7 +726,11 @@ html[data-side=groom] #inviteGaneshay{top:40px}      /* Ganeshay 40px lower, clo
 .rsvp-btn small{display:block;font:.8rem var(--f-venue);letter-spacing:.03em;text-transform:none;color:var(--sage)}
 .rsvp-btn.nudge::after{content:"";position:absolute;inset:-5px;border:2px solid var(--pink);border-radius:16px;pointer-events:none;animation:rsvpRing 1.1s ease-out 2}
 @keyframes rsvpRing{from{opacity:.9;transform:scale(.96)}to{opacity:0;transform:scale(1.12)}}
-  
+  /* ===== TREE / HIBISCUS / GANESHAY TWEAKS ===== */
+.tree-art img{transform:translateY(14px)}                        /* tree only; flowers unchanged */
+.flower{width:35.3px;height:35.3px}                              /* tree hibiscus -20% (44.1 -> 35.3) */
+.gflower{width:35.3px;height:35.3px;bottom:calc(3% + 4.4px)}     /* spinning hibiscus -20%, same centre */
+html[data-side=groom] #inviteGaneshay{width:clamp(86px,25cqw,120px);height:clamp(86px,25cqw,120px);top:34px}
 </style>
 </head>
 <body>
@@ -828,7 +832,7 @@ const EVENTS={
   puja:{always:true,bappa:true,title:"Grahamak & Mandap Mahurat",date:"wednesday, 09th december 2026",time:"9:00 AM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   mehendi:{title:"Mehendi te Vaavi",date:"thursday, 10th december 2026",time:"5:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   sangeet:{title:"Sagai &<br>Shor Sharaba",date:"friday, 11th december 2026",time:"7:00 PM onwards",venue:"Embassy Hall, The Tunga Paradise, Andheri E, Mumbai",map:"https://maps.app.goo.gl/GceAwj1eoHQRVYf56"},
-  gpuja:{skin:"puja",title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Orchid Hall, Lodha Eternis",map:"https://maps.app.goo.gl/JrvUhVTGP5fqonHS8"},
+  gpuja:{skin:"puja",title:"Prem Pithi",date:"saturday, 12th december 2026",time:"03:00 PM onwards",venue:"Orchid Hall, Lodha Eternis",map:"https://maps.app.goo.gl/JrvUhVTGP5fqonHS8"},
   haldi:{title:"Prem Pithi",date:"saturday, 12th december 2026",time:"05:00 PM onwards",venue:"Family Residence, Mumbai",map:"https://maps.app.goo.gl/QoJoFGFY6zFpY6jb7"},
   wedding:{always:true,title:"Mangal Pheras",date:"sunday, 13th december 2026",time:"Jaan Agaman: 10:30 AM<br>Hasta Melap: 12:30 PM",venue:"Grande Hall C, NESCO, Goregaon E, Mumbai",map:"https://maps.app.goo.gl/tzmzjRDrhJN4GLGJ7"}
 };
@@ -873,9 +877,9 @@ function clipDust(){
 function rs(){cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0);clipDust()}
 rs();addEventListener('resize',rs);
 function dust(x,y,o={}){
-  if(P.length>350)return;
+  if(P.length>500)return;
   const n=o.n||3;
-  for(let i=0;i<n;i++)P.push({x:x+rnd(-1,1)*(o.j??3),y:y+rnd(-1,1)*(o.j??3),vx:rnd(-.3,.3)*(o.spread||1),vy:rnd(-.35,.15)*(o.spread||1),l:0,m:o.tiny?rnd(55,120):rnd(40,85),s:o.tiny?rnd(.6,1.7):rnd(1.2,2.8),a:o.faint?.38:1,ph:rnd(0,6)});
+  for(let i=0;i<n;i++)P.push({x:x+rnd(-1,1)*(o.j??3),y:y+rnd(-1,1)*(o.j??3),vx:rnd(-.3,.3)*(o.spread||1),vy:rnd(-.35,.15)*(o.spread||1),l:0,m:o.life?rnd(o.life*.8,o.life*1.2):(o.tiny?rnd(55,120):rnd(40,85)),s:o.size?rnd(o.size*.7,o.size*1.3):(o.tiny?rnd(.6,1.7):rnd(1.2,2.8)),a:o.a??(o.faint?.38:1),ph:rnd(0,6)});
 }
 const burst=(x,y,n=50,o={})=>dust(x,y,{...o,n,spread:o.spread||4});
 function offeringPixieDust(){
@@ -2220,7 +2224,7 @@ let g0=0;
   if(!g0)g0=ts;
   const D=3200,t=(ts-g0)%(D+1600);
   if(t>D){hand.style.opacity=0;return}
-  const[x,y]=pathAt(t/D);place(x,y);if(Math.random()<.5)dust(x,y,{n:1,faint:true,tiny:true,spread:.4});
+  const[x,y]=pathAt(t/D);place(x,y);dust(x,y,{n:2,tiny:true,a:.7,size:1.5,life:75,j:1.2,spread:.3});
 })(0);
 function traceInf(ms,cb){
   const t0=performance.now();
