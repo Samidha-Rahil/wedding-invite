@@ -2574,5 +2574,24 @@ const wait=setInterval(()=>{
 },300);
 })();
 </script>
+<script>
+/* Flower grab assist: if a touch lands within 34px of a flower, start dragging it,
+   even when another layer is covering it */
+(()=>{
+addEventListener('pointerdown',e=>{
+  if(stage!=='scenes'||cur!==0||locked||popOpen)return;
+  if(e.target.closest&&e.target.closest('.flower'))return;
+  let best=null,bd=1e9;
+  document.querySelectorAll('#s0 .flower:not(.drag)').forEach(f=>{
+    const r=f.getBoundingClientRect();
+    const d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
+    if(d<bd){bd=d;best=f}
+  });
+  if(!best||bd>34)return;
+  e.stopImmediatePropagation();
+  best.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:e.pointerId,pointerType:e.pointerType,clientX:e.clientX,clientY:e.clientY,isPrimary:true}));
+},true);
+})();
+</script>
 </body>
 </html>
